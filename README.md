@@ -7,12 +7,22 @@ It needs only numpy, scipy and matplotlib: no FEniCSx installation, works on Win
 | Path | Content |
 |---|---|
 | `notebooks/cutfem_lecture.ipynb` | the notebook with exercises: start here |
+| `pyproject.toml` | makes `pip install <repository zip>` install minicut |
 | `minicut.py` | the cut FEM module (2D, P1, Nitsche, ghost penalty, cell aggregation), commented |
 | `solutions/cutfem_lecture_solutions.ipynb` | the same notebook with the exercises solved |
 | `tools/make_notebooks.py` | rebuilds both notebooks (the notebook text lives there) |
 | `slides/` | the lecture deck (HTML slides, images), see `slides/README.md` |
 | `notes/speaker-notes.md` | speaker notes of all slides, in order (generated from the deck) |
 | `tools/deck_tools.py` | local preview of the deck and export of the speaker notes |
+
+## Install only minicut (one line)
+
+```bash
+pip install https://github.com/sclaus2/cutfem-lecture/archive/main.zip
+```
+
+This installs `minicut` and numpy, scipy and matplotlib, so `import minicut` works in any folder (no git needed).
+The notebooks are not part of the package: for the exercises use the steps below.
 
 ## Run the notebook locally
 

@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "minicut"
+version = "0.1.0"
+description = "A small cut finite element method in pure Python (2D, P1, Nitsche, ghost penalty, aggregation), for a lecture"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+dependencies = ["numpy", "scipy", "matplotlib"]
+
+[project.urls]
+Homepage = "https://github.com/sclaus2/cutfem-lecture"
+
+[tool.setuptools]
+py-modules = ["minicut"]
