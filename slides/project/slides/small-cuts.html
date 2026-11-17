@@ -1,0 +1,26 @@
+<section id="small-cuts" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Small cuts break the matrix</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:28px">
+<ul style="font-size:30px;line-height:1.4">
+<li>For P1 the gradients of the hat functions ψi are constant, so the element matrix on T ∩ Ω is the full one scaled by η:</li>
+</ul>
+<img src="/_blob/c6ae07a51f79d147c1a85d3490b2a1be" alt="Integral over T intersected with Omega of grad psi i dot grad psi j equals eta times K T i j, where eta is the measure of T intersected with Omega divided by the measure of T" style="width:718px;height:85px;object-fit:contain">
+<ul style="font-size:30px;line-height:1.4">
+<li>A DOF that sees Ω only through a sliver gets matrix entries proportional to η</li>
+<li>The smallest eigenvalue tends to 0 with η, so κ(A) grows roughly like 1/η</li>
+</ul>
+<div style="background:#FDEBD8;padding:24px 32px;border-radius:16px;display:flex;flex-direction:column;gap:6px">
+<p style="font-size:30px;font-weight:700;color:#B34F00">Example from the sweep</p>
+<p style="font-size:30px;line-height:1.35">η = 1.3·10⁻⁸ gave κ(A) = 2.0·10⁹</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;align-items:center;width:660px">
+<img src="/_blob/7a60762ca59d7534bd33dcbaac3f45b6" alt="Log-log scatter of the condition number against the smallest cut fraction eta for 81 boundary positions, following roughly a line of slope minus one; most points are crosses, meaning the matrix is indefinite" style="width:660px;height:528px;object-fit:contain">
+<p style="font-size:24px;color:#6E6E6E;width:660px">81 positions of a disc on a fixed mesh, no stabilisation (minicut). η = smallest |T ∩ Ω| / |T| over the cut cells.</p>
+</div>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">29</p>
+<aside>Three minutes. Notation: psi_i are the hat functions (called phi_i in lecture 2; renamed here because phi is the level set). The argument is exact for P1 because the gradient is constant on a triangle: the element matrix restricted to T intersect Omega is eta times the full element matrix. So any DOF whose support meets Omega only in slivers has a tiny diagonal entry. The scatter plot comes from the sweep of the next slide: each point is one position of the disc, the horizontal axis is the smallest cut fraction eta over the cut cells, the vertical axis the condition number. The dashed line has slope minus one: the trend is roughly 1/eta, with scatter of one to two orders of magnitude, so say roughly and not exactly. Crosses mark matrices that have negative eigenvalues: for Nitsche without stabilisation, tiny slivers do not only hurt the conditioning, they make the matrix indefinite. Connect to lecture 3: conditioning drives iteration counts and round-off.</aside>
+</section>

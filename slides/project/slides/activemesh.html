@@ -1,0 +1,20 @@
+<section id="activemesh" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">The active mesh</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:32px">
+<ul style="font-size:38px;line-height:1.4">
+<li>Active mesh = inside cells + cut cells</li>
+<li>Unknowns live on active cells only; outside cells are never assembled</li>
+<li>The cost follows the size of Ω, not the size of the box</li>
+</ul>
+<div style="background:#FDEBD8;padding:28px 36px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:38px;font-weight:700;color:#B34F00">Watch this</p>
+<p style="font-size:36px;line-height:1.35">Vertices of cut cells can lie outside Ω. Their DOFs are active, and they will cause trouble in a few minutes.</p>
+</div>
+</div>
+<img src="/_blob/f11ef7edab25e57abe0564dc2116961e" alt="Active mesh: the shaded cells inside and cut by the flower-shaped boundary" style="width:640px;height:672px;object-fit:contain">
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">13</p>
+<aside>Two minutes. The finite element space is the usual P1 (or P2) space, restricted to the active mesh. Nothing new in the spaces. The warning about DOFs outside Ω is the seed for the conditioning block a few slides further on.</aside>
+</section>

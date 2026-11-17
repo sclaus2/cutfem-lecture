@@ -1,0 +1,109 @@
+{
+  "v": 4,
+  "attachments": {},
+  "createdOnFiles": {
+    "at": "2026-11-01T17:00:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "faces": {},
+  "lists": "css",
+  "order": [
+    "cover",
+    "plan",
+    "meshed-vs-levelset",
+    "recap",
+    "mot-images",
+    "three-examples",
+    "idea",
+    "nutshell",
+    "first-cut",
+    "levelset",
+    "ps-1",
+    "classify",
+    "activemesh",
+    "ex-classify",
+    "ps-2",
+    "quad-problem",
+    "cut-cell",
+    "quad-rules",
+    "ex-cutcell",
+    "ps-3",
+    "bc-options",
+    "lag-1",
+    "lag-2",
+    "nitsche-derive",
+    "nitsche-code",
+    "bc-compare",
+    "ps-4",
+    "cond-what",
+    "small-cuts",
+    "cond-setup",
+    "cond-sweep",
+    "cond-modes",
+    "ghost-1d",
+    "ghost",
+    "aggregation",
+    "cond-cost",
+    "ps-stab",
+    "ps-5",
+    "convergence",
+    "img2ls-1",
+    "img2ls-2",
+    "ex1-solve",
+    "csg",
+    "ex2-build",
+    "ex2-turn",
+    "ex2-opt",
+    "mot-designs",
+    "try-it",
+    "applications",
+    "limits",
+    "keyideas",
+    "questions",
+    "references"
+  ],
+  "sections": {
+    "why": {
+      "start": "cover",
+      "description": "Fitted meshes become the bottleneck, so we mesh a box and cut the geometry out of it; the three examples."
+    },
+    "flower": {
+      "start": "nutshell",
+      "description": "Example 1: Poisson on a flower, step by step: the algorithm and the goal."
+    },
+    "geometry": {
+      "start": "levelset",
+      "description": "Steps 1 and 2: describe the domain with a level set and classify the cells of the background mesh."
+    },
+    "integration": {
+      "start": "quad-problem",
+      "description": "Step 3: integrate over the cut cells with quadrature rules on the pieces."
+    },
+    "boundary": {
+      "start": "bc-options",
+      "description": "Step 4: impose Dirichlet conditions on the cut boundary: Lagrange multipliers and Nitsche's method."
+    },
+    "conditioning": {
+      "start": "cond-what",
+      "description": "Step 5: what conditioning is and how small cuts break it."
+    },
+    "remedy": {
+      "start": "ghost-1d",
+      "description": "Ghost penalty and aggregation repair the conditioning; the code; solve and convergence."
+    },
+    "image": {
+      "start": "img2ls-1",
+      "description": "Example 2: a porous specimen from an image, solved in the solid matrix."
+    },
+    "rotor": {
+      "start": "csg",
+      "description": "Example 3: a rotor built from level sets with min and max, turned and tuned."
+    },
+    "close": {
+      "start": "try-it",
+      "description": "Try it, applications, open questions, key ideas and references."
+    }
+  },
+  "title": "Cut Finite Element Methods Lecture"
+}

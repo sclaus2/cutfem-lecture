@@ -1,0 +1,26 @@
+<section id="classify" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Classifying the cells of the background mesh</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<div style="background:#EAF1F8;padding:28px 36px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:43px;font-weight:700;color:#00509A">Inside</h3>
+<p style="font-size:36px;line-height:1.35">φ &lt; 0 at every vertex: an ordinary cell</p>
+</div>
+<div style="background:#FDEBD8;padding:28px 36px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:43px;font-weight:700;color:#B34F00">Cut</h3>
+<p style="font-size:36px;line-height:1.35">φ changes sign: the boundary crosses the cell, special treatment</p>
+</div>
+<div style="background:#F1F1F1;padding:28px 36px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:43px;font-weight:700;color:#6E6E6E">Outside</h3>
+<p style="font-size:36px;line-height:1.35">φ &gt; 0 at every vertex: ignored</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+<img src="/_blob/c79f0db5584cf43616f0961596b75e45" alt="Background mesh with the cells crossed by the flower-shaped boundary highlighted in orange" style="width:600px;height:630px;object-fit:contain">
+<p style="font-size:31px;color:#6E6E6E">Cut cells in orange</p>
+</div>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">12</p>
+<aside>Three minutes. The classification only needs the sign of φ at the vertices of each cell, so it is one cheap pass over the mesh. A small caveat to mention only if asked: a thin feature of Ω can pass between vertices without changing any sign; the mesh must resolve the geometry at least roughly.</aside>
+</section>

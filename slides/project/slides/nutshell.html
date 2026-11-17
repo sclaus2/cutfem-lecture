@@ -1,0 +1,40 @@
+<section id="nutshell" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">The algorithm with cut cells</h2>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;gap:24px;background:#FDEBD8;padding:12px 28px;border-radius:14px">
+<div style="width:52px;height:52px;border-radius:50%;background:#00509A;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">1</p></div>
+<p style="font-size:32px;flex:1">Background mesh of a simple box, level set φ on it</p>
+<p style="font-size:26px;font-weight:700;color:#B34F00">Changed</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px;background:#EAF1F8;padding:12px 28px;border-radius:14px">
+<div style="width:52px;height:52px;border-radius:50%;background:#00509A;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">2</p></div>
+<p style="font-size:32px;flex:1">Choose the element type (P1, P2, …)</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px;background:#FDEBD8;padding:12px 28px;border-radius:14px">
+<div style="width:52px;height:52px;border-radius:50%;background:#00509A;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">3</p></div>
+<p style="font-size:32px;flex:1">Quadrature on T ∩ Ω and Γ ∩ T, assembly on active cells</p>
+<p style="font-size:26px;font-weight:700;color:#B34F00">Changed</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px;background:#FDEBD8;padding:12px 28px;border-radius:14px">
+<div style="width:52px;height:52px;border-radius:50%;background:#00509A;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">4</p></div>
+<p style="font-size:32px;flex:1">Dirichlet conditions: Nitsche terms on Γ</p>
+<p style="font-size:26px;font-weight:700;color:#B34F00">Changed</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px;background:#FDEBD8;padding:12px 28px;border-radius:14px">
+<div style="width:52px;height:52px;border-radius:50%;background:#B34F00;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">+</p></div>
+<p style="font-size:32px;flex:1">Stabilise small cuts: ghost penalty or aggregation</p>
+<p style="font-size:26px;font-weight:700;color:#B34F00">New</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px;background:#EAF1F8;padding:12px 28px;border-radius:14px">
+<div style="width:52px;height:52px;border-radius:50%;background:#00509A;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">5</p></div>
+<p style="font-size:32px;flex:1">Solve the sparse system K U = F</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px;background:#EAF1F8;padding:12px 28px;border-radius:14px">
+<div style="width:52px;height:52px;border-radius:50%;background:#00509A;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">6</p></div>
+<p style="font-size:32px;flex:1">Reconstruct uh from the DOFs and the shape functions</p>
+</div>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">8</p>
+<aside>Three minutes. Same slide as the recap, now with the answers. Steps 2, 5 and 6 are untouched: same element spaces, same solver, same reconstruction. Steps 1, 3, 4 changed in the way the next blocks will show, and one new step stabilises small cuts. Say explicitly: the Galerkin method and its best-approximation property (lecture 1) are what we are still doing. From here on we go through these steps on one example, the flower, and every step ends with the code in minicut.</aside>
+</section>

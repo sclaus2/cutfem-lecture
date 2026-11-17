@@ -1,0 +1,1130 @@
+<!doctype html><meta charset='utf-8'><title>Cut Finite Element Methods Lecture</title>
+<style>body{background:#ddd;font-family:Arial,sans-serif;margin:24px}.wrap{margin:0 auto 8px;width:960px}.frame{width:960px;height:540px;overflow:hidden;background:#fff;box-shadow:0 1px 6px #0004;position:relative}.frame section{position:absolute;left:0;top:0;width:1920px;height:1080px;box-sizing:border-box;transform:scale(0.5);transform-origin:0 0;overflow:hidden}.frame section *{margin:0;box-sizing:border-box}.frame section ul,.frame section ol{padding-left:1.2em}.frame section img{display:block}.note{font-size:14px;line-height:1.4;color:#333;margin:6px 0 30px;max-width:960px}h4{margin:0 0 4px;color:#00509A}</style>
+<div class='wrap'><h4>1. cover</h4><div class='frame'><section id="cover" data-transition="fade" style="background:#ffffff">
+  <h1 style="position:absolute; top:320px; left:128px; width:1664px; font-family:Arial, sans-serif; font-size:96px; font-weight:700; line-height:1.1; color:#00509a">Cut finite element methods</h1>
+  <p style="position:absolute; top:470px; left:128px; width:1664px; font-family:Arial, sans-serif; font-size:44px; line-height:1.3; color:#3b3b3b">Simulating on geometries that are not meshed</p>
+  <p style="position:absolute; top:680px; left:128px; width:1664px; font-family:Arial, sans-serif; font-size:32px; line-height:1.4; color:#6e6e6e">Susanne CLAUS · DTIS, ONERA, Université Paris-Saclay, Palaiseau, France</p>
+  <p style="position:absolute; top:735px; left:128px; width:1664px; font-family:Arial, sans-serif; font-size:32px; line-height:1.4; color:#6e6e6e">Lecture at MINES Paris – PSL&nbsp;</p>
+  <p style="position:absolute; top:790px; left:128px; width:1664px; font-family:Arial, sans-serif; font-size:32px; line-height:1.4; color:#6e6e6e">25/11/2026</p>
+  
+</section>
+</div><div class='note'>90-minute lecture. Audience: second-year MINES Paris engineers who met FEM this week (weak form and Galerkin, meshes, P1/P2 and assembly, convergence and cost). Goal: show what changes when the mesh does not fit the geometry. Replace [date of the lecture].</div></div>
+<div class='wrap'><h4>2. Overview</h4><div class='frame'><section id="plan" data-transition="fade" style="display:flex; flex-direction:column; gap:28px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Overview</h2>
+  <table style="font-family:Arial, sans-serif; font-size:30px; line-height:1.5; color:#3b3b3b">
+    <tr><th style="width:14%; color:#00509a">Minutes</th><th style="width:34%; color:#00509a">Block</th><th style="width:52%; color:#00509a">Question we answer</th></tr>
+    <tr><td>0–8</td><td>Opening</td><td>Why cut, and the three examples</td></tr>
+    <tr><td>8–17</td><td>Example 1 · Steps 1–2</td><td>Level set and cell classification: describing Ω without a mesh</td></tr>
+    <tr><td>17–26</td><td>Example 1 · Step 3</td><td>Integration on cut cells</td></tr>
+    <tr><td>26–36</td><td>Example 1 · Step 4</td><td>Boundary conditions: Lagrange multipliers or Nitsche</td></tr>
+    <tr><td>36–51</td><td>Example 1 · Step 5</td><td>Small cuts degrade the matrix; what repairs it?</td></tr>
+    <tr><td>51–55</td><td>Example 1 · Step 6</td><td>Solve, look, and convergence</td></tr>
+    <tr><td>55–67</td><td>Example 2 · image</td><td>From a scan to a level set, solved in the solid matrix</td></tr>
+    <tr><td>67–80</td><td>Example 3 · rotor</td><td>A rotor from level sets, turned through a hot jet, tuned</td></tr>
+    <tr><td>80–90</td><td>Close</td><td>Try it, applications, key ideas, questions</td></tr>
+  </table>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">2</p>
+  
+</section>
+</div><div class='note'>One minute. The story of the lecture: three examples, and one long one first. Why cut, the idea, and the three examples (8 minutes). Then Example 1, Poisson on a flower, built step by step, each step explained and then written in code with minicut: level set and classification, quadrature, Nitsche, the conditioning problem and its two remedies, solve and convergence. Then the same steps run on an image of a porous specimen (solved in the solid matrix) and on a rotor built from level sets, turned through a hot jet and tuned. Say that this lecture builds on the week: weak form and Galerkin (lecture 1), meshes, P1 and assembly (lecture 2), convergence and cost (lecture 3). Timings are estimates for 90 minutes; the conditioning step can be shortened by skipping the mode slide. Announce the two short exercises.</div></div>
+<div class='wrap'><h4>3. Two ways to describe a geometry</h4><div class='frame'><section id="meshed-vs-levelset" data-transition="fade" style="display:flex; flex-direction:column; gap:40px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Two ways to describe a geometry</h2>
+  <div style="display:flex; flex-direction:row; gap:52px; align-items:start">
+    <div style="width:520px; display:flex; flex-direction:column; gap:14px; flex:0 0 auto">
+      <img src="assets/aa346aeaee83a52b5d4f523bedd9c367.png" alt="Triangular mesh fitted to a flower-shaped domain: the mesh edges follow the boundary" style="width:520px; height:417px; object-fit:contain; background:#ffffff; border:3px solid #eaf1f8; border-radius:12px">
+      <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#b34f00">Meshed geometry</h3>
+      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b">The boundary is made of mesh edges: the mesh follows the shape. A new shape means a new mesh.</p>
+    </div>
+    <div style="width:520px; display:flex; flex-direction:column; gap:14px; flex:0 0 auto">
+      <img src="assets/1b168c1ca7567c6003fdaa9ac1bad6a1.png" alt="Colour map of a level set function: negative inside the flower, positive outside, zero on its boundary" style="width:520px; height:417px; object-fit:contain; background:#ffffff; border:3px solid #eaf1f8; border-radius:12px">
+      <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">Level set function φ</h3>
+      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b">A function φ(x) with a sign: φ &lt; 0 inside Ω, φ &gt; 0 outside, φ = 0 on the boundary Γ. A disc of radius R: φ(x) = |x − c| − R.</p>
+    </div>
+    <div style="width:520px; display:flex; flex-direction:column; gap:14px; flex:0 0 auto">
+      <img src="assets/b37042f3e0dea8cb6d469c6e8acce536.png" alt="Plain triangular background mesh with the flower-shaped boundary drawn across it" style="width:520px; height:417px; object-fit:contain; background:#ffffff; border:3px solid #eaf1f8; border-radius:12px">
+      <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">Level set on a simple mesh</h3>
+      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b">The mesh is a plain grid that ignores Ω. The boundary cuts through cells, and φ tells us where.</p>
+    </div>
+  </div>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">3</p>
+  
+</section>
+</div><div class='note'>Two minutes, no hurry: this slide prepares the pipeline on the next one. Left: the way they know from this week. The mesh is built to fit Ω, so the boundary is a list of mesh edges, and a new shape needs a new mesh. Middle: the other way. A level set function φ is just a function of position with a sign: negative inside, positive outside, zero on the boundary. Ask: for a disc, what is φ? Answer: distance to the centre minus the radius. To test whether a point is inside, evaluate φ and look at its sign; no mesh is needed for that. Right: the level set lives on a simple mesh that knows nothing about Ω. The boundary now cuts through cells, and that is where all the new work of the lecture sits. Next slide: the whole finite element pipeline with a fitted mesh and with a level set.</div></div>
+<div class='wrap'><h4>4. The Finite Element algorithm: where geometry enters</h4><div class='frame'><section id="recap" data-transition="fade" style="display:flex; flex-direction:column; gap:14px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">The Finite Element algorithm: where geometry enters</h2>
+  <p style="font-family:Arial, sans-serif; font-size:28px; font-weight:700; color:#00509a">Classical FEM: the mesh fits Ω</p>
+  <div style="display:grid; grid-template-columns:1fr 40px 1fr 40px 1fr 40px 1fr 40px 1fr 40px 1fr">
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#fdebd8; border:3px solid #b34f00; border-radius:16px">
+      <img src="assets/aa346aeaee83a52b5d4f523bedd9c367.png" alt="Triangular mesh fitted to a flower-shaped domain" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Geometry is meshed</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">1</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#eaf1f8; border:3px solid #eaf1f8; border-radius:16px">
+      <img src="assets/a82296bc8e76d15a89392b581034ebcd.png" alt="Reference triangles with P1 nodes (3) and P2 nodes (6)" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Choose elements: P1, P2</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">2</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#fdebd8; border:3px solid #b34f00; border-radius:16px">
+      <img src="assets/62928db44ea1a7a18b28f524e0fd6a32.png" alt="One triangle with three Gauss points and its 3 by 3 block added into the global matrix" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Quadrature rules, assemble K, F</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">3</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#fdebd8; border:3px solid #b34f00; border-radius:16px">
+      <img src="assets/06ddeb7cedd3cb5b5726446bcd51c5c9.png" alt="Fitted mesh with the boundary nodes marked where the Dirichlet values are fixed" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Fix the boundary nodes</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">4</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#eaf1f8; border:3px solid #eaf1f8; border-radius:16px">
+      <img src="assets/0f62c8eea750eec7ffc6cc063b040ca2.png" alt="Sparsity pattern of the stiffness matrix" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Solve K U = F</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">5</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#eaf1f8; border:3px solid #eaf1f8; border-radius:16px">
+      <img src="assets/82f94ab0388a76cab7ab17b1856745c6.png" alt="Finite element solution on the fitted mesh" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Solution uh</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">6</p>
+      </div>
+    </div>
+  </div>
+  <p style="font-family:Arial, sans-serif; font-size:28px; font-weight:700; color:#b34f00">Cut FEM: background mesh + level set function</p>
+  <div style="display:grid; grid-template-columns:1fr 40px 1fr 40px 1fr 40px 1fr 40px 1fr 40px 1fr">
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#fdebd8; border:3px solid #b34f00; border-radius:16px">
+      <img src="assets/e9f513a57b13609385422c55d89d917c.png" alt="Background mesh with the level set; cut cells in orange" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Background mesh + level set φ</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">1</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#eaf1f8; border:3px solid #eaf1f8; border-radius:16px">
+      <img src="assets/52254dbe8a9f62beaa07cedbbae2d2fa.png" alt="The same elements on the active mesh, degrees of freedom of active cells" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Same elements, active mesh</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">2</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#fdebd8; border:3px solid #b34f00; border-radius:16px">
+      <img src="assets/d85992284dc8d4553645380d09841723.png" alt="Quadrature points inside the cut cells and on the interface" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Quadrature on Ω∩T and Γ∩T</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">3</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#fdebd8; border:3px solid #b34f00; border-radius:16px">
+      <img src="assets/d764e04766558caf7d0d7ec8245ad501.png" alt="Ghost penalty facets in red and interface normals" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Nitsche + ghost penalty</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">4</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#eaf1f8; border:3px solid #eaf1f8; border-radius:16px">
+      <img src="assets/49148ffc00b7b2f268a4f7fb6ead2d10.png" alt="Sparsity pattern of the cut FEM matrix" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Solve K U = F</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">5</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#eaf1f8; border:3px solid #eaf1f8; border-radius:16px">
+      <img src="assets/aeae2c637d3a98fc59b79a3be69e1a4b.png" alt="Cut FEM solution on the domain" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Solution uh on Ω</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">6</p>
+      </div>
+    </div>
+  </div>
+  <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.3; color:#3b3b3b">The <span style="color:#b34f00"><b>orange steps</b></span> use the shape of Ω. Cut FEM replaces exactly these three; the linear algebra stays the same.</p>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">4</p>
+  
+</section>
+</div><div class='note'>Three minutes. Top row: the classical six-step algorithm from the end of lecture 2, one picture per step: a mesh that fits the boundary, the element type, Gauss rules on whole triangles and assembly of K and F, fixing the values at the boundary nodes, the sparse solve, and the reconstruction of u_h. Ask the room: which of these steps use the geometry? Answer: the orange ones, 1, 3 and 4. Bottom row: the same pipeline for a cut FEM. The mesh no longer fits, only a level set tells us where the boundary is. The integrals run over the cut pieces Ω∩T and Γ∩T. The boundary condition is imposed weakly with Nitsche, and the ghost penalty keeps the system stable. Steps 2, 5 and 6 keep their form: the same elements on the active mesh, the same sparse solve, the same reconstruction. We build each orange step in turn.</div></div>
+<div class='wrap'><h4>5. Meshing challenges</h4><div class='frame'><section id="mot-images" data-transition="fade" style="display:flex; flex-direction:column; gap:40px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Meshing challenges</h2>
+  <div style="display:flex; flex-direction:row; gap:52px; align-items:start">
+    <div style="width:520px; display:flex; flex-direction:column; gap:14px; flex:0 0 auto">
+      <img src="assets/a398f991df1e6ee9d6c573cf03efd14b.png" alt="Greyscale image of a porous material: bright material with dark pores of irregular shape" style="width:520px; height:520px; object-fit:contain">
+      <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">Scans and images</h3>
+      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b">Pores, cracks and phases from CT or microscopy: the geometry is described in pixels.</p>
+    </div>
+    <div style="width:520px; display:flex; flex-direction:column; gap:14px; flex:0 0 auto">
+      <img src="assets/9f99e2a3fc9f6357ad5b2fcec3317d26.gif" alt="Animation: two bubbles approach and merge on a fixed triangular background mesh; the boundary is drawn in blue, the cut cells in orange follow it" style="width:520px; height:520px; object-fit:contain">
+      <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">Moving geometry</h3>
+      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b">the shape and topology changes, merges or splits, a fitted mesh has to be rebuilt each time</p>
+    </div>
+    <div style="width:520px; display:flex; flex-direction:column; gap:14px; flex:0 0 auto">
+      <img src="assets/8de17a3467946569df17b40a9d2979e3.png" alt="Cluster of 27 blue spheres arranged in a cube" style="width:520px; height:520px; object-fit:contain">
+      <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">Implicit shapes</h3>
+      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b">Unions, blends and offsets of simple primitives: easy to describe, hard to mesh</p>
+    </div>
+  </div>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">5</p>
+  
+</section>
+</div><div class='note'>Four minutes. Start from the question, not from the method: what if my geometry is a scan, a shape that moves and changes topology, or a shape produced by an optimiser? Left: an image generated for this lecture, similar to a micro-CT slice of a porous material: light solid matrix, dark pores (synthetic, not a real scan). Middle: an animation made for this lecture (two bubbles merging, described by a level set): the background mesh never changes, only the cut cells in orange follow the boundary. With a fitted mesh the two bubbles would need a remesh at every step, and the merge itself is a change of topology. Right: a cluster of spheres built from implicit primitives, also from that talk. Ask the students how they would mesh the left image with the methods of this week: every pore needs its own boundary, and the mesh must follow it. We will solve in the solid matrix, with the pores empty.</div></div>
+<div class='wrap'><h4>6. Three examples we will build, step by step</h4><div class='frame'><section id="three-examples" data-transition="fade" style="display:flex; flex-direction:column; gap:40px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Three examples we will build, step by step</h2>
+  <div style="display:flex; flex-direction:row; gap:52px; align-items:start; justify-content:center">
+    <div style="width:520px; display:flex; flex-direction:column; gap:14px; flex:0 0 auto">
+      <img src="assets/e56284a2c551b54a14d7beabe00bb171.png" alt="Contour plot of the solution of a Poisson problem on a flower-shaped domain cut out of a square background mesh" style="width:520px; height:520px; object-fit:contain; align-self:center">
+      <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">1. Poisson on a flower</h3>
+      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b">Every step explained: level set, cut cells, quadrature, Nitsche, small cuts, convergence</p>
+    </div>
+    <div style="width:520px; display:flex; flex-direction:column; gap:14px; flex:0 0 auto">
+      <img src="assets/561f273224a43eea97971fd36e855627.png" alt="Solution of a Poisson problem in the solid matrix of a porous specimen obtained from an image, computed on a fixed triangular background mesh; the pores are empty and the cut boundary is orange" style="width:520px; height:520px; object-fit:contain; align-self:center">
+      <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">2. A porous specimen</h3>
+      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b">Pixels → signed distance → level set φ, then solve in the matrix, with the pores empty</p>
+    </div>
+    <div style="width:520px; display:flex; flex-direction:column; gap:14px; flex:0 0 auto">
+      <img src="assets/2934d2c92e1f800a915253ec6dc19959.png" alt="Temperature in a five-bladed rotor built from level sets, computed on a fixed triangular background mesh; one blade is hot where it passes through a fixed hot-gas jet, drawn as a red dashed circle" style="width:520px; height:520px; object-fit:contain; align-self:center">
+      <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">3. A rotor: build, turn, tune</h3>
+      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b">Union of turned blades, turned through a hot-gas jet by changing φ only, then the widest blade that stays below a temperature limit</p>
+    </div>
+  </div>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">6</p>
+  
+</section>
+</div><div class='note'>Two minutes. The three situations of the previous slides: scans, implicit shapes, moving shapes. We build three examples, all with the Python code of this lecture (minicut: numpy, scipy, matplotlib, nothing to install). Example 1 is the long one: Poisson on a flower, built step by step, where each step is first explained and then written in code: level set, cut and classify, quadrature, Nitsche, small cuts and their repair, solve, convergence. Example 2 repeats the same steps for a porous specimen given as an image: we solve in the solid matrix, the pores are empty (they could also be filled with a second material, which is an interface problem). Example 3 is a five-bladed rotor built from simple level sets with union, turned through a hot-gas jet that is fixed in space by changing the level set only, and finally tuned: find the widest blade whose peak temperature stays below a limit at every angle (a first shape optimisation). In all of them the background mesh never changes, the orange line is the boundary, the grey lines are the mesh.</div></div>
+<div class='wrap'><h4>7. The idea: mesh a box, cut the geometry out of it</h4><div class='frame'><section id="idea" data-transition="fade" style="background:#00509A;color:#FFFFFF;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#FFFFFF">The idea: mesh a box, cut the geometry out of it</h2>
+<p style="font-size:44px;line-height:1.35;color:#DCE9F7">Keep a simple background mesh and describe Ω separately. Each fitted-mesh assumption then becomes a problem with a tool.</p>
+<div style="display:flex;flex-direction:row;gap:24px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0B3E75;padding:32px;border-radius:16px">
+<p style="font-size:24px;font-weight:700;color:#A9C8E8">PROBLEM</p>
+<p style="font-size:42px;font-weight:700;line-height:1.25">Ω is not a mesh</p>
+<p style="font-size:24px;font-weight:700;color:#A9C8E8;padding-top:16px">TOOL</p>
+<h3 style="font-size:47px;font-weight:700;line-height:1.2">Level set φ</h3>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0B3E75;padding:32px;border-radius:16px">
+<p style="font-size:24px;font-weight:700;color:#A9C8E8">PROBLEM</p>
+<p style="font-size:42px;font-weight:700;line-height:1.25">Cells are only partly inside Ω</p>
+<p style="font-size:24px;font-weight:700;color:#A9C8E8;padding-top:16px">TOOL</p>
+<h3 style="font-size:47px;font-weight:700;line-height:1.2">Cut-cell quadrature</h3>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0B3E75;padding:32px;border-radius:16px">
+<p style="font-size:24px;font-weight:700;color:#A9C8E8">PROBLEM</p>
+<p style="font-size:42px;font-weight:700;line-height:1.25">No nodes on the boundary</p>
+<p style="font-size:24px;font-weight:700;color:#A9C8E8;padding-top:16px">TOOL</p>
+<h3 style="font-size:47px;font-weight:700;line-height:1.2">Nitsche’s method</h3>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0B3E75;padding:32px;border-radius:16px">
+<p style="font-size:24px;font-weight:700;color:#A9C8E8">PROBLEM</p>
+<p style="font-size:42px;font-weight:700;line-height:1.25">Tiny cuts ruin the matrix</p>
+<p style="font-size:24px;font-weight:700;color:#A9C8E8;padding-top:16px">TOOL</p>
+<h3 style="font-size:47px;font-weight:700;line-height:1.2">Ghost penalty or aggregation</h3>
+</div>
+</div>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#A9C8E8">7</p>
+
+</section>
+</div><div class='note'>Three minutes. This is the roadmap of the lecture, one block per column, and also the order of the steps of Example 1: the level set and the classification of cells (8 to 17 min), integration on cut cells (17 to 26), Nitsche (26 to 36), small cuts, conditioning and the two remedies (36 to 51), then solve and convergence (51 to 55). The same steps are then repeated for two more examples, an image (55 to 67) and a rotor (67 to 80). Stress that nothing else changes: the Galerkin method, the element spaces and the solver are those of the week.</div></div>
+<div class='wrap'><h4>8. The algorithm with cut cells</h4><div class='frame'><section id="nutshell" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">The algorithm with cut cells</h2>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;gap:24px;background:#FDEBD8;padding:12px 28px;border-radius:14px">
+<div style="width:52px;height:52px;border-radius:50%;background:#00509A;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">1</p></div>
+<p style="font-size:32px;flex:1">Background mesh of a simple box, level set φ on it</p>
+<p style="font-size:26px;font-weight:700;color:#B34F00">Changed</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px;background:#EAF1F8;padding:12px 28px;border-radius:14px">
+<div style="width:52px;height:52px;border-radius:50%;background:#00509A;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">2</p></div>
+<p style="font-size:32px;flex:1">Choose the element type (P1, P2, …)</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px;background:#FDEBD8;padding:12px 28px;border-radius:14px">
+<div style="width:52px;height:52px;border-radius:50%;background:#00509A;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">3</p></div>
+<p style="font-size:32px;flex:1">Quadrature on T ∩ Ω and Γ ∩ T, assembly on active cells</p>
+<p style="font-size:26px;font-weight:700;color:#B34F00">Changed</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px;background:#FDEBD8;padding:12px 28px;border-radius:14px">
+<div style="width:52px;height:52px;border-radius:50%;background:#00509A;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">4</p></div>
+<p style="font-size:32px;flex:1">Dirichlet conditions: Nitsche terms on Γ</p>
+<p style="font-size:26px;font-weight:700;color:#B34F00">Changed</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px;background:#FDEBD8;padding:12px 28px;border-radius:14px">
+<div style="width:52px;height:52px;border-radius:50%;background:#B34F00;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">+</p></div>
+<p style="font-size:32px;flex:1">Stabilise small cuts: ghost penalty or aggregation</p>
+<p style="font-size:26px;font-weight:700;color:#B34F00">New</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px;background:#EAF1F8;padding:12px 28px;border-radius:14px">
+<div style="width:52px;height:52px;border-radius:50%;background:#00509A;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">5</p></div>
+<p style="font-size:32px;flex:1">Solve the sparse system K U = F</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px;background:#EAF1F8;padding:12px 28px;border-radius:14px">
+<div style="width:52px;height:52px;border-radius:50%;background:#00509A;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">6</p></div>
+<p style="font-size:32px;flex:1">Reconstruct uh from the DOFs and the shape functions</p>
+</div>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">8</p>
+
+</section>
+</div><div class='note'>Three minutes. Same slide as the recap, now with the answers. Steps 2, 5 and 6 are untouched: same element spaces, same solver, same reconstruction. Steps 1, 3, 4 changed in the way the next blocks will show, and one new step stabilises small cuts. Say explicitly: the Galerkin method and its best-approximation property (lecture 1) are what we are still doing. From here on we go through these steps on one example, the flower, and every step ends with the code in minicut.</div></div>
+<div class='wrap'><h4>9. Example 1 · The goal: Poisson on a flower</h4><div class='frame'><section id="first-cut" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:24px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Example 1 · The goal: Poisson on a flower</h2>
+<div style="display:flex;flex-direction:column;gap:12px;"><div style="display:flex;flex-direction:row;gap:96px;align-items:flex-start;justify-content:center"><div style="display:flex;flex-direction:column;gap:10px;width:570px;flex:none;align-items:center"><img src="assets/f11ef7edab25e57abe0564dc2116961e.png" alt="Square background mesh of triangles with the flower-shaped boundary: cells inside in green, cut cells in orange" style="width:570px;height:599px;object-fit:contain"><p style="font-size:24px;line-height:1.3;color:#6E6E6E;width:570px">Background mesh of 18 × 18 squares (each split in two triangles); the boundary Γ is the black curve. Green: inside Ω, orange: cut by Γ.</p></div><div style="display:flex;flex-direction:column;gap:10px;width:660px;flex:none;align-items:center"><img src="assets/7151eca72b8e87592bd6fa6ac44b2b1b.png" alt="Three-dimensional surface plot of the solution of Poisson&#x27;s equation on the flower-shaped domain, highest in the middle and zero on the boundary" style="width:660px;height:562px;object-fit:contain"><p style="font-size:24px;line-height:1.3;color:#6E6E6E;width:660px">−Δu = 1 in Ω, u = 0 on Γ, P1 elements, solved on the active cells only.</p></div></div></div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">9</p>
+
+</section>
+</div><div class='note'>Three minutes. Show the result before any theory. The problem is the Poisson problem of the week with a flower-shaped domain: the boundary is not made of mesh edges. The background mesh is a regular grid of 18 by 18 squares, each split into two triangles. Green cells are inside, orange cells are cut by the boundary, white cells are never touched. The solution on the right lives on the green and orange cells and is zero on the flower boundary (imposed weakly, see later). Promise: by the end of this example they will know every step that produced this picture, and each step ends with the lines of code that do it, in minicut, the small Python package of the lecture. Figures made with minicut (tools/lecture_figures.py).</div></div>
+<div class='wrap'><h4>10. Describing Ω with a level set</h4><div class='frame'><section id="levelset" data-transition="fade" style="background:#ffffff">
+  <p id="e3-jkjayz" style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p id="e4-jkjayz" style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">10</p>
+  <h2 id="p7d8fa764f14br0-ca17f6e5" style="position:absolute; top:96px; left:128px; width:1664px; font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Describing Ω with a level set</h2>
+  <div id="p7d8fa764f14br1-ca17f6e5" style="position:absolute; top:202px; left:128px; width:1664px; display:flex; flex-direction:row; gap:36px; align-items:start">
+    <div style="width:600px; display:flex; flex-direction:column; gap:26px; flex:0 0 auto">
+      <div style="width:600px; box-sizing:border-box; display:flex; flex-direction:row; align-items:flex-start; gap:12px; padding:16px 24px; background:#eaf1f8; border-radius:16px">
+        <div style="position:relative; width:150px; height:272px; flex:0 0 auto; font-family:Arial, sans-serif; font-size:26px; font-weight:700; color:#00509a">
+          <div style="position:absolute; top:8px; left:0">Domain</div>
+          <div style="position:absolute; top:62px; left:0">Boundary</div>
+          <div style="position:absolute; top:132px; left:0">Normal</div>
+          <div style="position:absolute; top:210px; left:0">Curvature</div>
+        </div>
+        <img src="assets/cdcef2ab1561705f17eaaf6b23e2d9c8.svg" alt="Omega is the set of points x where phi of x is negative; the boundary of Omega is where phi of x is zero; the normal n is grad phi over the norm of grad phi; the curvature kappa is the divergence of n" style="width:385px; height:272px; object-fit:contain; flex:0 0 auto">
+      </div>
+      <ul style="margin:0; font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">
+        <li>φ(x, y) is any function we can evaluate: a formula, a distance to a boundary (CAD, mesh)</li>
+        <li>Disc: φ = √((x − cx)² + (y − cy)²) − R</li>
+        <li>On the mesh, φ is a finite element function: we only need its values at the nodes</li>
+      </ul>
+    </div>
+    <div style="width:500px; display:flex; flex-direction:column; gap:10px; align-items:center; flex:0 0 auto">
+      <img src="assets/7993784a3e280189c3aafe07744e9c4a.png" alt="A disc labelled phi smaller than zero inside, phi larger than zero outside, with the boundary phi equal to zero and outward normal arrows" style="width:500px; height:500px; object-fit:contain">
+      <p style="width:500px; font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">Sign convention: negative inside Ω</p>
+    </div>
+    <div style="width:520px; display:flex; flex-direction:column; gap:10px; align-items:center; flex:0 0 auto">
+      <img src="assets/4bab569cee86f00cdba05ba79215b56a.png" alt="Surface plot of a level-set function over the square: a bowl with the flower-shaped zero contour drawn on it" style="width:520px; height:468px; object-fit:contain">
+      <p style="width:520px; font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">The graph of φ: Γ is where it crosses zero</p>
+    </div>
+  </div>
+  
+</section>
+</div><div class='note'>Three minutes. Sign convention: negative inside. Left: the definition, the normal and the curvature (the divergence of the normal; it matters later for surface tension and for curved boundaries). Middle: a disc, with the outward normals. Right: the graph of a level-set function of the flower; the boundary is where the surface crosses zero. The level set is represented on the background mesh as a finite element function, as in the flower of Example 1 (six petals). Mention that the signed distance is the common choice but any function with the right zero set works. Link to lecture 1: the boundary is now a zero set, not a list of mesh edges.</div></div>
+<div class='wrap'><h4>11. Example 1 · Step 1/6: mesh and level set</h4><div class='frame'><section id="ps-1" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:28px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Example 1 · Step 1/6: mesh and level set</h2>
+<div style="display:flex;flex-direction:row;gap:40px;align-items:flex-start;"><div style="display:flex;flex-direction:column;gap:20px;flex:1"><div style="background:#1F2937;padding:24px 32px;border-radius:16px;display:flex;flex-direction:column;gap:2px"><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">mesh = mc.Mesh(18, box=(-1, -1, 1, 1))</p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;padding-left:0px">&nbsp;</p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">def level_set(x, y):  <span style="color:#9CA3AF"># flower, 6 petals</span></p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:62px">r = 0.48 * (1 + 0.18 * np.cos(6 * np.arctan2(y, x)))</p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:62px">return np.sqrt(x**2 + y**2) - r</p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;padding-left:0px">&nbsp;</p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">phi = level_set(mesh.nodes[:, 0], mesh.nodes[:, 1])</p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px"><span style="color:#9CA3AF"># phi: its values at the nodes (a P1 function)</span></p></div></div><div style="display:flex;flex-direction:column;gap:16px;flex:none;align-items:center"><div style="display:flex;flex-direction:column;gap:8px;align-items:center"><img src="assets/d396e1f77e68b2fa5053982b7ca90771.png" alt="Triangular background mesh of the square with the flower-shaped zero level set drawn in black" style="width:600px;height:630px;object-fit:contain"><p style="font-size:24px;line-height:1.3;color:#6E6E6E;width:600px">Background mesh and the zero level set Γ</p></div></div></div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">11</p>
+
+</section>
+</div><div class='note'>Two minutes. Step 1 of the flower example, in minicut, the Python code of the notebook: a structured triangle mesh of the box [-1, 1]² (18 × 18 squares, 648 triangles) and a level set. Everything about the geometry is in phi, here the values of a formula at the nodes; it could equally come from an image (Example 2) or from a combination of shapes (Example 3). minicut stores phi as a P1 function, so the zero set is piecewise linear on the mesh.</div></div>
+<div class='wrap'><h4>12. Classifying the cells of the background mesh</h4><div class='frame'><section id="classify" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Classifying the cells of the background mesh</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<div style="background:#EAF1F8;padding:28px 36px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:43px;font-weight:700;color:#00509A">Inside</h3>
+<p style="font-size:36px;line-height:1.35">φ &lt; 0 at every vertex: an ordinary cell</p>
+</div>
+<div style="background:#FDEBD8;padding:28px 36px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:43px;font-weight:700;color:#B34F00">Cut</h3>
+<p style="font-size:36px;line-height:1.35">φ changes sign: the boundary crosses the cell, special treatment</p>
+</div>
+<div style="background:#F1F1F1;padding:28px 36px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:43px;font-weight:700;color:#6E6E6E">Outside</h3>
+<p style="font-size:36px;line-height:1.35">φ &gt; 0 at every vertex: ignored</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+<img src="assets/c79f0db5584cf43616f0961596b75e45.png" alt="Background mesh with the cells crossed by the flower-shaped boundary highlighted in orange" style="width:600px;height:630px;object-fit:contain">
+<p style="font-size:31px;color:#6E6E6E">Cut cells in orange</p>
+</div>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">12</p>
+
+</section>
+</div><div class='note'>Three minutes. The classification only needs the sign of φ at the vertices of each cell, so it is one cheap pass over the mesh. A small caveat to mention only if asked: a thin feature of Ω can pass between vertices without changing any sign; the mesh must resolve the geometry at least roughly.</div></div>
+<div class='wrap'><h4>13. The active mesh</h4><div class='frame'><section id="activemesh" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">The active mesh</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:32px">
+<ul style="font-size:38px;line-height:1.4">
+<li>Active mesh = inside cells + cut cells</li>
+<li>Unknowns live on active cells only; outside cells are never assembled</li>
+<li>The cost follows the size of Ω, not the size of the box</li>
+</ul>
+<div style="background:#FDEBD8;padding:28px 36px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:38px;font-weight:700;color:#B34F00">Watch this</p>
+<p style="font-size:36px;line-height:1.35">Vertices of cut cells can lie outside Ω. Their DOFs are active, and they will cause trouble in a few minutes.</p>
+</div>
+</div>
+<img src="assets/f11ef7edab25e57abe0564dc2116961e.png" alt="Active mesh: the shaded cells inside and cut by the flower-shaped boundary" style="width:640px;height:672px;object-fit:contain">
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">13</p>
+
+</section>
+</div><div class='note'>Two minutes. The finite element space is the usual P1 (or P2) space, restricted to the active mesh. Nothing new in the spaces. The warning about DOFs outside Ω is the seed for the conditioning block a few slides further on.</div></div>
+<div class='wrap'><h4>14. Exercise: classify the cells</h4><div class='frame'><section id="ex-classify" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Exercise: classify the cells</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start">
+<svg viewBox="0 0 600 600" width="600" height="600" aria-label="A grid of 6 by 6 unit cells with a circle of radius 2 centred on the grid">
+<rect x="0" y="0" width="600" height="600" fill="#FFFFFF"/>
+<path d="M0 0H600M0 100H600M0 200H600M0 300H600M0 400H600M0 500H600M0 600H600M0 0V600M100 0V600M200 0V600M300 0V600M400 0V600M500 0V600M600 0V600" stroke="#9AA5B1" stroke-width="3" fill="none"/>
+<circle cx="300" cy="300" r="200" fill="none" stroke="#00509A" stroke-width="8"/>
+</svg>
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<h3 style="font-size:44px;font-weight:700;color:#B34F00">Your turn, 2 minutes</h3>
+<p style="font-size:32px;line-height:1.4">Background grid of 6 × 6 unit cells, origin at the centre, φ(x) = |x| − 2.</p>
+<ol style="font-size:32px;line-height:1.4">
+<li>Count the inside, cut and outside cells</li>
+<li>Which cells need special treatment in the assembly loop?</li>
+</ol>
+</div>
+</div>
+<div data-build-in="fade 1" style="position:absolute;left:784px;top:780px;width:1008px;background:#FDEBD8;padding:24px 36px;border-radius:16px">
+<p style="font-size:34px;font-weight:700;color:#B34F00">Answer: 4 inside · 12 cut · 20 outside</p>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">14</p>
+
+</section>
+</div><div class='note'>Two minutes of silent work, one minute of answers. Answer: 4 inside, 12 cut, 20 outside (counted with a script). The 12 cut cells are the only ones that need new code; the 4 inside cells are assembled as in lecture 2. Remark: the number of cut cells scales like 1/h in 2D, while the total scales like 1/h squared, so cut cells are a vanishing fraction under refinement.</div></div>
+<div class='wrap'><h4>15. Example 1 · Step 2/6: cut and classify</h4><div class='frame'><section id="ps-2" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:28px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Example 1 · Step 2/6: cut and classify</h2>
+<div style="display:flex;flex-direction:row;gap:40px;align-items:flex-start;"><div style="display:flex;flex-direction:column;gap:20px;flex:1"><div style="background:#1F2937;padding:24px 32px;border-radius:16px;display:flex;flex-direction:column;gap:2px"><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">geom = mc.CutGeometry(mesh, phi, order=2)</p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;padding-left:0px">&nbsp;</p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">t = geom.cell_type</p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">inside_cells = np.where(t == mc.INSIDE)[0]</p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">cut_cells = np.where(t == mc.CUT)[0]</p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">active_cells = geom.active_cells</p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;padding-left:0px">&nbsp;</p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px"><span style="color:#9CA3AF"># t: from the signs of phi at the vertices</span></p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px"><span style="color:#9CA3AF">#   INSIDE   all &lt; 0</span></p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px"><span style="color:#9CA3AF">#   CUT      the signs differ</span></p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px"><span style="color:#9CA3AF">#   OUTSIDE  all &gt; 0</span></p></div></div><div style="display:flex;flex-direction:column;gap:16px;flex:none;align-items:center"><div style="display:flex;flex-direction:row;gap:20px;align-items:flex-start;"><div style="display:flex;flex-direction:column;gap:8px;align-items:center"><img src="assets/c3136de6bae5ed7028d3d53331b45fe9.png" alt="Mesh with the cells entirely inside the flower in green" style="width:420px;height:441px;object-fit:contain"><p style="font-size:24px;line-height:1.3;color:#6E6E6E;width:420px">inside_cells (82)</p></div><div style="display:flex;flex-direction:column;gap:8px;align-items:center"><img src="assets/65f6b82f1040f04c0f0c22779e9e9ab2.png" alt="Mesh with the cells crossed by the flower boundary in orange" style="width:420px;height:441px;object-fit:contain"><p style="font-size:24px;line-height:1.3;color:#6E6E6E;width:420px">cut_cells (82)</p></div></div></div></div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">15</p>
+
+</section>
+</div><div class='note'>Two minutes. mc.CutGeometry(mesh, phi) does the whole cut in one call: it classifies every cell from the signs of phi at its vertices, cuts the cut cells into sub-triangles, and builds the quadrature rules of the next step. Its attributes are the cell lists: cell_type is INSIDE, CUT or OUTSIDE for every cell, active_cells is inside and cut together, the active mesh of the earlier slide. Here 82 cells are inside, 82 are cut and 484 are outside.</div></div>
+<div class='wrap'><h4>16. Integrating over a cut cell</h4><div class='frame'><section id="quad-problem" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Integrating over a cut cell</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:32px">
+<ul style="font-size:37px;line-height:1.4">
+<li>Lecture 2: integrals are computed with Gauss points on the whole cell</li>
+<li>On a cut cell the domain is T ∩ Ω, but the Gauss points ignore the boundary</li>
+<li>The integrand is discontinuous, so a higher-order Gauss rule does not cure it</li>
+</ul>
+<img src="assets/30b669c728024cd952bb5a66e932b70d.svg" alt="Integral over T of f dx is approximately the sum over q of w q times f of x q" style="width:368px;height:95px;object-fit:contain">
+<div style="display:flex;flex-direction:row;gap:24px">
+<div style="flex:1;background:#EAF1F8;padding:24px 32px;border-radius:16px;display:flex;flex-direction:column;gap:6px">
+<p style="font-size:60px;font-weight:700;color:#00509A">0.875</p>
+<p style="font-size:32px;line-height:1.3">exact area of T ∩ Ω</p>
+</div>
+<div style="flex:1;background:#FDEBD8;padding:24px 32px;border-radius:16px;display:flex;flex-direction:column;gap:6px">
+<p style="font-size:60px;font-weight:700;color:#B34F00">0.75</p>
+<p style="font-size:32px;line-height:1.3">from 2 × 2 Gauss points: 14 % too small</p>
+</div>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;align-items:center;width:460px">
+<svg viewBox="0 0 460 460" width="460" height="460" aria-label="Unit cell cut by the line x plus y equals 1.5, with the four Gauss points of a 2 by 2 rule; three are inside the domain and one is outside">
+<rect x="30" y="30" width="400" height="400" fill="#EAF1F8" stroke="#00509A" stroke-width="5"/>
+<path d="M230 30L430 30L430 230Z" fill="#E4E4E4"/>
+<path d="M230 30L430 230" stroke="#B34F00" stroke-width="7" fill="none"/>
+<circle cx="114.5" cy="345.5" r="14" fill="#00509A"/>
+<circle cx="345.5" cy="345.5" r="14" fill="#00509A"/>
+<circle cx="114.5" cy="114.5" r="14" fill="#00509A"/>
+<circle cx="345.5" cy="114.5" r="14" fill="#B34F00"/>
+</svg>
+<p style="font-size:30px;color:#6E6E6E">Unit cell, Ω = { x + y &lt; 1.5 }</p>
+</div>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">16</p>
+
+</section>
+</div><div class='note'>Three minutes. Recall lecture 2 (reference element, quadrature in practice) and lecture 1 (efficient quadrature rules for complex domains are not readily available). Example: the line x + y = 1.5 cuts a corner off the unit square. The 2 by 2 Gauss points are at 0.2113 and 0.7887. Three of them satisfy x + y &lt; 1.5, so the rule with an inside test gives 3 × 0.25 = 0.75, against the exact 7/8 = 0.875. The point (0.7887, 0.7887) is the one outside. The error does not vanish with more points because the integrand (indicator times f) is discontinuous.</div></div>
+<div class='wrap'><h4>17. Cutting one cell: from signs to quadrature points</h4><div class='frame'><section id="cut-cell" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:24px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Cutting one cell: from signs to quadrature points</h2>
+<div style="display:flex;flex-direction:column;gap:24px;"><img src="assets/ce433e95aded851b4445bba74471d829.png" alt="Four panels showing one triangle: signs of phi at the vertices, the cut points on the edges, the sub-triangle inside Omega with the interface segment, and quadrature points: three in the sub-triangle and two on the interface segment" style="width:1664px;height:466px;object-fit:contain"><div style="display:flex;flex-direction:row;gap:32px;align-items:flex-start;"><div style="display:flex;flex-direction:column;gap:6px;width:392px;flex:none"><h3 style="font-size:30px;font-weight:700;color:#00509A">Signs decide</h3><p style="font-size:26px;line-height:1.35">φ is P1 on the cell: a sign change between two vertices means the edge is cut</p></div><div style="display:flex;flex-direction:column;gap:6px;width:392px;flex:none"><h3 style="font-size:30px;font-weight:700;color:#00509A">Cut points</h3><p style="font-size:26px;line-height:1.35">on each cut edge, the zero of the linear interpolant of φ</p></div><div style="display:flex;flex-direction:column;gap:6px;width:392px;flex:none"><h3 style="font-size:30px;font-weight:700;color:#00509A">Sub-triangles</h3><p style="font-size:26px;line-height:1.35">T ∩ Ω is split into triangles; Γ ∩ T is a segment</p></div><div style="display:flex;flex-direction:column;gap:6px;width:392px;flex:none"><h3 style="font-size:30px;font-weight:700;color:#00509A">Gauss on pieces</h3><p style="font-size:26px;line-height:1.35">a standard rule on each piece, mapped to T; n = ∇φ/|∇φ| on Γ ∩ T</p></div></div></div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">17</p>
+
+</section>
+</div><div class='note'>Four minutes. One triangle, cut by a P1 level set. Only the signs at the three vertices matter: here one vertex is inside and two are outside. The zero of the linear interpolant on the two cut edges gives the two cut points. T intersect Omega is then a single triangle (when two vertices are inside it is a quadrilateral, split into two triangles). Each piece gets a standard Gauss rule, mapped to the cell: three points on this triangle, weight one third of the area each. The interface segment gets its own rule: two Gauss points, weights half the length each. With curved cuts (P2 level set) the pieces are curved and the rules are more involved; the idea is the same. The figure was drawn for this lecture, the rule shown is the simplest one.</div></div>
+<div class='wrap'><h4>18. Quadrature rules on the cut geometry</h4><div class='frame'><section id="quad-rules" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Quadrature rules on the cut geometry</h2>
+<div style="display:flex;flex-direction:row;gap:48px;align-items:flex-start">
+<div style="width:616px;display:flex;flex-direction:column;gap:28px">
+<ul style="font-size:30px;line-height:1.4">
+<li>Split T ∩ Ω into simplices, using a look-up table on the signs of φ</li>
+<li>Put a Gauss rule on each piece and map the points to T</li>
+<li>The interface Γ ∩ T gets its own points, weights and normal n</li>
+</ul>
+<div style="background:#EAF1F8;padding:24px 32px;border-radius:16px;display:flex;flex-direction:column;gap:10px">
+<img src="assets/22dc61ffef44421ba683226fc669ec12.svg" alt="Integral over T intersected with Omega of f dx is approximately the sum over q of w q times f of x q" style="width:408px;height:95px;object-fit:contain">
+<img src="assets/57ee8c605d65b43edf9672571523c47c.svg" alt="Integral over Gamma intersected with T of g ds is approximately the sum over q of w hat q times g of x q" style="width:396px;height:95px;object-fit:contain">
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+<img src="assets/2bb2108c9b21f61b130773de18f17bcf.png" alt="Volume quadrature points inside the flower-shaped domain" style="width:480px;height:504px;object-fit:contain">
+<p style="font-size:26px;color:#6E6E6E">Volume points in Ω</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+<img src="assets/309bad6182d4328a939934be61235add.png" alt="Interface quadrature points along the flower-shaped boundary" style="width:480px;height:504px;object-fit:contain">
+<p style="font-size:26px;color:#6E6E6E">Interface points on Γ</p>
+</div>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">18</p>
+
+</section>
+</div><div class='note'>Five minutes. Key message: once the rules exist, assembly is unchanged. The element routine receives (point, weight) pairs and does not care where they come from, exactly like Gauss points in lecture 2. In minicut the rules are two objects, geom.volume and geom.interface, produced when the mesh is cut; they hold the points, the weights and, on Γ, the normals. Geometry accuracy: with linear cuts the boundary is approximated to O(h squared); higher-order cutting is possible (mention the ray-based and subdivision approaches from the JSO talk if time allows). Interface points carry the normal n = grad(phi)/|grad(phi)|, which the next block uses.</div></div>
+<div class='wrap'><h4>19. Exercise: a cut cell by hand</h4><div class='frame'><section id="ex-cutcell" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Exercise: a cut cell by hand</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start">
+<div style="display:flex;flex-direction:column;gap:12px;align-items:center;width:460px">
+<svg viewBox="0 0 460 460" width="460" height="460" aria-label="Unit cell with the corner above the line x plus y equals 1.5 removed">
+<rect x="30" y="30" width="400" height="400" fill="#EAF1F8" stroke="#00509A" stroke-width="5"/>
+<path d="M230 30L430 30L430 230Z" fill="#E4E4E4"/>
+<path d="M230 30L430 230" stroke="#B34F00" stroke-width="7" fill="none"/>
+</svg>
+<p style="font-size:26px;color:#6E6E6E">T = [0, 1]², line x + y = 1.5</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<h3 style="font-size:44px;font-weight:700;color:#B34F00">Your turn, 4 minutes</h3>
+<ol style="font-size:32px;line-height:1.4">
+<li>Cut T ∩ Ω into triangles and compute its area exactly</li>
+<li>Compute the length of Γ ∩ T and the unit normal n</li>
+<li>Where does the 14 % error of the 2 × 2 Gauss rule come from?</li>
+</ol>
+</div>
+</div>
+<div data-build-in="fade 1" style="position:absolute;left:644px;top:780px;width:1148px;background:#FDEBD8;padding:24px 36px;border-radius:16px">
+<p style="font-size:32px;font-weight:700;color:#B34F00">Answer: area 7/8 · length √2/2 ≈ 0.707 · n = (1, 1)/√2</p>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">19</p>
+
+</section>
+</div><div class='note'>Four minutes of work, two minutes for the answer. Exact area: the square minus the corner triangle with legs 0.5, so 1 minus 0.125 = 0.875 = 7/8; split the remaining pentagon into three triangles to mimic the quadrature construction. Interface: the segment runs from (0.5, 1) to (1, 0.5), length sqrt(0.5) = 0.707. Normal: gradient of phi = x + y − 1.5 is (1, 1), normalised to (1, 1)/sqrt(2). Question 3: the Gauss points sample a discontinuous integrand and one of the four weights is on the wrong side of the line, which is 0.25 of the cell instead of the true 0.125 removed.</div></div>
+<div class='wrap'><h4>20. Example 1 · Step 3/6: quadrature rules</h4><div class='frame'><section id="ps-3" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:28px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Example 1 · Step 3/6: quadrature rules</h2>
+<div style="display:flex;flex-direction:row;gap:40px;align-items:flex-start;"><div style="display:flex;flex-direction:column;gap:20px;flex:1"><div style="background:#1F2937;padding:24px 32px;border-radius:16px;display:flex;flex-direction:column;gap:2px"><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">vol = geom.volume</p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">intf = geom.interface</p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;padding-left:0px">&nbsp;</p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px"><span style="color:#9CA3AF"># vol:  points, weights on T ∩ Ω</span></p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px"><span style="color:#9CA3AF"># intf: points, weights, normals on Γ ∩ T</span></p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;padding-left:0px">&nbsp;</p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">vol.points.shape    <span style="color:#9CA3AF"># (606, 2)</span></p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">intf.points.shape   <span style="color:#9CA3AF"># (246, 2)</span></p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;padding-left:0px">&nbsp;</p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px"><span style="color:#9CA3AF"># integrals become sums:</span></p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px"><span style="color:#9CA3AF"># ∫_Ω f dx ≈ Σ_q w_q f(x_q)</span></p><p style="font-size:26px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">np.sum(vol.weights)   <span style="color:#9CA3AF"># |Ω_h| = 0.7316</span></p></div></div><div style="display:flex;flex-direction:column;gap:16px;flex:none;align-items:center"><div style="display:flex;flex-direction:row;gap:20px;align-items:flex-start;"><div style="display:flex;flex-direction:column;gap:8px;align-items:center"><img src="assets/8c35da609fbe89c58bdb34dba0c8e8ce.png" alt="Zoom on one petal of the flower: the cut cells are subdivided into triangles and a three-point rule is placed on each piece" style="width:560px;height:431px;object-fit:contain"><p style="font-size:24px;line-height:1.3;color:#6E6E6E;width:560px">volume points: the pieces of T ∩ Ω near one petal</p></div><div style="display:flex;flex-direction:column;gap:8px;align-items:center"><img src="assets/309bad6182d4328a939934be61235add.png" alt="Interface quadrature points along the flower boundary" style="width:380px;height:399px;object-fit:contain"><p style="font-size:24px;line-height:1.3;color:#6E6E6E;width:380px">interface points</p></div></div></div></div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">20</p>
+
+</section>
+</div><div class='note'>Two minutes. This is the step that replaces the Gauss rule of lecture 2. The rules were built by the constructor of the previous step: geom.volume holds the points and weights on the pieces T ∩ Ω (a three-point interior triangle rule, exact for degree 2, on every sub-triangle; the dense clusters at the boundary come from the thin sub-triangles of cut cells, see the zoom), geom.interface the Gauss points on the straight segments Γ ∩ T with the outward unit normal. With a P1 level set the cut is exact: the pieces are triangles and Γ is a segment in every cut cell. The sum of the volume weights is the area of the discrete flower, 0.7316, against 0.7355 for the smooth flower: the level set was interpolated on a mesh with h = 0.11, so the geometry error shrinks with the mesh like the rest.</div></div>
+<div class='wrap'><h4>21. Dirichlet conditions on a cut boundary</h4><div class='frame'><section id="bc-options" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Dirichlet conditions on a cut boundary</h2>
+<p style="font-size:41px;line-height:1.35">Lecture 2 fixed the nodal values on ΓD and solved for the rest. Now no node lies on ΓD: the boundary runs through the cells.</p>
+<div style="display:flex;flex-direction:row;gap:24px">
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#F1F1F1;padding:32px;border-radius:16px">
+<h3 style="font-size:43px;font-weight:700;color:#3B3B3B">Snap to nodes</h3>
+<p style="font-size:36px;line-height:1.35">Move the boundary to the nearest nodes and fix their values</p>
+<p style="font-size:34px;line-height:1.35;color:#6E6E6E">The boundary moves by up to h: a first-order geometry error</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#F1F1F1;padding:32px;border-radius:16px">
+<h3 style="font-size:43px;font-weight:700;color:#3B3B3B">Lagrange multipliers</h3>
+<p style="font-size:36px;line-height:1.35">Enforce u = g on Γ with extra unknowns</p>
+<p style="font-size:34px;line-height:1.35;color:#6E6E6E">Saddle-point system; the spaces must be compatible</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#EAF1F8;padding:32px;border-radius:16px">
+<h3 style="font-size:43px;font-weight:700;color:#00509A">Nitsche’s method</h3>
+<p style="font-size:36px;line-height:1.35">Impose u = g weakly, inside the bilinear form</p>
+<p style="font-size:34px;line-height:1.35;color:#00509A;font-weight:700">No extra unknowns, symmetric, consistent</p>
+</div>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">21</p>
+
+</section>
+</div><div class='note'>Three minutes. Link to lecture 2 (Dirichlet conditions: assemble all nodes, fix UD, solve for Uf, a discrete lifting). With a cut boundary there is nothing to fix. Three options. Snapping destroys accuracy. Lagrange multipliers work but add unknowns and a compatibility condition. Nitsche keeps the system symmetric positive definite with the same unknowns, which is why it is the standard choice in cut methods. Neumann conditions are unchanged: they are natural in the weak form and only need the interface quadrature.</div></div>
+<div class='wrap'><h4>22. Lagrange multipliers: the derivation</h4><div class='frame'><section id="lag-1" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:24px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Lagrange multipliers: the derivation</h2>
+<div style="display:flex;flex-direction:column;gap:30px;"><div style="display:flex;flex-direction:row;gap:36px;align-items:center;"><div style="display:flex;flex-direction:column;gap:6px;width:520px;flex:none"><h3 style="font-size:32px;font-weight:700;color:#00509A">1 Constrained minimisation</h3><p style="font-size:26px;line-height:1.35">Minimise the energy among functions with u = g on Γ. The multiplier λ is a new function on Γ.</p></div><div style="background:#EAF1F8;padding:22px 32px;border-radius:16px;flex:1;display:flex;flex-direction:column;gap:12px"><img src="assets/c06e683cdd2ebe94e21ce2c4cd2e11a3.svg" alt="Lagrangian: one half of the integral of the squared gradient of u over Omega, minus the integral of f u, plus the integral over Gamma of lambda times u minus g" style="width:788px;height:79px;object-fit:contain"></div></div><div style="display:flex;flex-direction:row;gap:36px;align-items:center;"><div style="display:flex;flex-direction:column;gap:6px;width:520px;flex:none"><h3 style="font-size:32px;font-weight:700;color:#00509A">2 Stationary point</h3><p style="font-size:26px;line-height:1.35">Vary u: the weak form with an extra boundary term. Vary λ: the constraint, weakly.</p></div><div style="background:#EAF1F8;padding:22px 32px;border-radius:16px;flex:1;display:flex;flex-direction:column;gap:12px"><img src="assets/c4327ec699dd2bb55777904aef9cf052.svg" alt="Integral of grad u dot grad v plus the integral over Gamma of lambda v equals the integral of f v, for all v" style="width:669px;height:79px;object-fit:contain"><img src="assets/ca8cb767b4bf0406ca7584d911350997.svg" alt="Integral over Gamma of mu times u minus g equals zero for all mu" style="width:390px;height:79px;object-fit:contain"></div></div><div style="display:flex;flex-direction:row;gap:36px;align-items:center;"><div style="display:flex;flex-direction:column;gap:6px;width:520px;flex:none"><h3 style="font-size:32px;font-weight:700;color:#00509A">3 What is λ?</h3><p style="font-size:26px;line-height:1.35">Integrating by parts shows λ = −∂u/∂n on Γ: the flux through the boundary, often what we want to know.</p></div><div style="background:#EAF1F8;padding:22px 32px;border-radius:16px;flex:1;display:flex;flex-direction:column;gap:12px"><p style="font-size:30px;line-height:1.4">The boundary term is ∫Γ (∂u/∂n + λ) v ds, so λ = −∂u/∂n.</p></div></div></div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">22</p>
+
+</section>
+</div><div class='note'>Four minutes. First of the two classical alternatives to Nitsche. Minimise the energy with the constraint u = g on Gamma, and add a Lagrange multiplier lambda that lives on Gamma only. Taking the variation in u gives the usual weak form plus the term integral of lambda times v over Gamma; taking it in lambda gives the constraint in weak form. Integrating by parts shows that lambda is minus the normal derivative: the flux. This is physically meaningful, for instance the heat flux through the wall. The price is paid in the next slide. Sign convention: the Lagrangian here is energy minus work plus lambda times (u minus g).</div></div>
+<div class='wrap'><h4>23. Lagrange multipliers: discrete weak form and cost</h4><div class='frame'><section id="lag-2" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:24px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Lagrange multipliers: discrete weak form and cost</h2>
+<div style="display:flex;flex-direction:row;gap:40px;align-items:flex-start;"><div style="display:flex;flex-direction:column;gap:18px;width:820px;flex:none"><div style="background:#EAF1F8;padding:22px 30px;border-radius:16px;display:flex;flex-direction:column;gap:12px"><h3 style="font-size:32px;font-weight:700;color:#00509A">Discrete weak form</h3><p style="font-size:26px;line-height:1.35">Find (uₕ, λₕ) in Vₕ × Λₕ such that, for all (vₕ, μₕ) in Vₕ × Λₕ:</p><img src="assets/bb62e05c5dd2c8a77dc3c7055753ea68.svg" alt="a of u h and v h plus b of v h and lambda h equals the integral of f v h over Omega, for all v h in V h" style="width:650px;height:72px;object-fit:contain"><img src="assets/9ed34f44a5cbb6e7141ae5e3a3d8e609.svg" alt="b of u h and mu h equals the integral over Gamma of g mu h, for all mu h in Lambda h" style="width:495px;height:72px;object-fit:contain"></div><div style="background:#EAF1F8;padding:22px 30px;border-radius:16px;display:flex;flex-direction:column;gap:12px"><h3 style="font-size:32px;font-weight:700;color:#00509A">with the two bilinear forms</h3><img src="assets/1f14b1a39d84ff61b28e0dd6f4b09e8e.svg" alt="a of u and v is the integral of grad u dot grad v over Omega; b of v and mu is the integral over Gamma of mu v" style="width:650px;height:72px;object-fit:contain"></div><div style="background:#EAF1F8;padding:22px 30px;border-radius:16px;display:flex;flex-direction:column;gap:12px"><h3 style="font-size:32px;font-weight:700;color:#00509A">Matrix form</h3><img src="assets/794a847d925ef10dfc0f9f7f3087e3ad.svg" alt="Block matrix with A, B transpose, B and zero, times the vector U, Lambda, equals the vector F, G" style="width:381px;height:88px;object-fit:contain"></div></div><div style="display:flex;flex-direction:column;gap:18px;flex:1"><div style="background:#F1F1F1;padding:24px 28px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:32px;font-weight:700;color:#3B3B3B">Choosing Λₕ</h3>
+<p style="font-size:26px;line-height:1.35">Λₕ lives on Γ only: piecewise polynomials on the cut boundary, for instance the traces of Vₕ functions on Γ.</p>
+</div><div style="background:#FDEBD8;padding:24px 28px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:32px;font-weight:700;color:#B34F00">Saddle-point system</h3>
+<p style="font-size:26px;line-height:1.35">Extra unknowns λ, a zero diagonal block, an indefinite matrix: not a plain CG problem.</p>
+</div><div style="background:#FDEBD8;padding:24px 28px;border-radius:16px;display:flex;flex-direction:column;gap:12px"><h3 style="font-size:32px;font-weight:700;color:#B34F00">Compatibility</h3><img src="assets/88aad96fd030d420775bd6b5738019cf.svg" alt="Inf-sup condition: the infimum over mu of the supremum over v of the integral of mu v over Gamma, divided by the norms, is at least beta, which is positive" style="width:418px;height:87px;object-fit:contain"><p style="font-size:26px;line-height:1.35">Λₕ must be compatible with Vₕ in this inf-sup sense. On a cut mesh, small cuts can break it: stabilisation is needed here too (e.g. Barbosa–Hughes).</p></div></div></div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">23</p>
+
+</section>
+</div><div class='note'>Four minutes. The discrete version of the weak form of the previous slide. Choose a finite element space V_h on the background mesh and a multiplier space Lambda_h on the boundary Gamma only; find the pair (u_h, lambda_h) such that the first equation, the stiffness form a plus the coupling form b(v, lambda), equals the load, and the second equation, b(u, mu) = integral of g mu over Gamma, imposes the boundary condition weakly, for all test pairs. The two bilinear forms are the stiffness integral over Omega and the integral over Gamma of mu times v. In matrix form this is a block system with the stiffness matrix A, the coupling matrix B and a zero block: symmetric but indefinite. The spaces cannot be chosen independently: they must satisfy the inf-sup (LBB) condition with a constant beta independent of the mesh, otherwise the system is singular or the multiplier oscillates. On a cut mesh the cut cells have arbitrary shapes, so keeping the compatibility is delicate and in practice needs additional stabilisation. This is why Nitsche&#x27;s method, which has no extra unknowns, became the default in cut methods. Theory only: no numerical experiment with multipliers is shown.</div></div>
+<div class='wrap'><h4>24. Nitsche’s method, derived from the weak form</h4><div class='frame'><section id="nitsche-derive" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Nitsche’s method, derived from the weak form</h2>
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:center;gap:28px;background:#EAF1F8;padding:20px 32px;border-radius:14px">
+<div style="width:56px;height:56px;border-radius:50%;background:#00509A;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">1</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px">
+<p style="font-size:28px;line-height:1.3">Weak form of lecture 1, now with v ≠ 0 on Γ: the boundary term stays</p>
+<img src="assets/28ae53fa39463531b15e28c05cf244e1.svg" alt="Integral over Omega of grad u dot grad v minus integral over Gamma of grad u dot n times v equals integral over Omega of f v" style="width:677px;height:81px;object-fit:contain">
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:28px;background:#EAF1F8;padding:20px 32px;border-radius:14px">
+<div style="width:56px;height:56px;border-radius:50%;background:#00509A;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">2</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px">
+<p style="font-size:28px;line-height:1.3">Symmetry: add a term that is zero for the exact solution, since u = g on Γ</p>
+<img src="assets/11f6756e4956355a57f60a339b9e07fb.svg" alt="Minus the integral over Gamma of grad v dot n times u minus g" style="width:351px;height:81px;object-fit:contain">
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:28px;background:#EAF1F8;padding:20px 32px;border-radius:14px">
+<div style="width:56px;height:56px;border-radius:50%;background:#00509A;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#FFFFFF">3</p></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px">
+<p style="font-size:28px;line-height:1.3">Penalty: control u − g on Γ, with γ a constant and h the cell size</p>
+<img src="assets/dd596c0ee050cd5d17f5dd8d62745cca.svg" alt="Plus gamma over h times the integral over Gamma of u minus g times v" style="width:282px;height:81px;object-fit:contain">
+</div>
+</div>
+</div>
+<div style="background:#FDEBD8;padding:20px 32px;border-radius:14px">
+<p style="font-size:30px;line-height:1.35"><b>Consistent:</b> the exact solution satisfies every added term. <b>Symmetric:</b> same matrix structure as lecture 2.</p>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">24</p>
+
+</section>
+</div><div class='note'>Six minutes, the one derivation of the lecture. Walk step by step from the weak form they saw in lecture 1: there we chose v = 0 on the Dirichlet boundary so the boundary integral vanished; now the test functions do not vanish on Γ, so the integral stays and we get a term with the flux. Step 2: the extra term is zero for the exact solution (consistency), and it makes the form symmetric. Step 3: without a penalty the form is not coercive. The penalty needs gamma large enough; how large depends on small cut cells, which is the next block. n is the outward unit normal; for Poisson, minus Laplacian u = f in Omega, u = g on Gamma.</div></div>
+<div class='wrap'><h4>25. The Nitsche form, and the same in code</h4><div class='frame'><section id="nitsche-code" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">The Nitsche form, and the same in code</h2>
+<div style="background:#EAF1F8;padding:24px 32px;border-radius:16px;display:flex;flex-direction:column;gap:12px">
+<img src="assets/0cf710b770d2bc7f4ea75ef3a5952e24.svg" alt="a h of u and v equals the integral over Omega of grad u dot grad v, minus the integral over Gamma of grad u dot n times v, minus the integral over Gamma of grad v dot n times u, plus gamma over h times the integral over Gamma of u v" style="width:1018px;height:72px;object-fit:contain">
+<img src="assets/17886d6c7560803fc15eb6e5a05f152e.svg" alt="L h of v equals the integral over Omega of f v, minus the integral over Gamma of grad v dot n times g, plus gamma over h times the integral over Gamma of g v" style="width:672px;height:72px;object-fit:contain">
+</div>
+<div style="background:#1F2937;padding:28px 36px;border-radius:16px;display:flex;flex-direction:column;gap:6px"><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">q = geom.interface                                         <span style="color:#9CA3AF"># points x_q, weights w_q, normals n_q on Γ</span></p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">lam = mesh.bary(q.cells, q.points)                         <span style="color:#9CA3AF"># basis functions v_i(x_q)</span></p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">dn = np.einsum(&quot;qkd,qd-&gt;qk&quot;, mesh.grads[q.cells], q.normals)   <span style="color:#9CA3AF"># their normal derivatives ∂n v_i(x_q)</span></p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">w, pen = q.weights, gamma / mesh.h[q.cells]                <span style="color:#9CA3AF"># w_q and γ/h</span></p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">gx = g(q.points[:, 0], q.points[:, 1])                     <span style="color:#9CA3AF"># boundary data g(x_q)</span></p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre">&nbsp;</p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">local   = - np.einsum(&quot;q,qi,qj-&gt;qij&quot;, w, lam, dn)                <span style="color:#9CA3AF"># - ∫ ∂n u v</span></p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">local  += - np.einsum(&quot;q,qi,qj-&gt;qij&quot;, w, dn, lam)                <span style="color:#9CA3AF"># - ∫ u ∂n v</span></p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">local  += np.einsum(&quot;q,qi,qj-&gt;qij&quot;, w * pen, lam, lam)           <span style="color:#9CA3AF"># + γ/h ∫ u v</span></p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">local_b = - (w * gx)[:, None] * dn + (w * pen * gx)[:, None] * lam   <span style="color:#9CA3AF"># - ∫ g ∂n v + γ/h ∫ g v</span></p></div>
+<p style="font-size:26px;color:#6E6E6E">minicut, γ = 40: local[q, i, j] with i the test and j the trial function, scattered into the matrix; the Ω term is mc.stiffness, mc.load</p>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">25</p>
+
+</section>
+</div><div class='note'>Five minutes. The code is the formula, in minicut. The interface rule gives the points x_q, weights w_q and normals n_q on Gamma; lam holds the P1 basis functions at those points and dn their normal derivatives. The three boundary terms of the left-hand side are three lines (consistency, symmetry, penalty) and the two data terms are the last line. The volume term is mc.stiffness (lecture 1, with the cut volume rule) and mc.load; local[q, i, j] is scattered into the global matrix by mc.assemble_matrix. These are the lines of mc.nitsche, which the students write in section 5 of the notebook. The ghost penalty term is added in the stability block.</div></div>
+<div class='wrap'><h4>26. Three ways to impose u = g on Γ</h4><div class='frame'><section id="bc-compare" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Three ways to impose u = g on Γ</h2>
+<table style="font-size:32px;line-height:1.75;color:#3B3B3B;width:1664px">
+<tr><th style="width:22%"></th><th style="width:24%;color:#3B3B3B">Snap to nodes</th><th style="width:27%;color:#3B3B3B">Lagrange multiplier</th><th style="width:27%;color:#00509A">Nitsche</th></tr>
+<tr><td style="font-weight:700">Extra unknowns</td><td>none</td><td>λ on Γ</td><td style="color:#00509A;font-weight:700">none</td></tr>
+<tr><td style="font-weight:700">Matrix</td><td>SPD</td><td>symmetric, indefinite</td><td style="color:#00509A;font-weight:700">symmetric, SPD with stabilisation</td></tr>
+<tr><td style="font-weight:700">Consistent?</td><td>no: geometry error ~ h</td><td>yes</td><td style="color:#00509A;font-weight:700">yes</td></tr>
+<tr><td style="font-weight:700">Parameter</td><td>none</td><td>none, but λ space must fit</td><td style="color:#00509A;font-weight:700">γ (penalty) and h</td></tr>
+<tr><td style="font-weight:700">Gives the flux?</td><td>no</td><td>yes, directly (λ)</td><td style="color:#00509A;font-weight:700">from ∇u · n, with a correction</td></tr>
+<tr><td style="font-weight:700">Weak point</td><td>first-order geometry error</td><td>inf-sup, extra unknowns</td><td style="color:#00509A;font-weight:700">needs γ large enough and small cuts under control</td></tr>
+</table>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">26</p>
+
+</section>
+</div><div class='note'>Two minutes. The three options side by side. Snapping is simple but the geometry error is first order, so it destroys the accuracy of P2 and of any smooth solution. Multipliers are consistent and give the flux but need a compatible space and extra unknowns. Nitsche keeps the unknowns and the symmetry; its price is a penalty parameter and the need to control small cuts, which is the topic of the next block. For the flux with Nitsche: the normal derivative of the solution at the boundary plus a penalty term; a post-processing step, not discussed here.</div></div>
+<div class='wrap'><h4>27. Example 1 · Step 4/6: the variational form</h4><div class='frame'><section id="ps-4" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:28px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Example 1 · Step 4/6: the variational form</h2>
+<div style="display:flex;flex-direction:row;gap:40px;align-items:flex-start;"><div style="display:flex;flex-direction:column;gap:20px;flex:1"><div style="background:#1F2937;padding:24px 32px;border-radius:16px;display:flex;flex-direction:column;gap:2px"><p style="font-size:24px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">f = lambda x, y: np.ones_like(x)    <span style="color:#9CA3AF"># f = 1</span></p><p style="font-size:24px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">g = lambda x, y: np.zeros_like(x)   <span style="color:#9CA3AF"># g = 0</span></p><p style="font-size:24px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;padding-left:0px">&nbsp;</p><p style="font-size:24px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">A = mc.stiffness(geom)                   <span style="color:#9CA3AF"># ∫Ω ∇u·∇v dx</span></p><p style="font-size:24px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">An, bn = mc.nitsche(geom, g, gamma=40.0) <span style="color:#9CA3AF"># Nitsche on Γ</span></p><p style="font-size:24px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;padding-left:0px">&nbsp;</p><p style="font-size:24px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">A = A + An</p><p style="font-size:24px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">b = mc.load(geom, f) + bn   <span style="color:#9CA3AF"># ∫Ω f v dx and Nitsche</span></p></div><div style="background:#EAF1F8;border-radius:16px;padding:16px 28px;display:flex;flex-direction:column;gap:6px"><p style="font-size:28px;line-height:1.35;color:#3B3B3B"><span style="font-weight:700;color:#00509A">a(u, v)</span> = ∫<sub>Ω</sub> ∇u·∇v dx <span style="color:#6E6E6E">stiffness</span></p><p style="font-size:28px;line-height:1.35;color:#3B3B3B">&nbsp;&nbsp;&nbsp;− ∫<sub>Γ</sub> (∂<sub>n</sub>u v + u ∂<sub>n</sub>v) ds + (γ/h) ∫<sub>Γ</sub> u v ds <span style="color:#6E6E6E">Nitsche</span></p></div></div><div style="display:flex;flex-direction:column;gap:16px;flex:none;align-items:center"><div style="display:flex;flex-direction:column;gap:8px;align-items:center"><img src="assets/f14d90d0895d8a7fbfd74f6d2bdb9ab9.png" alt="Zoom on one petal: interface quadrature points on the boundary with the outward unit normals drawn as arrows" style="width:640px;height:492px;object-fit:contain"><p style="font-size:24px;line-height:1.3;color:#6E6E6E;width:640px">interface points and normals n on Γ ∩ T</p></div></div></div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">27</p>
+
+</section>
+</div><div class='note'>Three minutes. The weak form has two parts so far and each is one function of minicut. mc.stiffness integrates the gradient term over Ω with the volume rule; mc.nitsche integrates the Nitsche terms over Γ with the interface rule and returns the matrix and its right-hand side contribution (the g terms); the arrows are the normals n of the interface rule that the Nitsche terms use. The right-hand side f = 1 is integrated by mc.load. Inside, each function evaluates the integrals at the quadrature points and scatters the local matrices: short functions in minicut.py, which the students can read in the notebook; writing the Nitsche terms is their exercise. Nitsche&#x27;s penalty is gamma / h with gamma = 40. Question for the room: is this matrix safe? The next step shows when it is not.</div></div>
+<div class='wrap'><h4>28. What is the condition number?</h4><div class='frame'><section id="cond-what" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">What is the condition number?</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:28px">
+<p style="font-size:30px;line-height:1.4">The condition number of the matrix A is the ratio of its extreme eigenvalues, in absolute value:</p>
+<div style="background:#EAF1F8;padding:24px 32px;border-radius:16px;display:flex;flex-direction:row;gap:48px;align-items:center">
+<img src="assets/38ea87aeb35495a5fcfd345695fe4799.svg" alt="kappa of A equals lambda max of A divided by lambda min of A" style="width:355px;height:118px;object-fit:contain">
+</div>
+<ul style="font-size:30px;line-height:1.4">
+<li>Large κ: iterative solvers (CG, GMRES) need many iterations</li>
+<li>Large κ: round-off errors grow, about log₁₀ κ of the 16 digits of double precision are lost</li>
+</ul>
+<p style="font-size:30px;line-height:1.4">On a fitted mesh of size h, it grows like</p>
+<div style="background:#EAF1F8;padding:24px 32px;border-radius:16px">
+<img src="assets/d2fbb89682bfe3618dfcfc5ff7961187.svg" alt="kappa of A is of order C times h to the minus 2" style="width:293px;height:56px;object-fit:contain">
+</div>
+</div>
+<div style="width:640px;display:flex;flex-direction:column;gap:24px">
+<div style="background:#EAF1F8;padding:24px 28px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:32px;font-weight:700;color:#00509A">Fitted mesh</h3>
+<p style="font-size:28px;line-height:1.35">The constant C depends on the quality of the mesh, which the mesh generator controls.</p>
+</div>
+<div style="background:#FDEBD8;padding:24px 28px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:32px;font-weight:700;color:#B34F00">Cut mesh</h3>
+<p style="font-size:28px;line-height:1.35">The cut cells can have any shape. Does C now depend on where the boundary falls?</p>
+</div>
+<div style="background:#EAF1F8;padding:24px 28px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:32px;font-weight:700;color:#00509A">Next: an experiment</h3>
+<p style="font-size:28px;line-height:1.35">Slide a disc across a fixed mesh and watch κ, the accuracy and the solver cost.</p>
+</div>
+</div>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">28</p>
+
+</section>
+</div><div class='note'>Three minutes. Recall from lecture 3 that conditioning controls two things: how many iterations a Krylov solver needs and how many digits survive round-off. For a quasi-uniform mesh the condition number of the stiffness matrix grows like h to the minus two, with a constant that depends only on mesh quality. The question of this block is whether a cut mesh keeps this property. The cut cells are not chosen by a mesh generator: where the boundary falls decides their shape. In this lecture kappa is computed as the ratio of the largest to the smallest singular value (numpy cond), which equals the ratio of eigenvalue magnitudes for a symmetric matrix.</div></div>
+<div class='wrap'><h4>29. Small cuts break the matrix</h4><div class='frame'><section id="small-cuts" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Small cuts break the matrix</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:28px">
+<ul style="font-size:30px;line-height:1.4">
+<li>For P1 the gradients of the hat functions ψi are constant, so the element matrix on T ∩ Ω is the full one scaled by η:</li>
+</ul>
+<img src="assets/c6ae07a51f79d147c1a85d3490b2a1be.svg" alt="Integral over T intersected with Omega of grad psi i dot grad psi j equals eta times K T i j, where eta is the measure of T intersected with Omega divided by the measure of T" style="width:718px;height:85px;object-fit:contain">
+<ul style="font-size:30px;line-height:1.4">
+<li>A DOF that sees Ω only through a sliver gets matrix entries proportional to η</li>
+<li>The smallest eigenvalue tends to 0 with η, so κ(A) grows roughly like 1/η</li>
+</ul>
+<div style="background:#FDEBD8;padding:24px 32px;border-radius:16px;display:flex;flex-direction:column;gap:6px">
+<p style="font-size:30px;font-weight:700;color:#B34F00">Example from the sweep</p>
+<p style="font-size:30px;line-height:1.35">η = 1.3·10⁻⁸ gave κ(A) = 2.0·10⁹</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;align-items:center;width:660px">
+<img src="assets/7a60762ca59d7534bd33dcbaac3f45b6.png" alt="Log-log scatter of the condition number against the smallest cut fraction eta for 81 boundary positions, following roughly a line of slope minus one; most points are crosses, meaning the matrix is indefinite" style="width:660px;height:528px;object-fit:contain">
+<p style="font-size:24px;color:#6E6E6E;width:660px">81 positions of a disc on a fixed mesh, no stabilisation (minicut). η = smallest |T ∩ Ω| / |T| over the cut cells.</p>
+</div>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">29</p>
+
+</section>
+</div><div class='note'>Three minutes. Notation: psi_i are the hat functions (called phi_i in lecture 2; renamed here because phi is the level set). The argument is exact for P1 because the gradient is constant on a triangle: the element matrix restricted to T intersect Omega is eta times the full element matrix. So any DOF whose support meets Omega only in slivers has a tiny diagonal entry. The scatter plot comes from the sweep of the next slide: each point is one position of the disc, the horizontal axis is the smallest cut fraction eta over the cut cells, the vertical axis the condition number. The dashed line has slope minus one: the trend is roughly 1/eta, with scatter of one to two orders of magnitude, so say roughly and not exactly. Crosses mark matrices that have negative eigenvalues: for Nitsche without stabilisation, tiny slivers do not only hurt the conditioning, they make the matrix indefinite. Connect to lecture 3: conditioning drives iteration counts and round-off.</div></div>
+<div class='wrap'><h4>30. The numerical experiment</h4><div class='frame'><section id="cond-setup" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">The numerical experiment</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<div style="background:#EAF1F8;padding:24px 32px;border-radius:16px;display:flex;flex-direction:column;gap:16px">
+<img src="assets/7c16125c81f17615e9bcd38eaba4c32a.svg" alt="Minus Laplacian of u equals f in Omega, and u equals g on Gamma" style="width:533px;height:35px;object-fit:contain">
+<img src="assets/853b165615bdba70cb9b99d8e1f15695.svg" alt="The exact solution is u ex equals sine of pi x times sine of pi y, with f equal to 2 pi squared u ex and g equal to u ex on Gamma" style="width:883px;height:48px;object-fit:contain">
+</div>
+<ul style="font-size:26px;line-height:1.4">
+<li>Poisson problem on a disc Ω with a known solution, so the error can be measured</li>
+<li>P1 elements on a 20 × 20 triangle mesh of [−1, 1]²; the disc centre (0.037, −0.021) is off the grid, so cuts never line up with the mesh</li>
+<li>Nitsche with γ = 40, and a ghost penalty with γg = 0.1 when we stabilise</li>
+<li>Sweep: 81 radii from r = 0.50 to 0.60, one cell width in total. For each radius: assemble, compute the eigenvalues, κ, the error and the GMRES iterations</li>
+</ul>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;align-items:center;width:600px">
+<img src="assets/00d324bfb924b79883402b698f9d3851.png" alt="The 20 by 20 background mesh of the square from minus 1 to 1 with the disc: cells inside in blue, cut cells in orange, the boundary Gamma as a solid circle and two dashed circles for the smallest and largest radius of the sweep" style="width:600px;height:617px;object-fit:contain">
+<p style="font-size:24px;color:#6E6E6E;width:600px">Blue: cells inside Ω. Orange: cut cells. Active mesh = blue + orange.</p>
+</div>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">30</p>
+
+</section>
+</div><div class='note'>Two minutes. Set up the experiment before showing the results. The problem is the Poisson problem from the Nitsche slides: minus Laplacian u = f in Omega, u = g on Gamma, with u exact = sin(pi x) sin(pi y), f = 2 pi squared u exact and g the trace of the exact solution, so the L2 error is computable. Omega is a disc inside the box [-1,1]^2, meshed with 20 by 20 squares each split into two triangles, so h = 0.1 (the box is a few cells larger than the disc on every side; outside cells are never assembled). The centre is slightly off the grid so that the cut pattern is generic. The solid circle is the boundary at r = 0.545, the dashed circles are r = 0.50 and r = 0.60, the two ends of the sweep: the boundary moves by exactly one cell width. For each of the 81 radii we assemble the Nitsche system, with and without the ghost penalty, and compute the eigenvalues of the dense matrix on the active DOFs, the condition number, the L2 error, and the number of GMRES iterations. Figure and data are computed with minicut (tools/cond_sweep.py in the repository); the same sweep is section 7 of the notebook.</div></div>
+<div class='wrap'><h4>31. Slide the boundary by one cell width</h4><div class='frame'><section id="cond-sweep" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:28px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Slide the boundary by one cell width</h2>
+<div style="display:flex;flex-direction:row;gap:40px;align-items:flex-start">
+<div style="width:1100px;flex:none;display:flex;flex-direction:column;gap:12px">
+<img src="assets/830c855f01feaf735c2b9c3a422a3b5f.png" alt="Left: condition number against disc radius from 0.50 to 0.60 on a log scale. Without stabilisation it jumps between 2e3 and 2e9 and crosses mark an indefinite matrix; with ghost penalty it stays between 1e2 and 3e2. Right: L2 error against radius, between 6e-3 and 1e-2 for both." style="width:1100px;height:469px;object-fit:contain">
+<p style="font-size:24px;color:#6E6E6E">P1 on a 20×20 mesh of [−1,1]², disc of radius r, manufactured solution, Nitsche γ = 40, ghost γg = 0.1. Crosses: matrix not positive definite.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<div style="background:#FDEBD8;padding:24px 28px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:32px;font-weight:700;color:#B34F00">No stabilisation</h3>
+<p style="font-size:26px;line-height:1.35">κ from 2·10³ to 2·10⁹. Matrix indefinite for 55 of 81 positions. L² error between 6.6·10⁻³ and 9.4·10⁻³.</p>
+</div>
+<div style="background:#EAF1F8;padding:24px 28px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:32px;font-weight:700;color:#00509A">Ghost penalty</h3>
+<p style="font-size:26px;line-height:1.35">κ between 1.3·10² and 2.9·10². Error between 7.2·10⁻³ and 1.0·10⁻².</p>
+</div>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.35">Same mesh, same equation: only the boundary moved, by one cell width. The error hardly notices; the matrix does.</p>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">31</p>
+
+</section>
+</div><div class='note'>Three minutes. This is the experiment. One fixed 20 by 20 mesh, h = 0.1, and a disc whose radius changes from 0.50 to 0.60, so the boundary moves by one cell width in 81 steps. For each position we assemble the Nitsche system with and without the ghost penalty. Left: the condition number. Without stabilisation it jumps over almost six orders of magnitude, from about 2e3 to 2e9, with no pattern in r. With the ghost penalty it stays between 130 and 290. Crosses mark the 55 positions where the matrix has negative eigenvalues. Right: the L2 error. It is between 6.6e-3 and 9.4e-3 without stabilisation and between 7.2e-3 and 1.0e-2 with it: the accuracy hardly changes, the error is controlled by the mesh and not by the bad cuts (correlation of log kappa with log error: 0.25). Ask the students: so why do we care? The next slides show the mechanism, and the cost: the solver. Say honestly that for a direct solve on this size the damage stays invisible in the error; for iterative solvers, for larger problems, for eigenvalue problems or when the matrix is indefinite, it does not. Data computed with minicut (dense eigenvalue computation on the active DOFs).</div></div>
+<div class='wrap'><h4>32. What goes wrong: a DOF nobody controls</h4><div class='frame'><section id="cond-modes" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:24px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">What goes wrong: a DOF nobody controls</h2>
+<div style="display:flex;flex-direction:column;gap:20px;align-items:center">
+<img src="assets/934973da2f21fe5c141f882ec842def7.png" alt="Eigenvector of the smallest eigenvalue on the active mesh. Without stabilisation it is concentrated on a single DOF of a cell barely inside the disc, eigenvalue minus 1.4e-8. With ghost penalty it is smooth over many cells, eigenvalue plus 0.15." style="width:1240px;height:562px;object-fit:contain">
+</div>
+<p style="font-size:28px;line-height:1.4">Mode of the smallest eigenvalue at the worst position of the sweep (r = 0.595). <b style="color:#B34F00">Without stabilisation</b> it lives on one DOF that the sliver cell barely controls, and the eigenvalue is negative: the Nitsche matrix is no longer positive definite. <b style="color:#00509A">With ghost penalty</b> the mode is smooth and the eigenvalue is +0.15.</p>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">32</p>
+
+</section>
+</div><div class='note'>Three minutes. We take the worst case of the sweep, r = 0.595, and look at the eigenvector that belongs to the smallest eigenvalue. Each dot is a degree of freedom on the active mesh and its colour is the amplitude of the mode. Without stabilisation the mode is a single spike on a DOF at the bottom of the mesh, at (-0.2, -0.7), a vertex outside the disc whose cells contain only a tiny piece of it (volume fractions 1e-8 and 4e-8). The energy of that mode is almost zero, and because the Nitsche boundary terms are not sign definite the eigenvalue is slightly negative: minus 1.4e-8. So the matrix is not even positive definite and the condition number blows up to 2e9. With the ghost penalty the same eigenvector is a smooth, global function and the eigenvalue is +0.15, a normal size. Link back to the active-mesh slide: the DOFs outside the domain were the warning. (mc.smallest_mode in minicut computes this.)</div></div>
+<div class='wrap'><h4>33. Two ways to control the sliver</h4><div class='frame'><section id="ghost-1d" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:28px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Two ways to control the sliver</h2>
+<img src="assets/01f79b5570c426a15262ec6443743df2.png" alt="One-dimensional picture of a P1 function on the cells near the boundary. Without stabilisation the vertex outside the domain is free and any value fits. With ghost penalty it is tied to the neighbouring cell. With aggregation it has no DOF of its own." style="width:1560px;height:582px;object-fit:contain">
+<p style="font-size:30px;line-height:1.35">The vertex outside Ω sees the domain only through a sliver. <b style="color:#B34F00">Left:</b> its value is almost free. <b style="color:#00509A">Middle:</b> ghost penalty ties it to the neighbour. <b style="color:#00509A">Right:</b> aggregation removes it.</p>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">33</p>
+
+</section>
+</div><div class='note'>Two minutes. A picture in one dimension before the formulas. The shaded region is Omega and the thin orange strip is the sliver of the last cell that lies inside. The P1 function on that cell is determined by two values: the one inside Omega and the one at the vertex outside. The orange fans show that, without stabilisation, almost any value at the outside vertex fits the data because the sliver barely sees it. That is the free direction behind the tiny eigenvalue. Ghost penalty adds a term that ties the outside value to the neighbouring cell, so the function continues smoothly. Aggregation does something different: the outside vertex is not an unknown any more, the cell uses the polynomial of its neighbour. Both give the sliver control from a well-cut cell.</div></div>
+<div class='wrap'><h4>34. Ghost penalty: control from the neighbours</h4><div class='frame'><section id="ghost" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Ghost penalty: control from the neighbours</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:28px">
+<div style="background:#EAF1F8;padding:24px 32px;border-radius:16px">
+<img src="assets/ae898f839d5a2c0181acadfac61bffac.svg" alt="j of u and v equals the sum over facets F of gamma g times h times the integral over F of the jump of grad u dot n times the jump of grad v dot n" style="width:597px;height:92px;object-fit:contain">
+</div>
+<ul style="font-size:30px;line-height:1.4">
+<li>Sum over the facets F of cut cells (red); [·] is the jump across F</li>
+<li>It ties the values on a sliver cell to the neighbouring cell, so control extends to the whole cell</li>
+<li>Consistent: the jump vanishes for a smooth solution, so the accuracy is kept</li>
+<li>γg is a dimensionless constant, independent of how the cut falls</li>
+</ul>
+</div>
+<img src="assets/f6e39b1be9c2fe8a184ba313db3fec81.png" alt="Ghost penalty facets drawn in red around the cells cut by the flower-shaped boundary" style="width:640px;height:672px;object-fit:contain">
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">34</p>
+
+</section>
+</div><div class='note'>Three minutes. Intuition first (one-dimensional picture on the previous slide): a P1 function on a sliver is determined by its values at three vertices, but we only see a sliver of it. The ghost penalty forces the polynomial on the sliver cell to be close to the polynomial of its neighbour across each facet, so the sliver inherits control from a cell that is well inside. It also restores the coercivity of the Nitsche form independently of the cut position, which is why gamma can be chosen once. For P1 only the jump of the normal derivative is penalised; for higher degree, higher derivative jumps are needed. In minicut: mc.ghost_penalty(geom, gamma_g=0.1), one term on the facets geom.ghost_facets. Original reference: Burman 2010.</div></div>
+<div class='wrap'><h4>35. Cell aggregation: remove the unstable DOFs</h4><div class='frame'><section id="aggregation" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Cell aggregation: remove the unstable DOFs</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:26px">
+<ul style="font-size:28px;line-height:1.4">
+<li>Flag the ill-posed cut cells: the fraction |T ∩ Ω| / |T| is below a threshold (0.25 here)</li>
+<li>Attach each one to a well-cut root cell nearby: they form an aggregate</li>
+<li>On an aggregate the function is the polynomial of the root cell, so the DOFs of the sliver cells disappear</li>
+<li>Nothing is added to the form, and the system has fewer unknowns</li>
+</ul>
+<div style="background:#EAF1F8;padding:24px 28px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:32px;font-weight:700;color:#00509A">Ghost penalty or aggregation?</h3>
+<p style="font-size:26px;line-height:1.35">Ghost penalty adds a term and keeps all DOFs. Aggregation changes the space and removes DOFs. Both restore a well-conditioned system: over the sweep κ stays between 1.2·10² and 2.2·10², and the matrix stays positive definite.</p>
+</div>
+<p style="font-size:26px;color:#6E6E6E">Badia, Verdugo, Martín, 2018</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+<img src="assets/1ffc7b77cc7ddd9b9bb507483f5b2c1c.png" alt="Cell aggregation on a 12 by 12 mesh with a circular boundary: ill-posed cut cells in orange, root cells in blue, aggregates outlined in thick lines" style="width:600px;height:600px;object-fit:contain">
+<p style="font-size:24px;color:#6E6E6E;width:600px">Orange: ill-posed cells, blue: root cells, thick outline: aggregate. 12×12 mesh, disc of radius 0.6: 18 ill-posed cells among 48 cut cells, 7 dofs removed.</p>
+</div>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">35</p>
+
+</section>
+</div><div class='note'>Three minutes. Aggregation is the second repair. We detect the cut cells whose domain fraction is below a threshold, here 0.25, and attach each of them to a well-cut root cell nearby, through the facets of the active mesh; the group is an aggregate. On an aggregate the finite element function is the polynomial of the root cell, extended over the whole aggregate, so the DOFs on the sliver cells are no longer independent unknowns: a dof that touches no well-cut cell is removed and its value is the root polynomial evaluated at it. In matrix form u = E u_good, where E has one column per remaining dof, and the reduced system is E^T A E u_good = E^T b. Nothing is added to the weak form, the matrix is smaller, and the sliver is controlled by construction. In minicut: mc.aggregate(geom, threshold) and mc.solve_aggregated. The figure is made on a coarse 12 by 12 mesh so the cells are visible: orange cells are ill-posed (18 of 48 cut cells), blue are their root cells, thick lines outline the aggregates; 7 dofs are removed. On the 20 by 20 sweep 8 to 15 dofs are removed and kappa is between 121 and 220. Reference: Badia, Verdugo, Martin, Computer Methods in Applied Mechanics and Engineering, 2018.</div></div>
+<div class='wrap'><h4>36. What it costs the solver</h4><div class='frame'><section id="cond-cost" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:24px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">What it costs the solver</h2>
+<div style="display:flex;flex-direction:column;gap:20px;align-items:center">
+<img src="assets/65a0ee74bfd1cae44d294a2202811514.png" alt="Left: GMRES iterations against disc radius. Without stabilisation 102 to 150, with ghost penalty 61 to 77, with aggregation 51 to 66, and 34 to 48 for all three with diagonal scaling. Right: condition number after diagonal scaling, up to 101 without stabilisation and below 52 with ghost penalty or aggregation." style="width:1300px;height:555px;object-fit:contain">
+</div>
+<div style="background:#EAF1F8;padding:20px 32px;border-radius:16px">
+<p style="font-size:28px;line-height:1.4">Both repairs cut the GMRES iterations from 102–150 to 61–77 (ghost penalty) and 51–66 (aggregation). A diagonal scaling brings all three to 34–48, but only the repairs keep κ below 52 and the matrix positive definite.</p>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">36</p>
+
+</section>
+</div><div class='note'>Two minutes. Link to lecture 3: the cost of the solve. The same 81 positions. Left: GMRES iterations to reduce the residual by 1e-8, with no preconditioner (solid) or with a diagonal (Jacobi) scaling (dashed). Without stabilisation 102 to 150 iterations, with ghost penalty 61 to 77, with aggregation 51 to 66. A simple diagonal scaling already removes most of the problem for all three, 34 to 48 iterations: it equilibrates the tiny rows of the sliver cells. Right: the condition number after scaling. With ghost penalty or aggregation it is between 37 and 52 for every position. Without stabilisation it is mostly small too, but it reaches 101 in the worst case, and the matrix is still indefinite for 55 of the 81 positions. Take-away: cheap preconditioning helps the solver, but the stabilisation is what makes the problem well posed. A direct solver is affected by the same near-singularity through the pivots. Dense eigenvalue and GMRES computations on the active DOFs with minicut (mc.gmres_iterations, mc.condition_number); no preconditioner other than the diagonal scaling was tested.</div></div>
+<div class='wrap'><h4>37. Example 1 · Step 5/6: small cuts, and the repair</h4><div class='frame'><section id="ps-stab" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:28px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Example 1 · Step 5/6: small cuts, and the repair</h2>
+<div style="display:flex;flex-direction:row;gap:40px;align-items:flex-start;"><div style="display:flex;flex-direction:column;gap:20px;flex:1"><div style="background:#1F2937;padding:24px 32px;border-radius:16px;display:flex;flex-direction:column;gap:2px"><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">Ag = mc.ghost_penalty(geom, gamma_g=0.1)</p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;padding-left:0px">&nbsp;</p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px"><span style="color:#9CA3AF"># condition_number: (kappa, negative eigenvalues)</span></p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">mc.condition_number(geom, A)       <span style="color:#9CA3AF"># (5.4e4, 0)</span></p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">mc.condition_number(geom, A + Ag)  <span style="color:#9CA3AF"># (248, 0)</span></p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;padding-left:0px">&nbsp;</p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">agg = mc.aggregate(geom, 0.25)</p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">agg.summary()  <span style="color:#9CA3AF"># 38 ill-posed cells, 18 dofs removed</span></p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">mc.condition_number(geom, A, agg)  <span style="color:#9CA3AF"># (105, 0)</span></p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;padding-left:0px">&nbsp;</p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">A = A + Ag     <span style="color:#9CA3AF"># we continue with the ghost penalty</span></p></div><div style="background:#EAF1F8;border-radius:16px;padding:16px 28px;display:flex;flex-direction:column;gap:6px"><p style="font-size:26px;line-height:1.35;color:#3B3B3B"><span style="font-weight:700;color:#00509A">ghost penalty</span> &nbsp;+ γ<sub>g</sub> h Σ<sub>F</sub> ∫<sub>F</sub> [∂<sub>n</sub>u][∂<sub>n</sub>v] ds</p><p style="font-size:26px;line-height:1.35;color:#3B3B3B"><span style="font-weight:700;color:#2E8B57">aggregation</span> &nbsp;sliver dofs = polynomial of a root cell, E<sup>T</sup> A E</p></div></div><div style="display:flex;flex-direction:column;gap:16px;flex:none;align-items:center"><div style="display:flex;flex-direction:column;gap:8px;align-items:center"><img src="assets/b11767ec779097002e94991e347764d8.png" alt="Left: the facets of cut cells where the ghost penalty acts, in red. Right: ill-posed cut cells in orange attached to their blue root cell by aggregation" style="width:900px;height:450px;object-fit:contain"><p style="font-size:24px;line-height:1.3;color:#6E6E6E;width:900px">left: ghost_facets (red); right: aggregates (orange cells join the blue root)</p></div></div></div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">37</p>
+
+</section>
+</div><div class='note'>Three minutes. The code for the stabilisation, with the numbers of this flower mesh. Without it the condition number is 5.4e4, with the ghost penalty 248, with aggregation 105. On this particular mesh the unstabilised matrix is still positive definite, but this is luck of the cut: the sweep of the conditioning block moved the boundary by one cell width and found indefinite matrices for 55 of 81 positions and condition numbers up to 2e9. Ghost penalty: mc.ghost_penalty adds the jump of the normal derivative on the facets of cut cells (red on the left), 122 facets here. Aggregation: mc.aggregate attaches every cut cell whose volume fraction is below 0.25 to a well-cut root cell; the dofs that touch no well-cut cell are removed (18 of 103) and their values are the polynomial of the root cell, which is a matrix E, so the reduced system is E^T A E. Both are tools that restore the conditioning, and both are consistent. The ghost penalty is the one we keep for the rest of the example.</div></div>
+<div class='wrap'><h4>38. Example 1 · Step 6/6: solve and look</h4><div class='frame'><section id="ps-5" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:28px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Example 1 · Step 6/6: solve and look</h2>
+<div style="display:flex;flex-direction:row;gap:40px;align-items:flex-start;"><div style="display:flex;flex-direction:column;gap:20px;flex:1"><div style="background:#1F2937;padding:24px 32px;border-radius:16px;display:flex;flex-direction:column;gap:2px"><p style="font-size:24px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">u = mc.solve(geom, A, b)   <span style="color:#9CA3AF"># on the active dofs only</span></p><p style="font-size:24px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;padding-left:0px">&nbsp;</p><p style="font-size:24px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">outside = np.setdiff1d(np.arange(mesh.n_nodes),</p><p style="font-size:24px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:331px">geom.active_dofs)</p><p style="font-size:24px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">len(outside)               <span style="color:#9CA3AF"># 258 dofs left out (red)</span></p><p style="font-size:24px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;padding-left:0px">&nbsp;</p><p style="font-size:24px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">mc.plot_solution(geom, u)  <span style="color:#9CA3AF"># u_h on Ω_h itself</span></p><p style="font-size:24px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;padding-left:0px">&nbsp;</p><p style="font-size:24px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">mc.area(geom)              <span style="color:#9CA3AF"># 0.7316  (exact 0.7355)</span></p></div></div><div style="display:flex;flex-direction:column;gap:16px;flex:none;align-items:center"><div style="display:flex;flex-direction:row;gap:20px;align-items:flex-start;"><div style="display:flex;flex-direction:column;gap:8px;align-items:center"><img src="assets/968f86871ccfe5d25816e6337f760fe0.png" alt="Background mesh nodes with the deactivated nodes outside the active mesh marked in red" style="width:340px;height:357px;object-fit:contain"><p style="font-size:24px;line-height:1.3;color:#6E6E6E;width:340px">deactivated DOFs</p></div><div style="display:flex;flex-direction:column;gap:8px;align-items:center"><img src="assets/e56284a2c551b54a14d7beabe00bb171.png" alt="Contour plot of the solution on the flower-shaped domain" style="width:340px;height:357px;object-fit:contain"><p style="font-size:24px;line-height:1.3;color:#6E6E6E;width:340px">solution on Ω</p></div></div></div></div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">38</p>
+
+</section>
+</div><div class='note'>Two minutes. The matrix is assembled over the cut pieces only. The dofs that do not touch an active cell (the red points on the left; 258 of 361) have empty rows, so mc.solve removes them and solves the system on the 103 active dofs with a sparse direct solver. mc.plot_solution draws u_h on the sub-triangulation of Ω, so the picture shows the flower and not the box. As a check, the same code on a disc of radius 0.5 reproduces the exact solution (0.25 - r²)/4 with an L2 error of 1.1e-3. The next slide measures the convergence on the flower itself with a manufactured solution.</div></div>
+<div class='wrap'><h4>39. Example 1 · Convergence: the rates of the fitted mesh</h4><div class='frame'><section id="convergence" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Example 1 · Convergence: the rates of the fitted mesh</h2>
+<div style="display:flex;flex-direction:column;gap:16px;align-items:center">
+<img src="assets/ff4102144b35760b9e5382af0794ab27.png" alt="Two log-log plots of the error against h for the cut Poisson problem on the flower. L2 error slope about 2 and H1 seminorm slope about 1 with no stabilisation, ghost penalty and aggregation." style="width:1500px;height:606px;object-fit:contain">
+<p style="font-size:28px;line-height:1.35;color:#6E6E6E">P1 elements on the flower, manufactured solution u = sin πx · sin πy, h = 0.2 … 0.0125: L² slope ≈ 2, H¹ seminorm slope ≈ 1, with or without stabilisation</p>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">39</p>
+
+</section>
+</div><div class='note'>Three minutes. Recall lecture 3: for P1 the error in L2 decreases like h squared and the H1 seminorm error like h. Here the flower of Example 1 is solved with a manufactured solution, u = sin(pi x) sin(pi y) with f and g taken from it, Nitsche gamma = 40, on meshes of 10, 20, 40, 80 and 160 squares per side. The measured L2 slopes are 1.93 (no stabilisation), 2.02 (ghost penalty) and 1.95 (aggregation); the H1 slopes are 0.99, 1.00 and 1.00. The same as on a fitted mesh. So the geometry is no longer paid for in accuracy. The stabilisation changes the conditioning (previous block) but not the rates. Computed with minicut (tools/lecture_figures.py); students reproduce it in the notebook.</div></div>
+<div class='wrap'><h4>40. Example 2 · From an image to a level set</h4><div class='frame'><section id="img2ls-1" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:24px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Example 2 · From an image to a level set</h2>
+<div style="display:flex;flex-direction:column;gap:22px;"><img src="assets/c36c3f90ff5b14b623d9d328ba1356bd.png" alt="Four panels: a noisy greyscale image of a porous specimen, light matrix with dark pores, the segmented binary image, the signed distance function with its zero contour, and the zero level set drawn on a triangular background mesh with the cut cells in orange" style="width:1664px;height:452px;object-fit:contain"><div style="display:flex;flex-direction:row;gap:32px;align-items:flex-start;"><div style="display:flex;flex-direction:column;gap:6px;width:392px;flex:none"><h3 style="font-size:30px;font-weight:700;color:#00509A">1 Image</h3><p style="font-size:26px;line-height:1.35">grey values from a CT scan, microscope or photo</p></div><div style="display:flex;flex-direction:column;gap:6px;width:392px;flex:none"><h3 style="font-size:30px;font-weight:700;color:#00509A">2 Segment</h3><p style="font-size:26px;line-height:1.35">threshold (or a classifier): solid matrix or pore</p></div><div style="display:flex;flex-direction:column;gap:6px;width:392px;flex:none"><h3 style="font-size:30px;font-weight:700;color:#00509A">3 Distance</h3><p style="font-size:26px;line-height:1.35">signed distance to the boundary, smoothed</p></div><div style="display:flex;flex-direction:column;gap:6px;width:392px;flex:none"><h3 style="font-size:30px;font-weight:700;color:#00509A">4 Embed</h3><p style="font-size:26px;line-height:1.35">interpolate φ on any background mesh, cut it</p></div></div><p style="font-size:24px;line-height:1.3;color:#6E6E6E">Synthetic scan made with minicut for this lecture (a disc of solid matrix, pores from thresholded filtered noise, scanner noise added); the same steps apply to a real scan. We solve in the matrix (blue), the pores are empty.</p></div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">40</p>
+
+</section>
+</div><div class='note'>Four minutes. The point: an image is enough. Step 1: a greyscale image (here a synthetic micro-CT-like slice of a porous specimen made with mc.synthetic_scan: a light disc of solid matrix with dark pores, with added scanner noise; with a real scan the steps are identical). Step 2: segmentation gives a binary image: solid matrix or pore. Step 3: the signed distance to the boundary, negative in the matrix, smoothed over one or two pixels so the staircase of the pixels does not appear in the geometry. Step 4: interpolate this function on a background mesh that has nothing to do with the pixels (here 45 by 45 squares split into triangles). The cut cells are in orange, 856 of 4050 triangles. No mesh generator was used, and the pores are simply empty: they are outside Ω. Important caveat for questions: the geometry we compute with is the zero set of the interpolated function, so the mesh must be fine enough to resolve the thinnest feature.</div></div>
+<div class='wrap'><h4>41. Example 2 · The recipe in code</h4><div class='frame'><section id="img2ls-2" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Example 2 · The recipe in code</h2>
+<div style="display:flex;flex-direction:row;gap:48px;align-items:flex-start;"><div style="display:flex;flex-direction:column;gap:24px;width:760px;flex:none"><div style="background:#EAF1F8;padding:22px 28px;border-radius:16px"><img src="assets/34e21ecb79919605a9c7e2c1fedbe6b3.svg" alt="phi of x equals minus the distance from x to Gamma if x is in Omega, and plus the distance if x is not in Omega" style="width:546px;height:131px;object-fit:contain"></div><ul style="font-size:26px;line-height:1.4"><li>Threshold the image: B = true in the solid matrix (Ω), the pores are outside</li><li>Distance transform on both sides of the boundary, with the sign convention of the previous slide</li><li>Smooth over 1–2 pixels: the geometry should follow φ, not the pixel staircase</li><li>Interpolate on the background mesh: coarser mesh, coarser geometry</li><li>Same idea for CAD or STL: signed distance to the surface</li></ul></div><div style="display:flex;flex-direction:column;gap:22px;flex:1"><div style="background:#1F2937;padding:24px 32px;border-radius:16px;display:flex;flex-direction:column;gap:2px"><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">from scipy import ndimage as ndi</p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre">&nbsp;</p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">B = scan &gt; 0.5                  <span style="color:#9CA3AF"># True = solid matrix</span></p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">d_in  = ndi.distance_transform_edt(B)</p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">d_out = ndi.distance_transform_edt(~B)</p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">phi_px = np.where(B, -d_in, d_out)</p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">phi_px = ndi.gaussian_filter(phi_px, 1.5)</p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre">&nbsp;</p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px"><span style="color:#9CA3AF"># minicut: these steps and the interpolation in one call</span></p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">phi = mc.levelset_from_image(B, smooth=1.5)</p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre">&nbsp;</p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">mesh = mc.Mesh(45)</p><p style="font-size:22px;line-height:1.38;font-family:'Courier New', monospace;color:#F3F4F6;white-space:pre;padding-left:0px">geom = mc.CutGeometry(mesh, phi)</p></div><div style="background:#FDEBD8;padding:24px 28px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:32px;font-weight:700;color:#B34F00">Watch the resolution</h3>
+<p style="font-size:26px;line-height:1.35">A feature thinner than one cell can slip between mesh vertices: no sign change, no cut cell. Choose h from the thinnest feature you care about.</p>
+</div></div></div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">41</p>
+
+</section>
+</div><div class='note'>Three minutes. The recipe in code, with SciPy: distance transforms on both sides of the boundary, the sign convention negative inside, a light Gaussian smoothing, and a bilinear interpolation that lets phi be evaluated at any point, in particular at the nodes of the background mesh. mc.levelset_from_image does exactly these steps (and scales pixels to physical units); this is the code that made the previous figure and the next slide. CutGeometry evaluates phi at the nodes of the 45 by 45 mesh and cuts it. For CAD or STL geometries the signed distance to the surface does the same job. Resolution caveat: classification only looks at the signs of φ at mesh vertices, so features thinner than h can be missed.</div></div>
+<div class='wrap'><h4>42. Example 2 · Solve in the matrix, check</h4><div class='frame'><section id="ex1-solve" data-transition="fade" style="display:flex; flex-direction:column; gap:36px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Example 2 · Solve in the matrix, check</h2>
+  <div style="display:flex; flex-direction:row; gap:36px; align-items:flex-start">
+    <div style="width:500px; display:flex; flex-direction:column; gap:10px; flex:0 0 auto">
+      <img src="assets/233d891ecf566e3257938e28e7fc9598.png" alt="Background triangle mesh with the solid matrix of the porous specimen: cells inside in green, cut cells in orange, the boundary of the matrix, pores and outer edge, in orange" style="width:500px; height:500px; object-fit:contain; flex:0 0 auto">
+      <p style="width:500px; font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">Cells of the 40 × 40 background mesh: green inside the matrix, orange cut; the pores are empty</p>
+    </div>
+    <div style="width:500px; display:flex; flex-direction:column; gap:10px; flex:0 0 auto">
+      <img src="assets/9d7ef1b2520322753500a641abb20ffd.png" alt="Computed solution in the solid matrix of the porous specimen; the pores are holes" style="width:500px; height:500px; object-fit:contain; flex:0 0 auto">
+      <p style="width:500px; font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">u<sub>h</sub> in the matrix; the black line is Γ, around every pore and along the specimen edge</p>
+    </div>
+    <div style="width:592px; display:flex; flex-direction:column; gap:22px; flex:0 0 auto">
+      <div style="background:#eaf1f8; border-radius:16px; padding:22px 28px; display:flex; flex-direction:column; gap:10px">
+        <p style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#00509a">Check against a known solution</p>
+        <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">u = sin 2πx · sin 2πy, f = −Δu, u = g on Γ</p>
+        <table style="font-family:Arial, sans-serif; font-size:26px; color:#3b3b3b; width:100%">
+          <tr><th style="color:#00509a">n</th><th style="color:#00509a">cut cells</th><th style="color:#00509a">‖u − u<sub>h</sub>‖<sub>L²</sub></th><th style="color:#00509a">rate</th></tr>
+          <tr><td>20</td><td>358</td><td>4.54·10<sup>-3</sup></td><td>–</td></tr><tr><td>40</td><td>768</td><td>1.27·10<sup>-3</sup></td><td>1.84</td></tr><tr><td>80</td><td>1556</td><td>3.41·10<sup>-4</sup></td><td>1.90</td></tr>
+        </table>
+        <p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">Rate approaching two as the mesh resolves the pores</p>
+      </div>
+      <div style="background:#fdebd8; border-radius:16px; padding:22px 28px; display:flex; flex-direction:column; gap:8px">
+        <p style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#b34f00">Why the ghost penalty</p>
+        <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">Condition number at n = 40: 5.6·10<sup>7</sup> without it, with 16 negative eigenvalues; 331 with it.</p>
+      </div>
+    </div>
+  </div>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">42</p>
+  
+</section>
+</div><div class='note'>Three minutes. Same level set as the previous slides (the synthetic scan thresholded at 0.5), now taken all the way to a solution with minicut (P1, Nitsche with γ = 40, ghost penalty with γg = 0.1). The domain is the solid matrix: a disc of material with the pores cut out, so Γ is the outer edge and the boundary of every pore, and the pores are empty. Left: the classification of the 40 by 40 mesh, 768 cut cells. Middle: the solution of a manufactured problem, u = sin(2πx) sin(2πy) imposed on every boundary, pores included; a few small isolated pieces of matrix are separate components, which is fine for a Dirichlet problem. Right: the check. Error ratios 1.84 from n = 20 to 40 and 1.90 from 40 to 80: the rate approaches two as the mesh resolves the thin features and the pores (at n = 20 several features are thinner than a cell). No mesh was built for this geometry. The orange box is the link to the previous section: without the ghost penalty the condition number at n = 40 is 6·10⁷ and the matrix is indefinite (16 negative eigenvalues); with it, 331. Honest remark if asked: the error without ghost penalty is not larger (1.1e-3 against 1.3e-3 here); the ghost penalty repairs the matrix, not the accuracy. Variants: insulated pores need no boundary term at all (Neumann is natural), and pores filled with a second material make an interface problem. Numbers: tools/image_example.py.</div></div>
+<div class='wrap'><h4>43. Example 3 · Combining shapes with min and max</h4><div class='frame'><section id="csg" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Example 3 · Combining shapes with min and max</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:36px">
+<table style="font-size:30px;color:#3B3B3B">
+<tr><th style="width:32%;color:#00509A">Operation</th><th style="width:28%;color:#00509A">Shape</th><th style="width:40%;color:#00509A">Level set</th></tr>
+<tr><td>Union</td><td>A ∪ B</td><td>min(φA, φB)</td></tr>
+<tr><td>Intersection</td><td>A ∩ B</td><td>max(φA, φB)</td></tr>
+<tr><td>Complement</td><td>outside A</td><td>−φA</td></tr>
+<tr><td>Difference</td><td>A without B</td><td>max(φA, −φB)</td></tr>
+</table>
+<div style="background:#EAF1F8;padding:28px 36px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:32px;font-weight:700;color:#00509A">Plate with a hole</p>
+<p style="font-size:32px">φ = max(φbox, −φdisc): the box without the disc</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;align-items:center;width:780px"><div style="display:grid;grid-template-columns:380px 380px;gap:16px 20px"><div style="display:flex;flex-direction:column;gap:6px;align-items:center;width:380px"><img src="assets/1f40c9e221b16b9499dd568bb970bbbd.png" alt="A box A (blue) and a ball B (orange) side by side" style="width:380px;height:285px;object-fit:contain"><p style="font-size:26px;font-weight:700;color:#00509A">A: box, B: ball</p></div><div style="display:flex;flex-direction:column;gap:6px;align-items:center;width:380px"><img src="assets/697364e051018ec447d4a0cf8fcb6a87.png" alt="Union of box and ball: the box with the ball merged on one corner" style="width:380px;height:285px;object-fit:contain"><p style="font-size:26px;font-weight:700;color:#00509A">Union: min(φA, φB)</p></div><div style="display:flex;flex-direction:column;gap:6px;align-items:center;width:380px"><img src="assets/0c18296b37f2f27520fa5abf7c7a95d7.png" alt="Intersection of box and ball: only the corner of the box that lies inside the ball" style="width:380px;height:285px;object-fit:contain"><p style="font-size:26px;font-weight:700;color:#00509A">Intersection: max(φA, φB)</p></div><div style="display:flex;flex-direction:column;gap:6px;align-items:center;width:380px"><img src="assets/3f18cf17137ad8ce7a72b8c798f8ea21.png" alt="Difference of box and ball: the box with a spherical bite taken out of one corner" style="width:380px;height:285px;object-fit:contain"><p style="font-size:26px;font-weight:700;color:#00509A">Difference: max(φA, −φB)</p></div></div><p style="font-size:24px;color:#6E6E6E">Blue surface: where φA decides. Orange surface: where φB decides.</p></div>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">43</p>
+
+</section>
+</div><div class='note'>Two minutes. The four pictures were rendered directly from the level set formulas of the table, for a box A and a ball B (blue surface: φA decides, orange: φB decides). Look at the difference: the orange surface is the ball seen from inside the bite. Engineers know CSG from CAD: here union is min and intersection is max, because inside means negative. Quick check with the room: a point inside A but outside B has φA &lt; 0 and φB &gt; 0, so it lies in the union (min is negative) but not in the intersection (max is positive). Closing the loop with the plate with a hole from lectures 1 and 2. Next: we use union and difference to build a rotor. Multiple level sets (several materials, several phases) are possible; mention only in passing.</div></div>
+<div class='wrap'><h4>44. Example 3 · Build a rotor from simple shapes</h4><div class='frame'><section id="ex2-build" data-transition="fade" style="display:flex; flex-direction:column; gap:28px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Example 3 · Build a rotor from simple shapes</h2>
+  <div style="display:flex; flex-direction:column; gap:12px">
+    <img src="assets/71b8c2d63287965fdf455a1b874e8baf.png" alt="Three panels on the same background mesh: one tilted elliptical blade, five blades turned by 72 degrees each, and the five blades united with a round hub as a five-bladed rotor; cells inside in green, cut cells in orange" style="width:1664px; height:403px; object-fit:contain; flex:0 0 auto">
+    <div style="display:flex; flex-direction:row"><div style="width:552px; flex:0 0 auto; text-align:center; font-family:Arial, sans-serif; font-size:26px; line-height:1.3; color:#3b3b3b"><b style="color:#00509a">φ<sub>blade</sub></b><br>one blade: a tilted ellipse</div><div style="width:552px; flex:0 0 auto; text-align:center; font-family:Arial, sans-serif; font-size:26px; line-height:1.3; color:#3b3b3b"><b style="color:#00509a">min over five turned copies</b><br>φ<sub>blade</sub>(R<sub>k</sub><sup>−1</sup>x), each copy turned by 72°</div><div style="width:552px; flex:0 0 auto; text-align:center; font-family:Arial, sans-serif; font-size:26px; line-height:1.3; color:#3b3b3b"><b style="color:#00509a">min(φ<sub>hub</sub>, φ<sub>blades</sub>)</b><br>union with a disc for the hub: the rotor</div></div>
+  </div>
+  <div style="background:#1f2937; border-radius:16px; padding:20px 32px; display:flex; flex-direction:column; gap:2px"><p style="font-size:24px; line-height:1.4; font-family:'Courier New', monospace; color:#f3f4f6; white-space:pre">blade = ellipse((0.75, 0.5), 0.17, 0.055, 0.35)</p><p style="font-size:24px; line-height:1.4; font-family:'Courier New', monospace; color:#f3f4f6; white-space:pre">hub   = circle((0.5, 0.5), 0.12)</p><p style="font-size:24px; line-height:1.4; font-family:'Courier New', monospace; color:#f3f4f6; white-space:pre">rotor = union(hub, *[rotate(blade, 2*pi*k/5) for k in range(5)])</p></div>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">44</p>
+  
+</section>
+</div><div class='note'>Three minutes. The second example: a turbine rotor, built from simple level sets, then turned, then tuned. First the build. One blade is a tilted ellipse, as in the example code (an approximate signed distance). The blades of the rotor are copies of this blade turned by multiples of 72 degrees: the only new function is rotate, which turns a shape by evaluating its level set at the back-rotated point, φ(R⁻¹(x − c) + c). The union is the pointwise minimum, as on the previous slide, and the hub is a disc added by another union. Each panel is the same 40 by 40 background mesh: the rotor is 0.187 in area and cuts 332 cells; nothing is meshed. The whole construction is three lines of the example code. Next slide: turn it, through a hot-gas jet.</div></div>
+<div class='wrap'><h4>45. Example 3 · Turn it: same mesh, new cut</h4><div class='frame'><section id="ex2-turn" data-transition="fade" style="display:flex; flex-direction:column; gap:30px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Example 3 · Turn it: same mesh, new cut</h2>
+  <div style="display:flex; flex-direction:row; gap:44px; align-items:flex-start">
+    <div style="width:980px; display:flex; flex-direction:column; gap:20px; flex:0 0 auto">
+      <img src="assets/2125713db3bc0dcbcf9c5bc5e6e84d6d.gif" alt="Animation: a five-bladed rotor turns by one period through a fixed hot-gas jet, shown as a red dashed circle. Left, the background mesh with the cut cells in orange follows the rotor boundary; right, the temperature is high only in the blade that is inside the jet." style="width:980px; height:509px; object-fit:contain; flex:0 0 auto">
+      <div style="width:980px; box-sizing:border-box; flex:0 0 auto; background:#eaf1f8; border-radius:16px; padding:20px 28px; display:flex; flex-direction:column; gap:8px"><p style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#00509a">The load stays, the rotor turns</p><p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">At each angle θ: −Δu = f in Ω<sub>θ</sub>, u = 0 on Γ<sub>θ</sub>. f is a hot-gas jet fixed in space, u is the temperature rise above the coolant (quasi-static: one steady solve per angle).</p><p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b"><span style="font-family:'Courier New', monospace; font-size:24px">rotor_t = rotate(rotor, theta)</span>&nbsp; then cut, assemble, solve as before</p></div>
+    </div>
+    <div style="width:640px; display:flex; flex-direction:column; gap:20px; flex:0 0 auto">
+      <img src="assets/736c04f0c5084e223bc2a36e1392184d.png" alt="Top: the peak temperature against the rotation angle over one period, from about 4 when no blade is in the jet to about 95 when one is; the n equal 80 curve is within five percent of the n equal 40 curve. Bottom: the condition number against the angle, between 184 and 354 with the ghost penalty and between 2 times 10 to the 5 and 3 times 10 to the 8 without it." style="width:620px; height:490px; object-fit:contain; flex:0 0 auto">
+      <div style="width:640px; box-sizing:border-box; flex:0 0 auto; background:#fdebd8; border-radius:16px; padding:20px 28px; display:flex; flex-direction:column; gap:8px"><p style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#b34f00">The solution changes with θ</p><p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">Peak temperature from 4 to 95 within one turn. Condition number: 184 to 354 with the ghost penalty, 2·10<sup>5</sup> to 3·10<sup>8</sup> without.</p></div>
+    </div>
+  </div>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">45</p>
+  
+</section>
+</div><div class='note'>Three minutes. Play the animation first and ask what moves and what does not. The grey background mesh never changes; the rotor boundary turns, so the orange cut cells change at every frame, and the temperature field changes with them. Physical story: a rotor turns through a hot-gas jet. The jet is a heat source f fixed in space (the red dashed circle marks twice its width); the boundary of the rotor is kept at the coolant temperature, u = 0; u is the temperature rise. At each angle we solve a steady Poisson problem, so this is a quasi-static picture; a real turbine would need the time-dependent heat equation with the solution carried along with the body, which is a natural extension. Why a fixed load? If the load turned with the rotor, nothing would change: the rotation of a symmetric problem gives the same answer at every angle, and the example would be boring. Right, top: the peak temperature over one period (72 degrees, the five-fold symmetry): about 95 when a blade is in the jet (worst angle about 15 degrees), about 4 when the jet falls between two blades. The n = 80 curve (grey) is within 5 percent of the n = 40 curve (100 at the worst angle). Right, bottom: the condition number at the same 24 angles. With the ghost penalty it stays between 184 and 354. Without it, between 2·10⁵ and 3·10⁸, and the matrix is indefinite for some angles (up to 11 negative eigenvalues): in a moving problem you cannot choose where the cuts fall, which is why the ghost penalty came first. The temperature unit is arbitrary: f has amplitude 10⁵ at the jet centre.</div></div>
+<div class='wrap'><h4>46. Example 3 · A simple shape optimisation</h4><div class='frame'><section id="ex2-opt" data-transition="fade" style="display:flex; flex-direction:column; gap:30px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Example 3 · A simple shape optimisation</h2>
+  <div style="display:flex; flex-direction:row; gap:48px; align-items:flex-start">
+    <div style="width:700px; display:flex; flex-direction:column; gap:14px; flex:0 0 auto">
+      <img src="assets/be6a50df30e78f4f4664ec2e672c61c3.png" alt="Worst peak temperature over a turn against the blade half-width b for n equal 40 and n equal 80, increasing from about 30 to 250; the limit T star equal 150 is reached at b about 0.075" style="width:700px; height:492px; object-fit:contain; flex:0 0 auto">
+      <div style="width:700px; box-sizing:border-box; flex:0 0 auto; background:#fdebd8; border-radius:16px; padding:20px 28px; display:flex; flex-direction:column; gap:8px"><p style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#b34f00">The optimum hardly depends on the mesh</p><p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">b* = 0.075 at n = 40, 0.073 at n = 80. Cost at n = 40: 7 evaluations of the worst case, each 24 cut-and-solves, 5 s in total.</p></div>
+    </div>
+    <div style="width:916px; display:flex; flex-direction:column; gap:20px; flex:0 0 auto">
+      <div style="display:flex; flex-direction:row; gap:24px">
+        <div style="display:flex; flex-direction:column; gap:6px; width:446px; align-items:center"><img src="assets/b24a9e25c19177add26885f131f0e971.png" alt="Temperature on the starting rotor at its worst angle: the blade in the jet is hot" style="width:340px; height:340px; object-fit:contain; flex:0 0 auto"><p style="width:446px; font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e; text-align:center">start: b = 0.055, peak 95, A = 0.19</p></div>
+        <div style="display:flex; flex-direction:column; gap:6px; width:446px; align-items:center"><img src="assets/90944c51c982b3c5e5931a64a79f5cc3.png" alt="Temperature on the optimised rotor with wider blades at its worst angle" style="width:340px; height:340px; object-fit:contain; flex:0 0 auto"><p style="width:446px; font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e; text-align:center">optimum: b = 0.075, peak 150, A = 0.24</p></div>
+      </div>
+      <div style="width:916px; box-sizing:border-box; flex:0 0 auto; background:#eaf1f8; border-radius:16px; padding:20px 28px; display:flex; flex-direction:column; gap:8px"><p style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#00509a">Design to a temperature limit</p><p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">Widest (strongest) blade with peak temperature ≤ T* = 150 at every angle. The peak grows with b: the optimum is where the worst angle just reaches T*.</p></div>
+      <div style="width:916px; box-sizing:border-box; background:#1f2937; border-radius:16px; padding:20px 32px; display:flex; flex-direction:column; gap:2px"><p style="font-size:24px; line-height:1.4; font-family:'Courier New', monospace; color:#f3f4f6; white-space:pre">T_worst = lambda b: max(peak(b, t) for t in angles)</p><p style="font-size:24px; line-height:1.4; font-family:'Courier New', monospace; color:#f3f4f6; white-space:pre">b_star  = brentq(lambda b: T_worst(b) - T_star, 0.03, 0.12)</p></div>
+    </div>
+  </div>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">46</p>
+  
+</section>
+</div><div class='note'>Three minutes. The simplest shape optimisation we can do in the time: one design parameter, the blade half-width b, and one requirement. Wider blades are stronger, but they also get hotter in the jet. We want the widest blade whose temperature stays below the limit T* = 150 at every angle of the turn. peak(b, t) is the maximum of u for the rotor with half-width b turned by t: a new level set, a cut of the same mesh and a solve. T_worst(b) is the maximum over the 24 angles of one period. Because the peak grows with b, the optimum is where T_worst(b) = T*: a one-dimensional root finding with scipy&#x27;s brentq. Without the temperature limit the widest blade would always win, and without a requirement on strength the thinnest blade would always win: that is why the problem is posed as a limit. It takes 7 evaluations of T_worst, so 168 cut-and-solve steps and 5 s at n = 40 (17 s at n = 80): no meshing in the loop. Result: b* = 0.0750 at n = 40, 0.0731 at n = 80 (a 2.5 percent difference; the peak itself differs by 5 percent between the two meshes, see the previous slide); the worst angle is about 15 degrees for both designs. The area grows from 0.187 to 0.238. Real shape optimisation has many parameters or a free boundary and uses the gradient of the objective with respect to the shape (shape derivative), which costs about one more solve; the next slide shows the same loop for a wing. Homework: add the number of blades as a second parameter.</div></div>
+<div class='wrap'><h4>47. Example 3 · The same loop for a wing</h4><div class='frame'><section id="mot-designs" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Example 3 · The same loop for a wing</h2>
+<div style="display:flex;flex-direction:row;gap:48px;align-items:center;"><img src="assets/0e10ec020400ab0c1f8097e8bcdbd2c2.png" data-video="assets/5f83aacc05748402d3b1ba30f374a9e8.mp4" alt="Video: an aircraft whose wingspan and sweep are changed with sliders; each new shape is cut from the same background grid and solved, ending with six designs deformed under 100 kilonewtons of lift" style="width:1040px;height:585px;object-fit:contain"><div style="display:flex;flex-direction:column;gap:24px;flex:1"><h3 style="font-size:36px;font-weight:700;color:#00509A">6 designs, one grid</h3><ul style="font-size:28px;line-height:1.4"><li>Span and sweep change from design to design</li><li>Same background mesh, h = 0.15 m, for all of them</li><li>Only the level set φ(θ) depends on the design parameters θ</li><li>The optimiser can change the shape thousands of times</li></ul></div></div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">47</p>
+
+</section>
+</div><div class='note'>Two minutes. The picture is a video (it plays in presentation mode and loops; click to pause). It shows a 3D aircraft skin where the wingspan and the sweep are changed with sliders: for each new shape only the level set changes, the shape is cut from the same background grid and solved again, and the clip ends on the six-design overview. Say what to look at: the grid never changes. Figure and video from the JSO 2026 talk: six wing designs, 100 kN of lift on each, one background grid with h = 0.15 m. The geometry of each design is a level set depending on parameters. This is what makes shape optimisation affordable: no meshing in the loop. The rotor of the previous slide is the same loop with one parameter; here there are several (span, sweep) and a gradient drives the optimiser. We will not go into the optimisation; the point is the workflow.</div></div>
+<div class='wrap'><h4>48. Try it yourself</h4><div class='frame'><section id="try-it" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Try it yourself</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start;"><div style="display:flex;flex-direction:column;gap:20px;flex:1"><h3 style="font-size:36px;font-weight:700;color:#00509A">Now: the notebook, no install</h3><ul style="font-size:32px;line-height:1.4"><li>cutfem_lecture.ipynb: a cut FEM in pure Python (numpy, scipy, matplotlib), runs on any laptop</li><li>You write the Nitsche terms, sweep the radius and switch the ghost penalty on</li><li>Same errors and condition numbers as CutFEMx on the same mesh</li></ul><p style="font-size:26px;line-height:1.3;color:#6E6E6E">Files: cutfem_lecture.ipynb and minicut.py · questions: </p></div><div style="display:flex;flex-direction:column;gap:20px;flex:1"><h3 style="font-size:36px;font-weight:700;color:#B34F00">Later: the real thing, CutFEMx</h3><ul style="font-size:32px;line-height:1.4"><li>Conda environment with FEniCSx 0.11, then build CutCells, runintgen and CutFEMx: docs/getting-started/installation.md at github.com/sclaus2/CutFEMx</li><li>On Windows, use WSL2 (Linux)</li><li>Run python/demo/demo_poisson.py, then change one thing: a disc of radius 0.5, γg = 0, or your own image</li></ul></div></div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">48</p>
+
+</section>
+</div><div class='note'>Three minutes. Hands-on part: students open the notebook (cutfem_lecture.ipynb, with minicut.py next to it). It needs only numpy, scipy and matplotlib, so there is no installation problem on Windows laptops. It follows the lecture: level set, cut, quadrature, Nitsche (they write the terms), convergence, the radius sweep that shows the small-cut ill-conditioning, and the ghost penalty. On the same mesh it reproduces the CutFEMx errors and condition numbers. The real CutFEMx is the homework: the installation is source-based (repository documentation), on Windows through WSL2. Before the lecture check that the repository is public and that the students know where the notebook files are.</div></div>
+<div class='wrap'><h4>49. Where cut methods are used</h4><div class='frame'><section id="applications" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Where cut methods are used</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px"><div style="background:#EAF1F8;padding:24px 28px;border-radius:16px;display:flex;flex-direction:row;gap:24px;align-items:center"><x-icon name="Lightning" style="color:#00509A;width:96px;height:96px"></x-icon><div style="display:flex;flex-direction:column;gap:8px;flex:1"><h3 style="font-size:34px;font-weight:700;color:#00509A">Additive manufacturing</h3><p style="font-size:28px;line-height:1.35">Layer-by-layer growth, laser ablation: the shape evolves, the mesh does not</p></div></div><div style="background:#EAF1F8;padding:24px 28px;border-radius:16px;display:flex;flex-direction:row;gap:24px;align-items:center"><img src="assets/19984f029c48684944a80ffc90d30bf1.png" alt="Lattice cells on a background mesh" style="width:300px;height:212px;object-fit:contain"><div style="display:flex;flex-direction:column;gap:8px;flex:1"><h3 style="font-size:34px;font-weight:700;color:#00509A">Images and lattices</h3><p style="font-size:28px;line-height:1.35">CT scans, porous materials and lattices simulated straight from the geometry</p></div></div><div style="background:#EAF1F8;padding:24px 28px;border-radius:16px;display:flex;flex-direction:row;gap:24px;align-items:center"><img src="assets/822a22bae8ecbd4ffcddd4523aff8dd4.png" alt="Bodies moving over a fixed background mesh" style="width:300px;height:81px;object-fit:contain"><div style="display:flex;flex-direction:column;gap:8px;flex:1"><h3 style="font-size:34px;font-weight:700;color:#00509A">Moving interfaces</h3><p style="font-size:28px;line-height:1.35">Bubbles, drops, multi-phase flows, contact between bodies</p></div></div><div style="background:#EAF1F8;padding:24px 28px;border-radius:16px;display:flex;flex-direction:row;gap:24px;align-items:center"><img src="assets/0e10ec020400ab0c1f8097e8bcdbd2c2.png" alt="Six wing designs on one background grid" style="width:300px;height:169px;object-fit:contain"><div style="display:flex;flex-direction:column;gap:8px;flex:1"><h3 style="font-size:34px;font-weight:700;color:#00509A">Shape and topology optimisation</h3><p style="font-size:28px;line-height:1.35">The shape changes at every iteration on the same background mesh</p></div></div></div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">49</p>
+
+</section>
+</div><div class='note'>Three minutes. Where the method is used. The pictures are figures from this lecture and from the JSO 2026 talk: lattices (cut mesh of a lattice), moving bodies (illustration made for this lecture) and six wing designs on one grid. The additive manufacturing card has no picture yet: replace the icon with an image from your own talks. Candidates: laser ablation and additive manufacturing slides in INRIA_CutFEM.pptx (slides 57 to 67) and CutFEM_ALM.pptx, the multi-phase viscoelastic flows (slides 30 to 37), contact and braided composite (slides 39 to 49), and the lattice and compliance-optimisation demos in python/demo.</div></div>
+<div class='wrap'><h4>50. Limits and open questions</h4><div class='frame'><section id="limits" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Limits and open questions</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+<div style="display:flex;flex-direction:column;gap:12px;background:#F1F1F1;padding:32px;border-radius:16px">
+<h3 style="font-size:45px;font-weight:700;color:#3B3B3B">Geometry accuracy</h3>
+<p style="font-size:38px;line-height:1.35">Curved, high-order cuts are harder than linear ones</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#F1F1F1;padding:32px;border-radius:16px">
+<h3 style="font-size:45px;font-weight:700;color:#3B3B3B">Stability</h3>
+<p style="font-size:38px;line-height:1.35">Accuracy and conditioning independent of the cut, with few parameters</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#F1F1F1;padding:32px;border-radius:16px">
+<h3 style="font-size:45px;font-weight:700;color:#3B3B3B">Several level sets</h3>
+<p style="font-size:38px;line-height:1.35">Multi-material domains need rules for every combination of signs</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#F1F1F1;padding:32px;border-radius:16px">
+<h3 style="font-size:45px;font-weight:700;color:#3B3B3B">Cost at scale</h3>
+<p style="font-size:38px;line-height:1.35">Quadrature generation and parallel load balance in 3D</p>
+</div>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">50</p>
+
+</section>
+</div><div class='note'>Two minutes. Be honest about limits; this is also the research agenda at ONERA (cut-cell construction and quadrature generation, bad-cut repair, parallel runs). Good place to invite questions from curious students.</div></div>
+<div class='wrap'><h4>51. Key ideas</h4><div class='frame'><section id="keyideas" data-transition="fade" style="background:#00509A;color:#FFFFFF;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#FFFFFF">Key ideas</h2>
+<div style="display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;align-items:center;gap:28px;background:#0B3E75;padding:20px 32px;border-radius:14px">
+<div style="width:56px;height:56px;border-radius:50%;background:#FFFFFF;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#00509A">1</p></div>
+<p style="font-size:34px;line-height:1.3;flex:1">Describe Ω implicitly with a level set φ (formula, CAD/STL or image) and mesh a simple box</p>
+</div>
+<div style="display:flex;align-items:center;gap:28px;background:#0B3E75;padding:20px 32px;border-radius:14px">
+<div style="width:56px;height:56px;border-radius:50%;background:#FFFFFF;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#00509A">2</p></div>
+<p style="font-size:34px;line-height:1.3;flex:1">Only cut cells need new work: integrate on T ∩ Ω and Γ ∩ T</p>
+</div>
+<div style="display:flex;align-items:center;gap:28px;background:#0B3E75;padding:20px 32px;border-radius:14px">
+<div style="width:56px;height:56px;border-radius:50%;background:#FFFFFF;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#00509A">3</p></div>
+<p style="font-size:34px;line-height:1.3;flex:1">Impose Dirichlet conditions weakly with Nitsche’s method</p>
+</div>
+<div style="display:flex;align-items:center;gap:28px;background:#0B3E75;padding:20px 32px;border-radius:14px">
+<div style="width:56px;height:56px;border-radius:50%;background:#FFFFFF;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#00509A">4</p></div>
+<p style="font-size:34px;line-height:1.3;flex:1">Small cuts make κ jump by orders of magnitude: stabilise with ghost penalty or aggregation</p>
+</div>
+<div style="display:flex;align-items:center;gap:28px;background:#0B3E75;padding:20px 32px;border-radius:14px">
+<div style="width:56px;height:56px;border-radius:50%;background:#FFFFFF;display:flex;align-items:center;justify-content:center"><p style="font-size:30px;font-weight:700;color:#00509A">5</p></div>
+<p style="font-size:34px;line-height:1.3;flex:1">It is still the Galerkin method, with the convergence rates of the week</p>
+</div>
+</div>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#A9C8E8">51</p>
+
+</section>
+</div><div class='note'>Three minutes. Read the five lines aloud, then ask one student to restate one in their own words. Close the loop with slide 4: three of the six steps changed, plus one new stabilisation step.</div></div>
+<div class='wrap'><h4>52. questions</h4><div class='frame'><section id="questions" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif">
+<h1 style="position:absolute;left:128px;top:360px;width:1664px;font-size:120px;font-weight:700;line-height:1.1;color:#00509A">Questions?</h1>
+<p style="position:absolute;left:128px;top:600px;width:1664px;font-size:34px;line-height:1.4;color:#3B3B3B">Susanne CLAUS · ONERA</p>
+<p style="position:absolute;left:128px;top:660px;width:1664px;font-size:30px;line-height:1.4;color:#6E6E6E">DTIS/MACI, ONERA, Palaiseau, France</p>
+<p style="position:absolute;left:128px;top:710px;width:1664px;font-size:30px;line-height:1.4;color:#6E6E6E">Lecture code: minicut and the notebook (cutfem-lecture)</p>
+
+</section>
+</div><div class='note'>Three minutes for questions; the buffer in the schedule. If time is left over, go back to the demo and change one parameter live.</div></div>
+<div class='wrap'><h4>53. Further reading</h4><div class='frame'><section id="references" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Further reading</h2>
+<ul style="font-size:28px;line-height:1.4">
+<li>Nitsche (1971), Abh. Math. Sem. Univ. Hamburg 36: the weak imposition of boundary conditions</li>
+<li>Hansbo and Hansbo (2002), An unfitted finite element method, based on Nitsche’s method, for elliptic interface problems, CMAME 191</li>
+<li>Burman (2010), Ghost penalty, C. R. Math. Acad. Sci. Paris 348</li>
+<li>Burman, Claus, Hansbo, Larson, Massing (2015), CutFEM: discretizing geometry and partial differential equations, IJNME 104</li>
+<li>Badia, Verdugo, Martín (2018), The aggregated unfitted finite element method for elliptic problems, CMAME 336</li>
+<li>Saye (2015), High-order quadrature methods for implicitly defined surfaces and volumes in hyperrectangles, SIAM J. Sci. Comput. 37(2)</li>
+</ul>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">53</p>
+
+</section>
+</div><div class='note'>Backup slide for the students. Verify the bibliographic details before distributing the deck.</div></div>

@@ -1,0 +1,151 @@
+<section id="recap" data-transition="fade" style="display:flex; flex-direction:column; gap:14px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">The Finite Element algorithm: where geometry enters</h2>
+  <p style="font-family:Arial, sans-serif; font-size:28px; font-weight:700; color:#00509a">Classical FEM: the mesh fits Ω</p>
+  <div style="display:grid; grid-template-columns:1fr 40px 1fr 40px 1fr 40px 1fr 40px 1fr 40px 1fr">
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#fdebd8; border:3px solid #b34f00; border-radius:16px">
+      <img src="/_blob/aa346aeaee83a52b5d4f523bedd9c367" alt="Triangular mesh fitted to a flower-shaped domain" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Geometry is meshed</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">1</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#eaf1f8; border:3px solid #eaf1f8; border-radius:16px">
+      <img src="/_blob/a82296bc8e76d15a89392b581034ebcd" alt="Reference triangles with P1 nodes (3) and P2 nodes (6)" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Choose elements: P1, P2</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">2</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#fdebd8; border:3px solid #b34f00; border-radius:16px">
+      <img src="/_blob/62928db44ea1a7a18b28f524e0fd6a32" alt="One triangle with three Gauss points and its 3 by 3 block added into the global matrix" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Quadrature rules, assemble K, F</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">3</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#fdebd8; border:3px solid #b34f00; border-radius:16px">
+      <img src="/_blob/06ddeb7cedd3cb5b5726446bcd51c5c9" alt="Fitted mesh with the boundary nodes marked where the Dirichlet values are fixed" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Fix the boundary nodes</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">4</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#eaf1f8; border:3px solid #eaf1f8; border-radius:16px">
+      <img src="/_blob/0f62c8eea750eec7ffc6cc063b040ca2" alt="Sparsity pattern of the stiffness matrix" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Solve K U = F</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">5</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#eaf1f8; border:3px solid #eaf1f8; border-radius:16px">
+      <img src="/_blob/82f94ab0388a76cab7ab17b1856745c6" alt="Finite element solution on the fitted mesh" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Solution uh</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">6</p>
+      </div>
+    </div>
+  </div>
+  <p style="font-family:Arial, sans-serif; font-size:28px; font-weight:700; color:#b34f00">Cut FEM: background mesh + level set function</p>
+  <div style="display:grid; grid-template-columns:1fr 40px 1fr 40px 1fr 40px 1fr 40px 1fr 40px 1fr">
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#fdebd8; border:3px solid #b34f00; border-radius:16px">
+      <img src="/_blob/e9f513a57b13609385422c55d89d917c" alt="Background mesh with the level set; cut cells in orange" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Background mesh + level set φ</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">1</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#eaf1f8; border:3px solid #eaf1f8; border-radius:16px">
+      <img src="/_blob/52254dbe8a9f62beaa07cedbbae2d2fa" alt="The same elements on the active mesh, degrees of freedom of active cells" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Same elements, active mesh</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">2</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#fdebd8; border:3px solid #b34f00; border-radius:16px">
+      <img src="/_blob/d85992284dc8d4553645380d09841723" alt="Quadrature points inside the cut cells and on the interface" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Quadrature on Ω∩T and Γ∩T</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">3</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#fdebd8; border:3px solid #b34f00; border-radius:16px">
+      <img src="/_blob/d764e04766558caf7d0d7ec8245ad501" alt="Ghost penalty facets in red and interface normals" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Nitsche + ghost penalty</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">4</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#eaf1f8; border:3px solid #eaf1f8; border-radius:16px">
+      <img src="/_blob/49148ffc00b7b2f268a4f7fb6ead2d10" alt="Sparsity pattern of the cut FEM matrix" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Solve K U = F</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">5</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:row; align-items:center; justify-content:center">
+      <p style="font-family:Arial, sans-serif; font-size:36px; color:#6e6e6e">→</p>
+    </div>
+    <div style="position:relative; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:stretch; justify-self:stretch; padding:12px 10px 10px; background:#eaf1f8; border:3px solid #eaf1f8; border-radius:16px">
+      <img src="/_blob/aeae2c637d3a98fc59b79a3be69e1a4b" alt="Cut FEM solution on the domain" style="width:212px; height:170px; background:#ffffff; border-radius:8px; object-fit:contain">
+      <div style="display:flex; flex-direction:row; align-items:center; justify-content:center; min-height:58px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; line-height:1.2; text-align:center; color:#3b3b3b">Solution uh on Ω</p>
+      </div>
+      <div style="position:absolute; top:0; left:0; width:42px; height:42px; display:flex; flex-direction:row; align-items:center; justify-content:center; background:#00509a; border-radius:256px">
+        <p style="font-family:Arial, sans-serif; font-size:24px; font-weight:700; text-align:center; color:#ffffff">6</p>
+      </div>
+    </div>
+  </div>
+  <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.3; color:#3b3b3b">The <span style="color:#b34f00"><b>orange steps</b></span> use the shape of Ω. Cut FEM replaces exactly these three; the linear algebra stays the same.</p>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">4</p>
+  <aside>Three minutes. Top row: the classical six-step algorithm from the end of lecture 2, one picture per step: a mesh that fits the boundary, the element type, Gauss rules on whole triangles and assembly of K and F, fixing the values at the boundary nodes, the sparse solve, and the reconstruction of u_h. Ask the room: which of these steps use the geometry? Answer: the orange ones, 1, 3 and 4. Bottom row: the same pipeline for a cut FEM. The mesh no longer fits, only a level set tells us where the boundary is. The integrals run over the cut pieces Ω∩T and Γ∩T. The boundary condition is imposed weakly with Nitsche, and the ghost penalty keeps the system stable. Steps 2, 5 and 6 keep their form: the same elements on the active mesh, the same sparse solve, the same reconstruction. We build each orange step in turn.</aside>
+</section>

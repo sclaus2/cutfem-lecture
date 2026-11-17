@@ -1,0 +1,10 @@
+<section id="convergence" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Example 1 · Convergence: the rates of the fitted mesh</h2>
+<div style="display:flex;flex-direction:column;gap:16px;align-items:center">
+<img src="/_blob/ff4102144b35760b9e5382af0794ab27" alt="Two log-log plots of the error against h for the cut Poisson problem on the flower. L2 error slope about 2 and H1 seminorm slope about 1 with no stabilisation, ghost penalty and aggregation." style="width:1500px;height:606px;object-fit:contain">
+<p style="font-size:28px;line-height:1.35;color:#6E6E6E">P1 elements on the flower, manufactured solution u = sin πx · sin πy, h = 0.2 … 0.0125: L² slope ≈ 2, H¹ seminorm slope ≈ 1, with or without stabilisation</p>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">39</p>
+<aside>Three minutes. Recall lecture 3: for P1 the error in L2 decreases like h squared and the H1 seminorm error like h. Here the flower of Example 1 is solved with a manufactured solution, u = sin(pi x) sin(pi y) with f and g taken from it, Nitsche gamma = 40, on meshes of 10, 20, 40, 80 and 160 squares per side. The measured L2 slopes are 1.93 (no stabilisation), 2.02 (ghost penalty) and 1.95 (aggregation); the H1 slopes are 0.99, 1.00 and 1.00. The same as on a fitted mesh. So the geometry is no longer paid for in accuracy. The stabilisation changes the conditioning (previous block) but not the rates. Computed with minicut (tools/lecture_figures.py); students reproduce it in the notebook.</aside>
+</section>

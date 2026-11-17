@@ -1,0 +1,24 @@
+<section id="cond-setup" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">The numerical experiment</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<div style="background:#EAF1F8;padding:24px 32px;border-radius:16px;display:flex;flex-direction:column;gap:16px">
+<img src="/_blob/7c16125c81f17615e9bcd38eaba4c32a" alt="Minus Laplacian of u equals f in Omega, and u equals g on Gamma" style="width:533px;height:35px;object-fit:contain">
+<img src="/_blob/853b165615bdba70cb9b99d8e1f15695" alt="The exact solution is u ex equals sine of pi x times sine of pi y, with f equal to 2 pi squared u ex and g equal to u ex on Gamma" style="width:883px;height:48px;object-fit:contain">
+</div>
+<ul style="font-size:26px;line-height:1.4">
+<li>Poisson problem on a disc Ω with a known solution, so the error can be measured</li>
+<li>P1 elements on a 20 × 20 triangle mesh of [−1, 1]²; the disc centre (0.037, −0.021) is off the grid, so cuts never line up with the mesh</li>
+<li>Nitsche with γ = 40, and a ghost penalty with γg = 0.1 when we stabilise</li>
+<li>Sweep: 81 radii from r = 0.50 to 0.60, one cell width in total. For each radius: assemble, compute the eigenvalues, κ, the error and the GMRES iterations</li>
+</ul>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;align-items:center;width:600px">
+<img src="/_blob/00d324bfb924b79883402b698f9d3851" alt="The 20 by 20 background mesh of the square from minus 1 to 1 with the disc: cells inside in blue, cut cells in orange, the boundary Gamma as a solid circle and two dashed circles for the smallest and largest radius of the sweep" style="width:600px;height:617px;object-fit:contain">
+<p style="font-size:24px;color:#6E6E6E;width:600px">Blue: cells inside Ω. Orange: cut cells. Active mesh = blue + orange.</p>
+</div>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">30</p>
+<aside>Two minutes. Set up the experiment before showing the results. The problem is the Poisson problem from the Nitsche slides: minus Laplacian u = f in Omega, u = g on Gamma, with u exact = sin(pi x) sin(pi y), f = 2 pi squared u exact and g the trace of the exact solution, so the L2 error is computable. Omega is a disc inside the box [-1,1]^2, meshed with 20 by 20 squares each split into two triangles, so h = 0.1 (the box is a few cells larger than the disc on every side; outside cells are never assembled). The centre is slightly off the grid so that the cut pattern is generic. The solid circle is the boundary at r = 0.545, the dashed circles are r = 0.50 and r = 0.60, the two ends of the sweep: the boundary moves by exactly one cell width. For each of the 81 radii we assemble the Nitsche system, with and without the ghost penalty, and compute the eigenvalues of the dense matrix on the active DOFs, the condition number, the L2 error, and the number of GMRES iterations. Figure and data are computed with minicut (tools/cond_sweep.py in the repository); the same sweep is section 7 of the notebook.</aside>
+</section>

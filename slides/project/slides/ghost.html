@@ -1,0 +1,20 @@
+<section id="ghost" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Ghost penalty: control from the neighbours</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:28px">
+<div style="background:#EAF1F8;padding:24px 32px;border-radius:16px">
+<img src="/_blob/ae898f839d5a2c0181acadfac61bffac" alt="j of u and v equals the sum over facets F of gamma g times h times the integral over F of the jump of grad u dot n times the jump of grad v dot n" style="width:597px;height:92px;object-fit:contain">
+</div>
+<ul style="font-size:30px;line-height:1.4">
+<li>Sum over the facets F of cut cells (red); [·] is the jump across F</li>
+<li>It ties the values on a sliver cell to the neighbouring cell, so control extends to the whole cell</li>
+<li>Consistent: the jump vanishes for a smooth solution, so the accuracy is kept</li>
+<li>γg is a dimensionless constant, independent of how the cut falls</li>
+</ul>
+</div>
+<img src="/_blob/f6e39b1be9c2fe8a184ba313db3fec81" alt="Ghost penalty facets drawn in red around the cells cut by the flower-shaped boundary" style="width:640px;height:672px;object-fit:contain">
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">34</p>
+<aside>Three minutes. Intuition first (one-dimensional picture on the previous slide): a P1 function on a sliver is determined by its values at three vertices, but we only see a sliver of it. The ghost penalty forces the polynomial on the sliver cell to be close to the polynomial of its neighbour across each facet, so the sliver inherits control from a cell that is well inside. It also restores the coercivity of the Nitsche form independently of the cut position, which is why gamma can be chosen once. For P1 only the jump of the normal derivative is penalised; for higher degree, higher derivative jumps are needed. In minicut: mc.ghost_penalty(geom, gamma_g=0.1), one term on the facets geom.ghost_facets. Original reference: Burman 2010.</aside>
+</section>

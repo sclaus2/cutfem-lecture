@@ -1,0 +1,25 @@
+<section id="aggregation" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Cell aggregation: remove the unstable DOFs</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:26px">
+<ul style="font-size:28px;line-height:1.4">
+<li>Flag the ill-posed cut cells: the fraction |T ∩ Ω| / |T| is below a threshold (0.25 here)</li>
+<li>Attach each one to a well-cut root cell nearby: they form an aggregate</li>
+<li>On an aggregate the function is the polynomial of the root cell, so the DOFs of the sliver cells disappear</li>
+<li>Nothing is added to the form, and the system has fewer unknowns</li>
+</ul>
+<div style="background:#EAF1F8;padding:24px 28px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:32px;font-weight:700;color:#00509A">Ghost penalty or aggregation?</h3>
+<p style="font-size:26px;line-height:1.35">Ghost penalty adds a term and keeps all DOFs. Aggregation changes the space and removes DOFs. Both restore a well-conditioned system: over the sweep κ stays between 1.2·10² and 2.2·10², and the matrix stays positive definite.</p>
+</div>
+<p style="font-size:26px;color:#6E6E6E">Badia, Verdugo, Martín, 2018</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+<img src="/_blob/1ffc7b77cc7ddd9b9bb507483f5b2c1c" alt="Cell aggregation on a 12 by 12 mesh with a circular boundary: ill-posed cut cells in orange, root cells in blue, aggregates outlined in thick lines" style="width:600px;height:600px;object-fit:contain">
+<p style="font-size:24px;color:#6E6E6E;width:600px">Orange: ill-posed cells, blue: root cells, thick outline: aggregate. 12×12 mesh, disc of radius 0.6: 18 ill-posed cells among 48 cut cells, 7 dofs removed.</p>
+</div>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">35</p>
+<aside>Three minutes. Aggregation is the second repair. We detect the cut cells whose domain fraction is below a threshold, here 0.25, and attach each of them to a well-cut root cell nearby, through the facets of the active mesh; the group is an aggregate. On an aggregate the finite element function is the polynomial of the root cell, extended over the whole aggregate, so the DOFs on the sliver cells are no longer independent unknowns: a dof that touches no well-cut cell is removed and its value is the root polynomial evaluated at it. In matrix form u = E u_good, where E has one column per remaining dof, and the reduced system is E^T A E u_good = E^T b. Nothing is added to the weak form, the matrix is smaller, and the sliver is controlled by construction. In minicut: mc.aggregate(geom, threshold) and mc.solve_aggregated. The figure is made on a coarse 12 by 12 mesh so the cells are visible: orange cells are ill-posed (18 of 48 cut cells), blue are their root cells, thick lines outline the aggregates; 7 dofs are removed. On the 20 by 20 sweep 8 to 15 dofs are removed and kappa is between 121 and 220. Reference: Badia, Verdugo, Martin, Computer Methods in Applied Mechanics and Engineering, 2018.</aside>
+</section>
