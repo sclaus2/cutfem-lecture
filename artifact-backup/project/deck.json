@@ -1,0 +1,112 @@
+{
+  "v": 4,
+  "attachments": {},
+  "createdOnFiles": {
+    "at": "2026-11-01T17:00:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "faces": {},
+  "lists": "css",
+  "order": [
+    "cover",
+    "plan",
+    "meshed-vs-levelset",
+    "mot-images",
+    "three-examples",
+    "install-minicut",
+    "first-cut",
+    "recap",
+    "levelset",
+    "ps-1",
+    "classify",
+    "activemesh",
+    "ps-2",
+    "cut-cell",
+    "quad-rules",
+    "ps-3",
+    "bc-options",
+    "lag-1",
+    "lag-2",
+    "nitsche-derive",
+    "ps-4",
+    "assemble-active",
+    "bad-cut",
+    "cond-what",
+    "cond-setup",
+    "cond-sweep",
+    "small-cuts",
+    "cond-modes",
+    "penalty",
+    "ghost-1d",
+    "ghost",
+    "aggregation",
+    "agg-impl",
+    "agg-reference",
+    "agg-example",
+    "cond-cost",
+    "agg-summary",
+    "ps-stab",
+    "ps-5",
+    "convergence",
+    "img2ls-1",
+    "img2ls-2",
+    "ex1-solve",
+    "csg",
+    "ex2-build",
+    "ex2-turn",
+    "ex2-opt",
+    "mot-designs",
+    "try-it",
+    "applications",
+    "limits",
+    "keyideas",
+    "questions",
+    "references"
+  ],
+  "sections": {
+    "boundary": {
+      "description": "Step 4: impose Dirichlet conditions on the cut boundary: Lagrange multipliers and Nitsche's method.",
+      "start": "bc-options"
+    },
+    "close": {
+      "description": "Try it, applications, open questions, key ideas and references.",
+      "start": "try-it"
+    },
+    "conditioning": {
+      "description": "Step 5: assemble over the active cells, small cuts give small entries, what the condition number is, the experiment, and κ ~ 1/η.",
+      "start": "assemble-active"
+    },
+    "flower": {
+      "before": null,
+      "description": "Example 1: Poisson on a flower, step by step: the algorithm and the goal.",
+      "start": "recap"
+    },
+    "geometry": {
+      "description": "Steps 1 and 2: describe the domain with a level set and classify the cells of the background mesh.",
+      "start": "levelset"
+    },
+    "image": {
+      "description": "Example 2: a porous specimen from an image, solved in the solid matrix.",
+      "start": "img2ls-1"
+    },
+    "integration": {
+      "before": null,
+      "description": "Step 3: integrate over the cut cells with quadrature rules on the pieces.",
+      "start": "cut-cell"
+    },
+    "remedy": {
+      "description": "Ghost penalty and aggregation repair the conditioning; the code; solve and convergence.",
+      "start": "ghost-1d"
+    },
+    "rotor": {
+      "description": "Example 3: a rotor built from level sets with min and max, turned and tuned.",
+      "start": "csg"
+    },
+    "why": {
+      "description": "Fitted meshes become the bottleneck, so we mesh a box and cut the geometry out of it; the three examples.",
+      "start": "cover"
+    }
+  },
+  "title": "Cut Finite Element Methods Lecture"
+}

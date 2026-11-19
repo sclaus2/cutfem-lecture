@@ -1,0 +1,23 @@
+<section id="mot-images" data-transition="fade" style="display:flex; flex-direction:column; gap:40px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Meshing challenges</h2>
+  <div style="display:flex; flex-direction:row; gap:52px; align-items:start">
+    <div style="width:520px; display:flex; flex-direction:column; gap:14px; flex:0 0 auto">
+      <img src="/_blob/a398f991df1e6ee9d6c573cf03efd14b" alt="Greyscale image of a porous material: bright material with dark pores of irregular shape" style="width:520px; height:520px; object-fit:contain">
+      <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">Scans and images</h3>
+      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b">Pores, cracks and phases from CT or microscopy: the geometry is described in pixels.</p>
+    </div>
+    <div style="width:520px; display:flex; flex-direction:column; gap:14px; flex:0 0 auto">
+      <img src="/_blob/9f99e2a3fc9f6357ad5b2fcec3317d26" alt="Animation: two bubbles approach and merge on a fixed triangular background mesh; the boundary is drawn in blue, the cut cells in orange follow it" style="width:520px; height:520px; object-fit:contain">
+      <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">Moving geometry</h3>
+      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b">the shape and topology changes, merges or splits, a fitted mesh has to be rebuilt each time</p>
+    </div>
+    <div style="width:520px; display:flex; flex-direction:column; gap:14px; flex:0 0 auto">
+      <img src="/_blob/8de17a3467946569df17b40a9d2979e3" alt="Cluster of 27 blue spheres arranged in a cube" style="width:520px; height:520px; object-fit:contain">
+      <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">Implicit shapes</h3>
+      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b">Unions, blends and offsets of simple primitives: easy to describe, hard to mesh</p>
+    </div>
+  </div>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">4</p>
+  <aside>Four minutes. Start from the question, not from the method: what if my geometry is a scan, a shape that moves and changes topology, or a shape produced by an optimiser? Left: an image generated for this lecture, similar to a micro-CT slice of a porous material: light solid matrix, dark pores (synthetic, not a real scan). Middle: an animation made for this lecture (two bubbles merging, described by a level set): the background mesh never changes, only the cut cells in orange follow the boundary. With a fitted mesh the two bubbles would need a remesh at every step, and the merge itself is a change of topology. Right: a cluster of spheres built from implicit primitives, also from that talk. Ask the students how they would mesh the left image with the methods of this week: every pore needs its own boundary, and the mesh must follow it. We will solve in the solid matrix, with the pores empty.</aside>
+</section>

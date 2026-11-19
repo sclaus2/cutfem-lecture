@@ -1,0 +1,12 @@
+<section id="cond-cost" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:24px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">What it costs the solver</h2>
+<div style="display:flex;flex-direction:column;gap:20px;align-items:center">
+<img src="/_blob/65a0ee74bfd1cae44d294a2202811514" alt="Left: GMRES iterations against disc radius. Without stabilisation 102 to 150, with ghost penalty 61 to 77, with aggregation 51 to 66, and 34 to 48 for all three with diagonal scaling. Right: condition number after diagonal scaling, up to 101 without stabilisation and below 52 with ghost penalty or aggregation." style="width:1300px;height:555px;object-fit:contain">
+</div>
+<div style="background:#EAF1F8;padding:20px 32px;border-radius:16px">
+<p style="font-size:28px;line-height:1.4">Both repairs cut the GMRES iterations from 102–150 to 61–77 (ghost penalty) and 51–66 (aggregation). A diagonal scaling brings all three to 34–48, but only the repairs keep κ below 52 and the matrix positive definite.</p>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">35</p>
+<aside>Two minutes. Link to lecture 3: the cost of the solve. The same 81 positions. Left: GMRES iterations to reduce the residual by 1e-8, with no preconditioner (solid) or with a diagonal (Jacobi) scaling (dashed). Without stabilisation 102 to 150 iterations, with ghost penalty 61 to 77, with aggregation 51 to 66. A simple diagonal scaling already removes most of the problem for all three, 34 to 48 iterations: it equilibrates the tiny rows of the sliver cells. Right: the condition number after scaling. With ghost penalty or aggregation it is between 37 and 52 for every position. Without stabilisation it is mostly small too, but it reaches 101 in the worst case, and the matrix is still indefinite for 55 of the 81 positions. Take-away: cheap preconditioning helps the solver, but the stabilisation is what makes the problem well posed. A direct solver is affected by the same near-singularity through the pivots. Dense eigenvalue and GMRES computations on the active DOFs with minicut (mc.gmres_iterations, mc.condition_number); no preconditioner other than the diagonal scaling was tested.</aside>
+</section>

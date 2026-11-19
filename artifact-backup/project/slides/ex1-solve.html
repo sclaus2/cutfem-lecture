@@ -1,0 +1,31 @@
+<section id="ex1-solve" data-transition="fade" style="display:flex; flex-direction:column; gap:36px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Example 2 · Solve in the matrix, check</h2>
+  <div style="display:flex; flex-direction:row; gap:36px; align-items:flex-start">
+    <div style="width:500px; display:flex; flex-direction:column; gap:10px; flex:0 0 auto">
+      <img src="/_blob/41fcdee78e103ba13c077860925600bb" alt="Background triangle mesh with the solid matrix of the porous specimen: cells inside in blue, cut cells in orange, inactive cells in white, the boundary of the matrix, pores and outer edge, in dark orange" style="width:500px; height:500px; object-fit:contain; flex:0 0 auto">
+      <p style="width:500px; font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">Cells of the 40 × 40 background mesh: blue inside the matrix, orange cut, white inactive; the pores are empty</p>
+    </div>
+    <div style="width:500px; display:flex; flex-direction:column; gap:10px; flex:0 0 auto">
+      <img src="/_blob/9d7ef1b2520322753500a641abb20ffd" alt="Computed solution in the solid matrix of the porous specimen; the pores are holes" style="width:500px; height:500px; object-fit:contain; flex:0 0 auto">
+      <p style="width:500px; font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">u<sub>h</sub> in the matrix; the black line is Γ, around every pore and along the specimen edge</p>
+    </div>
+    <div style="width:592px; display:flex; flex-direction:column; gap:22px; flex:0 0 auto">
+      <div style="background:#eaf1f8; border-radius:16px; padding:22px 28px; display:flex; flex-direction:column; gap:10px">
+        <p style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#00509a">Check against a known solution</p>
+        <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">u = sin 2πx · sin 2πy, f = −Δu, u = g on Γ</p>
+        <table style="font-family:Arial, sans-serif; font-size:26px; color:#3b3b3b; width:100%">
+          <tr><th style="color:#00509a">n</th><th style="color:#00509a">cut cells</th><th style="color:#00509a">‖u − u<sub>h</sub>‖<sub>L²</sub></th><th style="color:#00509a">rate</th></tr>
+          <tr><td>20</td><td>358</td><td>4.54·10<sup>-3</sup></td><td>–</td></tr><tr><td>40</td><td>768</td><td>1.27·10<sup>-3</sup></td><td>1.84</td></tr><tr><td>80</td><td>1556</td><td>3.41·10<sup>-4</sup></td><td>1.90</td></tr>
+        </table>
+        <p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">Rate approaching two as the mesh resolves the pores</p>
+      </div>
+      <div style="background:#fdebd8; border-radius:16px; padding:22px 28px; display:flex; flex-direction:column; gap:8px">
+        <p style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#b34f00">Why the ghost penalty</p>
+        <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">Condition number at n = 40: 5.6·10<sup>7</sup> without it, with 16 negative eigenvalues; 331 with it.</p>
+      </div>
+    </div>
+  </div>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">41</p>
+  <aside>Three minutes. Same level set as the previous slides (the synthetic scan thresholded at 0.5), now taken all the way to a solution with minicut (P1, Nitsche with γ = 40, ghost penalty with γg = 0.1). The domain is the solid matrix: a disc of material with the pores cut out, so Γ is the outer edge and the boundary of every pore, and the pores are empty. Left: the classification of the 40 by 40 mesh, 768 cut cells. Middle: the solution of a manufactured problem, u = sin(2πx) sin(2πy) imposed on every boundary, pores included; a few small isolated pieces of matrix are separate components, which is fine for a Dirichlet problem. Right: the check. Error ratios 1.84 from n = 20 to 40 and 1.90 from 40 to 80: the rate approaches two as the mesh resolves the thin features and the pores (at n = 20 several features are thinner than a cell). No mesh was built for this geometry. The orange box is the link to the previous section: without the ghost penalty the condition number at n = 40 is 6·10⁷ and the matrix is indefinite (16 negative eigenvalues); with it, 331. Honest remark if asked: the error without ghost penalty is not larger (1.1e-3 against 1.3e-3 here); the ghost penalty repairs the matrix, not the accuracy. Variants: insulated pores need no boundary term at all (Neumann is natural), and pores filled with a second material make an interface problem. Numbers: tools/image_example.py.</aside>
+</section>

@@ -1,0 +1,23 @@
+<section id="meshed-vs-levelset" data-transition="fade" style="display:flex; flex-direction:column; gap:40px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Different ways to describe a geometry</h2>
+  <div style="display:flex; flex-direction:row; gap:52px; align-items:start">
+    <div style="width:520px; display:flex; flex-direction:column; gap:14px; flex:0 0 auto">
+      <img src="/_blob/aa346aeaee83a52b5d4f523bedd9c367" alt="Triangular mesh fitted to a flower-shaped domain: the mesh edges follow the boundary" style="width:520px; height:417px; background:#ffffff; border:3px solid #eaf1f8; border-radius:12px; object-fit:contain">
+      <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#b34f00">Meshed geometry</h3>
+      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b">The boundary is made of mesh edges: the mesh follows the shape. A new shape means a new mesh.</p>
+    </div>
+    <div style="width:520px; display:flex; flex-direction:column; gap:14px; flex:0 0 auto">
+      <img src="/_blob/1b168c1ca7567c6003fdaa9ac1bad6a1" alt="Colour map of a level set function: negative inside the flower, positive outside, zero on its boundary" style="width:520px; height:417px; background:#ffffff; border:3px solid #eaf1f8; border-radius:12px; object-fit:contain">
+      <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">Level set function φ</h3>
+      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b">A function φ(x) with a sign: φ &lt; 0 inside Ω, φ &gt; 0 outside, φ = 0 on the boundary Γ. A disc of radius R:</p><img src="/_blob/a74ea3959d3e6e4b2916b7a9b46567ff" alt="phi of x equals the norm of x minus c, minus R" style="width:260px;height:40px;object-fit:contain;">
+    </div>
+    <div style="width:520px; display:flex; flex-direction:column; gap:14px; flex:0 0 auto">
+      <img src="/_blob/b37042f3e0dea8cb6d469c6e8acce536" alt="Plain triangular background mesh with the flower-shaped boundary drawn across it" style="width:520px; height:417px; background:#ffffff; border:3px solid #eaf1f8; border-radius:12px; object-fit:contain">
+      <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">Level set on a simple mesh</h3>
+      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b">The mesh is a plain grid that ignores Ω. The boundary cuts through cells, and φ tells us where.</p>
+    </div>
+  </div>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">3</p>
+  <aside>Two minutes, no hurry: this slide prepares the pipeline on the next one. Left: the way they know from this week. The mesh is built to fit Ω, so the boundary is a list of mesh edges, and a new shape needs a new mesh. Middle: the other way. A level set function φ is just a function of position with a sign: negative inside, positive outside, zero on the boundary. Ask: for a disc, what is φ? Answer: distance to the centre minus the radius. To test whether a point is inside, evaluate φ and look at its sign; no mesh is needed for that. Right: the level set lives on a simple mesh that knows nothing about Ω. The boundary now cuts through cells, and that is where all the new work of the lecture sits. Next slide: the whole finite element pipeline with a fitted mesh and with a level set.</aside>
+</section>

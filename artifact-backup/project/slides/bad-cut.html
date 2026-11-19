@@ -1,0 +1,31 @@
+<section id="bad-cut" data-transition="fade" style="display:flex; flex-direction:column; gap:24px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">A small cut gives small matrix entries</h2>
+  <div style="display:flex; flex-direction:row; gap:52px; align-items:start; justify-content:center">
+    <div style="width:520px; display:flex; flex-direction:column; gap:6px; flex:0 0 auto">
+      <img src="/_blob/0104adc81e7b52c050b14133b3bac246" alt="A triangle cut by the boundary: the part inside Omega in blue is about half of the triangle" style="width:280px; height:280px; object-fit:contain; align-self:center">
+      <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">A good cut</h3>
+      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.3; color:#3b3b3b">η = |T ∩ Ω| / |T| = 0.49: the entries are about half of the full ones</p>
+    </div>
+    <div style="width:520px; display:flex; flex-direction:column; gap:6px; flex:0 0 auto">
+      <img src="/_blob/e440c532d2a32a06e5721abd05646c5b" alt="The same triangle with the boundary close to the inside vertex: the part inside Omega in blue is a small corner" style="width:280px; height:280px; object-fit:contain; align-self:center">
+      <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">A small cut</h3>
+      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.3; color:#3b3b3b">η = 0.04: the entries are 25 times smaller</p>
+    </div>
+    <div style="width:520px; display:flex; flex-direction:column; gap:6px; flex:0 0 auto">
+      <img src="/_blob/8c5629b8f4313a5ecf186d7c1a02d38e" alt="The same triangle with the boundary almost at the inside vertex: the part inside Omega is a sliver too small to see" style="width:280px; height:280px; object-fit:contain; align-self:center">
+      <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#b34f00">A bad cut</h3>
+      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.3; color:#3b3b3b">η = 0.001: 1000 times smaller; the two vertices outside see Ω only through a sliver</p>
+    </div>
+  </div>
+  <div style="display:flex; flex-direction:row; gap:36px; align-items:center; padding:16px 28px; background:#eaf1f8; border-radius:16px">
+    <p style="font-family:Arial, sans-serif; font-size:30px; line-height:1.3; color:#3b3b3b; flex:1">For P1 the gradients are constant on T, so the entries on the cut cell are the full ones times η:</p>
+    <img src="/_blob/c6ae07a51f79d147c1a85d3490b2a1be" alt="Integral over T intersected with Omega of grad psi i dot grad psi j equals eta times K T i j, where eta is the measure of T intersected with Omega divided by the measure of T" style="width:718px; height:85px; object-fit:contain; flex:0 0 auto">
+  </div>
+  <p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">● vertex inside Ω, ○ vertex outside Ω. Blue: T ∩ Ω. Orange: the rest of the cut cell T. The boundary Γ is the dark orange line.</p>
+  <div style="display:flex; flex-direction:column; padding:14px 28px; background:#fdebd8; border-radius:16px">
+    <p style="font-family:Arial, sans-serif; font-size:30px; line-height:1.3; color:#3b3b3b"><b style="color:#b34f00">Tiny entries make the matrix nearly singular.</b> How bad is that? The condition number measures it.</p>
+  </div>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">23</p>
+  <aside>Two minutes. One triangle of the background mesh, cut by a straight boundary (a P1 level set) at three positions. Define eta = |T intersect Omega| / |T|, the fraction of the cell that lies in Omega. Left: eta = 0.49, the integral over T intersect Omega is about half of the integral over the whole cell. Middle: eta = 0.04, Omega is only a corner of the cell. Right: eta = 0.001, the part inside Omega is a sliver that you can hardly see: the filled vertex is inside, the two open vertices are outside Omega but are still unknowns of the active mesh, and they see Omega only through the sliver. The formula is exact for P1: the gradients of the hat functions are constant on a triangle, so the matrix entries over T intersect Omega are eta times the entries over the whole cell T. A DOF whose cells are all cut like this has a whole row of tiny entries, so the matrix is nearly singular. The boundary falls where the geometry puts it, nothing in the mesh prevents it, and a moving boundary goes through all these cases. How bad it is, is measured by the condition number, next slide.</aside>
+</section>

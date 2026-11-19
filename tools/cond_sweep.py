@@ -126,9 +126,9 @@ fig.subplots_adjust(0, 0, 1, 1)
 fig.savefig(out / "cond_setup.png"); plt.close(fig)
 
 # --- sweep: kappa and error, no stabilisation vs ghost penalty
-def sweep_fig(names, fname, size=(11, 4.69)):
+def sweep_fig(names, fname, size=(11, 4.69), stab_label="ghost penalty"):
     fig, ax = plt.subplots(1, 2, figsize=size, dpi=200)
-    style = {0: (ORANGE, "no stabilisation"), 1: (BLUE, "ghost penalty"), 2: (GREEN, "aggregation")}
+    style = {0: (ORANGE, "no stabilisation"), 1: (BLUE, stab_label), 2: (GREEN, "aggregation")}
     for i in names:
         c, lab = style[i]
         k, n, e = R[f"k{i}"], R[f"n{i}"], R[f"e{i}"]
@@ -153,7 +153,7 @@ def sweep_fig(names, fname, size=(11, 4.69)):
     fig.savefig(out / fname); plt.close(fig)
 
 
-sweep_fig([0, 1], "cond_sweep.png")
+sweep_fig([0, 1], "cond_sweep.png", stab_label="with stabilisation")
 sweep_fig([0, 1, 2], "cond_sweep3.png")
 
 # --- small cuts: kappa against eta
@@ -187,7 +187,7 @@ def mode_panel(ax, mode, ev, cmap, colour, name):
 th = np.linspace(0, 2 * np.pi, 400)
 fig, ax = plt.subplots(1, 2, figsize=(12.4, 5.62), dpi=200)
 mode_panel(ax[0], mode0, ev0, "Oranges", ORANGE, "No stabilisation")
-mode_panel(ax[1], mode1, ev1, "Blues", BLUE, "Ghost penalty")
+mode_panel(ax[1], mode1, ev1, "Blues", BLUE, "With stabilisation")
 fig.tight_layout(); fig.savefig(out / "cond_modes.png"); plt.close(fig)
 
 # --- solver cost

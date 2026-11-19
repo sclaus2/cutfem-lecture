@@ -1,0 +1,27 @@
+<section id="quad-rules" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Quadrature rules on the cut geometry</h2>
+<div style="display:flex;flex-direction:row;gap:48px;align-items:flex-start">
+<div style="width:616px;display:flex;flex-direction:column;gap:28px">
+<ul style="font-size:30px;line-height:1.4">
+<li>Split T ∩ Ω into simplices, using a look-up table on the signs of φ</li>
+<li>Put a Gauss rule on each piece and map the points to T</li>
+<li>The interface Γ ∩ T gets its own points, weights and normal n</li>
+</ul>
+<div style="background:#EAF1F8;padding:24px 32px;border-radius:16px;display:flex;flex-direction:column;gap:10px">
+<img src="/_blob/22dc61ffef44421ba683226fc669ec12" alt="Integral over T intersected with Omega of f dx is approximately the sum over q of w q times f of x q" style="width:408px;height:95px;object-fit:contain">
+<img src="/_blob/57ee8c605d65b43edf9672571523c47c" alt="Integral over Gamma intersected with T of g ds is approximately the sum over q of w hat q times g of x q" style="width:396px;height:95px;object-fit:contain">
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+<img src="/_blob/2bb2108c9b21f61b130773de18f17bcf" alt="Volume quadrature points inside the flower-shaped domain" style="width:480px;height:504px;object-fit:contain">
+<p style="font-size:26px;color:#6E6E6E">Volume points in Ω</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+<img src="/_blob/309bad6182d4328a939934be61235add" alt="Interface quadrature points along the flower-shaped boundary" style="width:480px;height:504px;object-fit:contain">
+<p style="font-size:26px;color:#6E6E6E">Interface points on Γ</p>
+</div>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">17</p>
+<aside>Five minutes. Key message: once the rules exist, assembly is unchanged. The element routine receives (point, weight) pairs and does not care where they come from, exactly like Gauss points in lecture 2. In minicut the rules are two objects, geom.volume and geom.interface, produced when the mesh is cut; they hold the points, the weights and, on Γ, the normals. Geometry accuracy: with linear cuts the boundary is approximated to O(h squared); higher-order cutting is possible (mention the ray-based and subdivision approaches from the JSO talk if time allows). Interface points carry the normal n = grad(phi)/|grad(phi)|, which the next block uses.</aside>
+</section>

@@ -1,0 +1,24 @@
+<section id="cond-sweep" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:28px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Slide the boundary by one cell width</h2>
+<div style="display:flex;flex-direction:row;gap:40px;align-items:flex-start">
+<div style="width:1100px;flex:none;display:flex;flex-direction:column;gap:12px">
+<img src="/_blob/ced8f2a8aaea582037f03c87079ce67b" alt="Left: condition number against disc radius from 0.50 to 0.60 on a log scale. Without stabilisation it jumps between 2e3 and 2e9 and crosses mark an indefinite matrix; with stabilisation it stays between 1e2 and 3e2. Right: L2 error against radius, between 6e-3 and 1e-2 for both." style="width:1100px;height:469px;object-fit:contain">
+<p style="font-size:24px;color:#6E6E6E">P1 on a 20×20 mesh of [−1,1]², disc of radius r, manufactured solution, Nitsche γ = 40, stabilisation strength 0.1. Crosses: matrix not positive definite.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<div style="background:#FDEBD8;padding:24px 28px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:32px;font-weight:700;color:#B34F00">No stabilisation</h3>
+<p style="font-size:26px;line-height:1.35">κ from 2·10³ to 2·10⁹. Matrix indefinite for 55 of 81 positions. L² error between 6.6·10⁻³ and 9.4·10⁻³.</p>
+<p style="font-size:24px;line-height:1.3;color:#6E6E6E"><b>Indefinite</b>: some eigenvalues are negative (the Poisson matrix should have only positive ones). κ uses |λ|, so it does not see the sign.</p>
+</div>
+<div style="background:#EAF1F8;padding:24px 28px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:32px;font-weight:700;color:#00509A">With stabilisation</h3>
+<p style="font-size:26px;line-height:1.35">κ between 1.3·10² and 2.9·10². Error between 7.2·10⁻³ and 1.0·10⁻².</p>
+</div>
+</div>
+</div>
+<p style="font-size:30px;line-height:1.35">Same mesh, same equation: only the boundary moved, by one cell width. The error hardly notices; the matrix does.</p>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">30</p>
+<aside>Three minutes. This is the experiment. One fixed 20 by 20 mesh, h = 0.1, and a disc whose radius changes from 0.50 to 0.60, so the boundary moves by one cell width in 81 steps. For each position we assemble the Nitsche system with and without the stabilisation. Left: the condition number. Without stabilisation it jumps over almost six orders of magnitude, from about 2e3 to 2e9, with no pattern in r. With the stabilisation it stays between 130 and 290. Crosses mark the 55 positions where the matrix has negative eigenvalues: it is indefinite, meaning it has positive and negative eigenvalues, whereas the Poisson matrix of a good discretisation is symmetric positive definite (all eigenvalues positive). The condition number is the ratio of the largest to the smallest eigenvalue in absolute value, so it does not see the sign: indefiniteness and the size of kappa are two different questions. Why does it happen? The Nitsche terms minus the integral over Gamma of (d_n u v + u d_n v) are not sign definite; the penalty gamma/h has to dominate them, which needs the boundary term of the gradient to be controlled by the energy on T intersect Omega. On a sliver the energy scales with eta but the boundary part does not, so the penalty is not large enough and a negative eigenvalue appears. A stabilisation restores this control (next block). Right: the L2 error. It is between 6.6e-3 and 9.4e-3 without stabilisation and between 7.2e-3 and 1.0e-2 with it: the accuracy hardly changes, the error is controlled by the mesh and not by the bad cuts (correlation of log kappa with log error: 0.25). Ask the students: so why do we care? The next slides show the mechanism, and the cost: the solver. Say honestly that for a direct solve on this size the damage stays invisible in the error; for iterative solvers, for larger problems, for eigenvalue problems or when the matrix is indefinite, it does not. Data computed with minicut (dense eigenvalue computation on the active DOFs).</aside>
+</section>

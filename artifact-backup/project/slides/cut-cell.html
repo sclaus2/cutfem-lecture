@@ -1,0 +1,28 @@
+<section id="cut-cell" data-transition="fade" style="display:flex; flex-direction:column; gap:24px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Cutting one cell: from signs to quadrature points</h2>
+  <div style="display:flex; flex-direction:column; gap:24px">
+    <img src="/_blob/166e2d5b6a54dfb2454ac25d3f8ec1c5" alt="Integral over T intersect Omega of f dx equals the sum over the sub-triangles K of T intersect Omega of the integral over K of f dx, approximately the sum over K and q of w q times f of x q; and the integral over Gamma intersect T of g ds is approximately the sum over q of w q times g of x q" style="width:1076px; height:95px; align-self:start; object-fit:contain">
+    <img src="/_blob/ce433e95aded851b4445bba74471d829" alt="Four panels showing one triangle: signs of phi at the vertices, the cut points on the edges, the sub-triangle inside Omega with the interface segment, and quadrature points: three in the sub-triangle and two on the interface segment" style="width:1664px; height:466px; object-fit:contain">
+    <div style="display:flex; flex-direction:row; gap:32px; align-items:start">
+      <div style="width:392px; display:flex; flex-direction:column; gap:6px; flex:0 0 auto">
+        <h3 style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#00509a">Signs decide</h3>
+        <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">φ is P1 on the cell: a sign change between two vertices means the edge is cut</p>
+      </div>
+      <div style="width:392px; display:flex; flex-direction:column; gap:6px; flex:0 0 auto">
+        <h3 style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#00509a">Cut points</h3>
+        <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">on each cut edge, the zero of the linear interpolant of φ</p>
+      </div>
+      <div style="width:392px; display:flex; flex-direction:column; gap:6px; flex:0 0 auto">
+        <h3 style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#00509a">Sub-triangles</h3>
+        <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">T ∩ Ω is split into triangles; Γ ∩ T is a segment</p>
+      </div>
+      <div style="width:392px; display:flex; flex-direction:column; gap:6px; flex:0 0 auto">
+        <h3 style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#00509a">Gauss on pieces</h3>
+        <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">a standard rule on each piece, mapped to T</p>
+      </div>
+    </div>
+  </div>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">16</p>
+  <aside>Four minutes. The formula at the top is what the whole slide is for: the integral over the cut cell T ∩ Ω is the sum of the integrals over its sub-triangles K, and on each K a standard Gauss rule with points x_q and weights w_q is used; on the interface piece Γ ∩ T the same idea gives the boundary integral. One triangle, cut by a P1 level set. Only the signs at the three vertices matter: here one vertex is inside and two are outside. The zero of the linear interpolant on the two cut edges gives the two cut points. T intersect Omega is then a single triangle (when two vertices are inside it is a quadrilateral, split into two triangles). Each piece gets a standard Gauss rule, mapped to the cell: three points on this triangle, weight one third of the area each. The interface segment gets its own rule: two Gauss points, weights half the length each. With curved cuts (P2 level set) the pieces are curved and the rules are more involved; the idea is the same. The figure was drawn for this lecture, the rule shown is the simplest one.</aside>
+</section>

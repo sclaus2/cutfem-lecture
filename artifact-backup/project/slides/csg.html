@@ -1,0 +1,22 @@
+<section id="csg" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Example 3 · Combining shapes with min and max</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:36px">
+<table style="font-size:30px;color:#3B3B3B">
+<tr><th style="width:32%;color:#00509A">Operation</th><th style="width:28%;color:#00509A">Shape</th><th style="width:40%;color:#00509A">Level set</th></tr>
+<tr><td>Union</td><td>A ∪ B</td><td>min(φA, φB)</td></tr>
+<tr><td>Intersection</td><td>A ∩ B</td><td>max(φA, φB)</td></tr>
+<tr><td>Complement</td><td>outside A</td><td>−φA</td></tr>
+<tr><td>Difference</td><td>A without B</td><td>max(φA, −φB)</td></tr>
+</table>
+<div style="background:#EAF1F8;padding:28px 36px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<p style="font-size:32px;font-weight:700;color:#00509A">Plate with a hole</p>
+<p style="font-size:32px">φ = max(φbox, −φdisc): the box without the disc</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;align-items:center;width:780px"><div style="display:grid;grid-template-columns:380px 380px;gap:16px 20px"><div style="display:flex;flex-direction:column;gap:6px;align-items:center;width:380px"><img src="/_blob/1f40c9e221b16b9499dd568bb970bbbd" alt="A box A (blue) and a ball B (orange) side by side" style="width:380px;height:285px;object-fit:contain"><p style="font-size:26px;font-weight:700;color:#00509A">A: box, B: ball</p></div><div style="display:flex;flex-direction:column;gap:6px;align-items:center;width:380px"><img src="/_blob/697364e051018ec447d4a0cf8fcb6a87" alt="Union of box and ball: the box with the ball merged on one corner" style="width:380px;height:285px;object-fit:contain"><p style="font-size:26px;font-weight:700;color:#00509A">Union: min(φA, φB)</p></div><div style="display:flex;flex-direction:column;gap:6px;align-items:center;width:380px"><img src="/_blob/0c18296b37f2f27520fa5abf7c7a95d7" alt="Intersection of box and ball: only the corner of the box that lies inside the ball" style="width:380px;height:285px;object-fit:contain"><p style="font-size:26px;font-weight:700;color:#00509A">Intersection: max(φA, φB)</p></div><div style="display:flex;flex-direction:column;gap:6px;align-items:center;width:380px"><img src="/_blob/3f18cf17137ad8ce7a72b8c798f8ea21" alt="Difference of box and ball: the box with a spherical bite taken out of one corner" style="width:380px;height:285px;object-fit:contain"><p style="font-size:26px;font-weight:700;color:#00509A">Difference: max(φA, −φB)</p></div></div><p style="font-size:24px;color:#6E6E6E">Blue surface: where φA decides. Orange surface: where φB decides.</p></div>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">42</p>
+<aside>Two minutes. The four pictures were rendered directly from the level set formulas of the table, for a box A and a ball B (blue surface: φA decides, orange: φB decides). Look at the difference: the orange surface is the ball seen from inside the bite. Engineers know CSG from CAD: here union is min and intersection is max, because inside means negative. Quick check with the room: a point inside A but outside B has φA &lt; 0 and φB &gt; 0, so it lies in the union (min is negative) but not in the intersection (max is positive). Closing the loop with the plate with a hole from lectures 1 and 2. Next: we use union and difference to build a rotor. Multiple level sets (several materials, several phases) are possible; mention only in passing.</aside>
+</section>

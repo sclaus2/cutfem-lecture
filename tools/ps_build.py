@@ -31,18 +31,18 @@ def code(lines, size=26):
     out = []
     for ln in lines:
         if not ln.strip():
-            out.append(f'<p style="font-size:{size}px;line-height:1.38;font-family:\'Courier New\', monospace;color:#F3F4F6;padding-left:0px">&nbsp;</p>')
+            out.append(f'<p style="font-size:{size}px;line-height:1.38;font-family:Consolas, Menlo, \'DejaVu Sans Mono\', \'Courier New\', monospace; font-weight:700;color:#1F2937;padding-left:0px">&nbsp;</p>')
             continue
         pad = len(ln) - len(ln.lstrip(" "))
         body = ln.lstrip(" ")
         if "#" in body:
             k = body.index("#")
             main, com = body[:k], body[k:]
-            txt = html.escape(main) + f'<span style="color:#9CA3AF">{html.escape(com)}</span>'
+            txt = html.escape(main) + f'<span style="color:#566275">{html.escape(com)}</span>'
         else:
             txt = html.escape(body)
-        out.append(f'<p style="font-size:{size}px;line-height:1.38;font-family:\'Courier New\', monospace;color:#F3F4F6;white-space:pre;padding-left:{round(pad * ch)}px">{txt}</p>')
-    return ('<div style="background:#1F2937;padding:24px 32px;border-radius:16px;display:flex;flex-direction:column;gap:2px">'
+        out.append(f'<p style="font-size:{size}px;line-height:1.38;font-family:Consolas, Menlo, \'DejaVu Sans Mono\', \'Courier New\', monospace; font-weight:700;color:#1F2937;white-space:pre;padding-left:{round(pad * ch)}px">{txt}</p>')
+    return ('<div style="background:#F4F7FB;border:2px solid #B9C7D8;padding:24px 32px;border-radius:16px;display:flex;flex-direction:column;gap:2px">'
             + "".join(out) + "</div>")
 
 

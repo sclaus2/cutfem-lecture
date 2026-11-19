@@ -1,0 +1,38 @@
+<section id="cond-what" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">What is the condition number?</h2>
+<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<p style="font-size:28px;line-height:1.35">The condition number of the matrix A is the ratio of its extreme eigenvalues, in absolute value:</p>
+<div style="background:#EAF1F8;padding:14px 32px;border-radius:16px;display:flex;flex-direction:row;gap:48px;align-items:center">
+<img src="/_blob/38ea87aeb35495a5fcfd345695fe4799" alt="kappa of A equals lambda max of A divided by lambda min of A" style="width:355px;height:118px;object-fit:contain">
+</div>
+<p style="font-size:30px;font-weight:700;color:#B34F00">A large κ means</p>
+<ul style="font-size:28px;line-height:1.35">
+<li>Iterative solvers (CG, GMRES) need many iterations: about √κ for CG</li>
+<li>Round-off errors grow: about log₁₀ κ of the 16 digits of double precision are lost</li>
+<li>At κ ≈ 10¹⁶ the matrix is numerically singular and the solution is lost</li>
+</ul>
+<p style="font-size:28px;line-height:1.35">On a fitted mesh of size h, it grows like</p>
+<div style="background:#EAF1F8;padding:14px 32px;border-radius:16px">
+<img src="/_blob/d2fbb89682bfe3618dfcfc5ff7961187" alt="kappa of A is of order C times h to the minus 2" style="width:293px;height:56px;object-fit:contain">
+</div>
+</div>
+<div style="width:640px;display:flex;flex-direction:column;gap:24px">
+<div style="background:#EAF1F8;padding:24px 28px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:32px;font-weight:700;color:#00509A">Fitted mesh</h3>
+<p style="font-size:28px;line-height:1.35">The constant C depends on the quality of the mesh, which the mesh generator controls.</p>
+</div>
+<div style="background:#FDEBD8;padding:24px 28px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:32px;font-weight:700;color:#B34F00">Cut mesh</h3>
+<p style="font-size:28px;line-height:1.35">The cut cells can have any shape. Does C now depend on where the boundary falls? A small cut gives tiny entries (previous slide).</p>
+</div>
+<div style="background:#EAF1F8;padding:24px 28px;border-radius:16px;display:flex;flex-direction:column;gap:8px">
+<h3 style="font-size:32px;font-weight:700;color:#00509A">Next: an experiment</h3>
+<p style="font-size:28px;line-height:1.35">Slide a disc across a fixed mesh and watch κ, the accuracy and the solver cost.</p>
+</div>
+</div>
+</div>
+<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
+<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">27</p>
+<aside>Three minutes. The previous slide ended with tiny matrix entries on small cuts: the condition number measures how bad that is. Recall from lecture 3 that conditioning controls two things: how many iterations a Krylov solver needs and how many digits survive round-off. For a quasi-uniform mesh the condition number of the stiffness matrix grows like h to the minus two, with a constant that depends only on mesh quality. The question of this block is whether a cut mesh keeps this property. The cut cells are not chosen by a mesh generator: where the boundary falls decides their shape. In this lecture kappa is computed as the ratio of the largest to the smallest singular value (numpy cond), which equals the ratio of eigenvalue magnitudes for a symmetric matrix.</aside>
+</section>

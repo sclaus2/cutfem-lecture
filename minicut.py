@@ -615,7 +615,7 @@ def gmres_iterations(geom, A, b, tol=1e-8, scale=False, agg=None):
 # --------------------------------------------------------------------------
 # Plotting
 # --------------------------------------------------------------------------
-_COLOURS = {INSIDE: "#cfe8d5", CUT: "#fbd9a8", OUTSIDE: "#f3f3f3"}
+_COLOURS = {INSIDE: "#CFE2F5", CUT: "#F9C48F", OUTSIDE: "#FFFFFF"}  # inside blue, cut orange, outside white (inactive)
 
 
 def _axes(ax):

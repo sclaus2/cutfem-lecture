@@ -1,0 +1,29 @@
+<section id="ps-4" data-transition="fade" style="display:flex; flex-direction:column; gap:28px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Minicut: the variational form</h2>
+  <div style="display:flex; flex-direction:row; gap:40px; align-items:start">
+    <div style="display:flex; flex-direction:column; gap:20px; flex:1">
+      <div style="display:flex; flex-direction:column; gap:2px; padding:24px 32px; background:#f4f7fb; border:2px solid #b9c7d8; border-radius:16px">
+        <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.38; color:#1f2937">f = lambda x, y: np.ones_like(x) <span style="color:#566275"># f = 1</span></p>
+        <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.38; color:#1f2937">g = lambda x, y: np.zeros_like(x) <span style="color:#566275"># g = 0</span></p>
+        <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.38; color:#1f2937">&nbsp;</p>
+        <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.38; color:#1f2937">A = mc.stiffness(geom) <span style="color:#566275"># ∫Ω ∇u·∇v dx</span></p>
+        <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.38; color:#1f2937">An, bn = mc.nitsche(geom, g, gamma=40.0) <span style="color:#566275"># Nitsche on Γ</span></p>
+        <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.38; color:#1f2937">&nbsp;</p>
+        <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.38; color:#1f2937">A = A + An</p>
+        <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.38; color:#1f2937">b = mc.load(geom, f) + bn <span style="color:#566275"># ∫Ω f v dx and Nitsche</span></p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px; padding:16px 28px; background:#eaf1f8; border-radius:16px">
+        <img src="/_blob/fcc14b38e336f9164862831f4e1db846" alt="a of u and v equals the integral over Omega of grad u dot grad v dx (stiffness), minus the integral over Gamma of the normal derivative of u times v plus u times the normal derivative of v, ds, plus gamma over h times the integral over Gamma of u v ds (Nitsche)" style="width:588px; height:159px; object-fit:contain; align-self:flex-start">
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:16px; align-items:center; flex:0 0 auto">
+      <div style="display:flex; flex-direction:column; gap:8px; align-items:center">
+        <img src="/_blob/f14d90d0895d8a7fbfd74f6d2bdb9ab9" alt="Zoom on one petal: interface quadrature points on the boundary with the outward unit normals drawn as arrows" style="width:640px; height:492px; object-fit:contain">
+        <p style="width:640px; font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">interface points and normals n on Γ ∩ T</p>
+      </div>
+    </div>
+  </div>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">26</p>
+  <aside>Three minutes. The weak form has two parts so far and each is one function of minicut. mc.stiffness integrates the gradient term over Ω with the volume rule; mc.nitsche integrates the Nitsche terms over Γ with the interface rule and returns the matrix and its right-hand side contribution (the g terms); the arrows are the normals n of the interface rule that the Nitsche terms use. The right-hand side f = 1 is integrated by mc.load. Inside, each function evaluates the integrals at the quadrature points and scatters the local matrices: short functions in minicut.py, which the students can read in the notebook; writing the Nitsche terms is their exercise. Nitsche's penalty is gamma / h with gamma = 40. Question for the room: is this matrix safe? The next step shows when it is not.</aside>
+</section>
