@@ -1,7 +1,35 @@
-<section id="try-it" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
-<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Try it yourself</h2>
-<div style="display:flex;flex-direction:row;gap:56px;align-items:flex-start;"><div style="display:flex;flex-direction:column;gap:20px;flex:1"><h3 style="font-size:36px;font-weight:700;color:#00509A">Now: the notebook, no install</h3><ul style="font-size:32px;line-height:1.4"><li>cutfem_lecture.ipynb: a cut FEM in pure Python (numpy, scipy, matplotlib), runs on any laptop</li><li>You write the Nitsche terms, sweep the radius and switch the ghost penalty on</li><li>Same errors and condition numbers as CutFEMx on the same mesh</li></ul><p style="font-size:26px;line-height:1.3;color:#6E6E6E">Files: cutfem_lecture.ipynb and minicut.py · questions: </p></div><div style="display:flex;flex-direction:column;gap:20px;flex:1"><h3 style="font-size:36px;font-weight:700;color:#B34F00">Later: the real thing, CutFEMx</h3><ul style="font-size:32px;line-height:1.4"><li>Conda environment with FEniCSx 0.11, then build CutCells, runintgen and CutFEMx: docs/getting-started/installation.md at github.com/sclaus2/CutFEMx</li><li>On Windows, use WSL2 (Linux)</li><li>Run python/demo/demo_poisson.py, then change one thing: a disc of radius 0.5, γg = 0, or your own image</li></ul></div></div>
-<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
-<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">48</p>
-<aside>Three minutes. Hands-on part: students open the notebook (cutfem_lecture.ipynb, with minicut.py next to it). It needs only numpy, scipy and matplotlib, so there is no installation problem on Windows laptops. It follows the lecture: level set, cut, quadrature, Nitsche (they write the terms), convergence, the radius sweep that shows the small-cut ill-conditioning, and the ghost penalty. On the same mesh it reproduces the CutFEMx errors and condition numbers. The real CutFEMx is the homework: the installation is source-based (repository documentation), on Windows through WSL2. Before the lecture check that the repository is public and that the students know where the notebook files are.</aside>
+<section id="try-it" data-transition="fade" style="display:flex; flex-direction:column; gap:40px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Try it yourself</h2>
+  <div style="display:flex; flex-direction:row; gap:56px; align-items:start">
+    <div style="display:flex; flex-direction:column; gap:20px; flex:1">
+      <h3 style="font-family:Arial, sans-serif; font-size:36px; font-weight:700; color:#00509a">Now: the notebook, no install</h3>
+      <ul style="font-family:Arial, sans-serif; font-size:32px; line-height:1.4; color:#3b3b3b">
+        <li>cutfem_lecture.ipynb: a cut FEM in pure Python (numpy, scipy, matplotlib), runs on any laptop</li>
+        <li>You write the Nitsche terms, sweep the radius and switch the ghost penalty on</li>
+      </ul>
+      <div style="display:flex; flex-direction:row; gap:32px; align-items:center; margin:12px 0">
+        <img src="/_blob/9ece605fa2f530bba67bc5b7126ebbe0" alt="QR code linking to github.com/sclaus2/cutfem-lecture, with minicut.py and the notebook" style="width:230px; height:230px; flex:0 0 auto">
+        <p style="font-family:Arial, sans-serif; font-size:30px; line-height:1.4; color:#3b3b3b">Download minicut.py and cutfem_lecture.ipynb:<br><b>github.com/sclaus2/cutfem-lecture</b></p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:20px; flex:1">
+      <h3 style="font-family:Arial, sans-serif; font-size:36px; font-weight:700; color:#b34f00">If you want to try 3D use CutFEMx&nbsp;</h3>
+      <div style="display:flex; flex-direction:column">
+        <ul style="font-family:Arial, sans-serif; font-size:32px; line-height:1.4; color:#3b3b3b">
+          <li>Conda environment with FEniCSx 0.11, then build CutCells, runintgen and CutFEMx: docs/getting-started/installation.md at&nbsp;</li>
+        </ul>
+        <div style="display:flex; flex-direction:row; gap:32px; align-items:center; margin:12px 0 12px 0">
+          <img src="/_blob/d95ea6eaad1490f06082c7b10547c35f" alt="QR code linking to github.com/sclaus2/CutFEMx" style="width:230px; height:230px; flex:0 0 auto">
+          <p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; line-height:1.4; color:#3b3b3b">github.com/sclaus2/CutFEMx</p>
+        </div>
+        <ul style="font-family:Arial, sans-serif; font-size:32px; line-height:1.4; color:#3b3b3b">
+          <li>On Windows, use WSL2 (Linux)</li>
+          <li>Run python/demo/demo_poisson.py, then change one thing: a disc of radius 0.5, γg = 0, or your own image</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">47</p>
+  <aside>Three minutes. Hands-on part: students open the notebook (cutfem_lecture.ipynb, with minicut.py next to it). It needs only numpy, scipy and matplotlib, so there is no installation problem on Windows laptops. It follows the lecture: level set, cut, quadrature, Nitsche (they write the terms), convergence, the radius sweep that shows the small-cut ill-conditioning, and the ghost penalty. On the same mesh it reproduces the CutFEMx errors and condition numbers. The real CutFEMx is the homework: the installation is source-based (repository documentation), on Windows through WSL2. Before the lecture check that the repository is public and that the students know where the notebook files are.</aside>
 </section>

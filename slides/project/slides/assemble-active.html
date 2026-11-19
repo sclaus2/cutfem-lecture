@@ -1,0 +1,23 @@
+<section id="assemble-active" data-transition="fade" style="display:flex; flex-direction:column; gap:32px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Next: assemble over all active cells</h2>
+  <div style="display:flex; flex-direction:row; gap:56px; align-items:start">
+    <div style="display:flex; flex-direction:column; gap:28px; flex:1">
+      <p style="font-family:Arial, sans-serif; font-size:32px; line-height:1.35; color:#3b3b3b">We now assemble the matrix over <b>every active cell</b>: the inside cells and all the cut cells.</p>
+      <div style="display:flex; flex-direction:column; padding:20px 28px; background:#eaf1f8; border-radius:16px">
+        <img src="/_blob/ae47241b414fa724864d0c150e98d7d8" alt="A of i j equals the sum over the inside cells T of the integral over T of grad psi j dot grad psi i dx, plus the sum over the cut cells T of the integral over T intersect Omega of grad psi j dot grad psi i dx, plus the sum over the cut cells T of the integral over Gamma intersect T of the Nitsche terms ds" style="width:423.4px; height:285.7px; object-fit:contain">
+      </div>
+      <ul style="font-family:Arial, sans-serif; font-size:30px; line-height:1.4; color:#3b3b3b">
+        <li>Inside cells: the usual integral over the whole cell T</li>
+        <li>Cut cells: integrals over T ∩ Ω and Γ ∩ T, with the quadrature rules of the pieces</li>
+        <li><b style="color:#b34f00">The cut cells are the new part:</b> what happens to their entries when the cut is small?</li>
+      </ul>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px; align-items:center; flex:0 0 auto">
+      <img src="/_blob/c477a17bb364fe9c1ac2a89e1b12ea07" alt="Active mesh: inside cells blue and cut cells orange, outlined in black; outside cells are white because they are inactive" style="width:480px; height:504px; object-fit:contain">
+      <p style="width:480px; font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">Active cells = blue (inside) + orange (cut); white cells are never assembled</p>
+    </div>
+  </div>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">22</p>
+  <aside>Two minutes. This is the transition from the variational form to stabilisation. The matrix of the previous slides (stiffness plus the Nitsche terms) is assembled cell by cell over the active mesh: inside cells with the usual integral over the whole cell, cut cells with integrals over T intersect Omega (the volume part, using the quadrature rules on the pieces) and over Gamma intersect T (the Nitsche terms). Hat functions are called psi_i here, because phi is the level set. For an inside cell nothing is new. For a cut cell the integration domain depends on where the boundary falls, and so does the size of the entries. The next slide shows what happens when the cut is small.</aside>
+</section>

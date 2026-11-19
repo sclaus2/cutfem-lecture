@@ -1,0 +1,29 @@
+<section id="agg-example" data-transition="fade" style="display:flex; flex-direction:column; gap:28px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">The extension matrix E on the example</h2>
+  <div style="display:flex; flex-direction:row; gap:40px; align-items:start">
+    <div style="display:flex; flex-direction:column; gap:8px; align-items:center; flex:0 0 auto">
+      <img src="/_blob/e71639d2cbdd7ec298099f8ab2bc4882" alt="Extension matrix E, 14 rows for the active dofs and 12 columns for the good dofs: an identity block for the good dofs and two highlighted rows. Row 7 has weights 1, 1, minus 1 in columns 13, 14, 20. Row 28 has weights minus 1, 1, 1 in columns 20, 21, 27." style="width:614px; height:633px; flex:0 0 auto; object-fit:contain">
+      <p style="width:440px; font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">E: rows are active DOFs, columns good DOFs.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:20px; flex:1">
+      <div style="display:flex; flex-direction:column; gap:12px; padding:22px 28px; background:#eaf1f8; border-radius:16px">
+        <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">Row 7: a removed DOF</h3>
+        <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">Root cell: vertices 13, 14, 20. At x₇ the barycentric coordinates are (1, 1, −1):</p>
+        <img src="/_blob/f6b05fb72a0c37a474fd93db21cbea72" alt="u 7 equals 1 times u 13 plus 1 times u 14 minus 1 times u 20" style="width:405.1px; height:37.8px; align-self:start; object-fit:contain">
+        <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#6e6e6e">The weights sum to 1; they may be negative.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px; padding:22px 28px; background:#eaf1f8; border-radius:16px">
+        <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">Good DOFs stay unknowns: one 1 per row. Solve, then extend:</p>
+        <img src="/_blob/eee045f87d87b4b3d76435c35d9ec7df" alt="u equals E u good, and E transpose A E u good equals E transpose b" style="width:477.8px; height:45.4px; align-self:start; object-fit:contain">
+      </div>
+      <div style="display:flex; flex-direction:column; gap:2px; padding:18px 28px; background:#f4f7fb; border:2px solid #b9c7d8; border-radius:16px">
+        <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.38; color:#1f2937">A_red = E.T @ A @ E <span style="color:#566275"># 12 x 12 system</span></p>
+        <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.38; color:#1f2937">ug = spsolve(A_red, E.T @ b)</p>
+        <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.38; color:#1f2937">u = E @ ug <span style="color:#566275"># or mc.solve_aggregated</span></p>
+      </div>
+    </div>
+  </div>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">36</p>
+  <aside>Three minutes. The mesh of the previous slide is repeated on the left so that the numbers can be followed: row 7 of E reads off the root cell with the vertices 13, 14, 20 in the picture. The extension matrix of the example, drawn as a grid. Columns are the 12 good dofs, rows are the 14 active dofs: 12 identity rows for the good dofs, in blue, and two rows for the removed dofs 7 and 28, in orange. Row 7: its root cell has the vertices 13, 14 and 20. The polynomial of the root, a plane, is evaluated at the position of dof 7, which lies outside the root cell; the barycentric coordinates are 1, 1 and minus 1 (on this structured mesh the removed vertex is the fourth corner of a parallelogram, so u7 = u13 + u14 - u20). Weights sum to one because the constant function is reproduced exactly, and they can be negative since we extrapolate, but only by one cell. Row 28 is the same by symmetry: minus 1, 1, 1 on the dofs 20, 21, 27. Then the discrete problem: u is E times the vector of good unknowns, the reduced system is E transpose A E, and the right-hand side E transpose b. It is an ordinary Galerkin projection onto a smaller space, so the matrix stays symmetric and the Nitsche terms are untouched. The sliver cells are now part of a larger piece of a polynomial, so their small entries are multiplied by weights of order one and added to the entries of the root cell: there is no longer a small diagonal. In the code E is a scipy sparse matrix: agg.E, of shape 36 by 12 because minicut keeps a row for every node of the background mesh, the inactive ones are empty.</aside>
+</section>

@@ -1,0 +1,38 @@
+<section id="ex3-overview" data-transition="fade" style="display:flex; flex-direction:column; gap:28px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Example 3 · Complex moving geometry</h2>
+  <div style="display:flex; flex-direction:row; gap:44px; align-items:start">
+    <div style="width:980px; display:flex; flex-direction:column; gap:18px; flex:0 0 auto">
+      <img src="/_blob/2125713db3bc0dcbcf9c5bc5e6e84d6d" alt="Animation: a five-bladed rotor turns by one period through a fixed hot-gas jet, shown as a red dashed circle. Left, the background mesh with the cut cells in orange follows the rotor boundary; right, the temperature is high only in the blade that is inside the jet." style="width:980px; height:509px; object-fit:contain">
+      <div style="display:flex; flex-direction:column; gap:8px; padding:18px 28px; background:#fdebd8; border-radius:16px">
+        <p style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#b34f00">The problem at each angle θ</p>
+        <img src="/_blob/24c76193fe4cd5979dfb8169c161a95a" alt="minus Laplacian of u equals f in Omega theta, u equals 0 on Gamma theta" style="width:433.6px; height:37.8px; object-fit:contain">
+        <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.3; color:#3b3b3b">f: hot-gas jet, fixed in space. u: temperature rise above the coolant on the rotor boundary.</p>
+      </div>
+    </div>
+    <div style="width:640px; display:flex; flex-direction:column; gap:18px; flex:0 0 auto">
+      <div style="display:flex; flex-direction:row; gap:20px; align-items:start; padding:18px 24px; background:#eaf1f8; border-radius:16px">
+        <p style="width:48px; flex:0 0 auto; font-family:Arial, sans-serif; font-size:44px; font-weight:700; color:#00509a">1</p>
+        <div style="display:flex; flex-direction:column; gap:6px">
+          <p style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#00509a">Build</p>
+          <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.3; color:#3b3b3b">a rotor from simple shapes: a hub and five turned blades, joined with min and max of level sets</p>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:row; gap:20px; align-items:start; padding:18px 24px; background:#eaf1f8; border-radius:16px">
+        <p style="width:48px; flex:0 0 auto; font-family:Arial, sans-serif; font-size:44px; font-weight:700; color:#00509a">2</p>
+        <div style="display:flex; flex-direction:column; gap:6px">
+          <p style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#00509a">Turn</p>
+          <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.3; color:#3b3b3b">the rotor turns through the jet: same mesh, new cut and a new solve at every angle</p>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:row; gap:20px; align-items:start; padding:18px 24px; background:#eaf1f8; border-radius:16px">
+        <p style="width:48px; flex:0 0 auto; font-family:Arial, sans-serif; font-size:44px; font-weight:700; color:#00509a">3</p>
+        <div style="display:flex; flex-direction:column; gap:6px">
+          <p style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#00509a">Optimize the shape of the blades</p>
+          <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.3; color:#3b3b3b">the widest blade whose peak temperature stays below a limit at every angle</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <aside>Two minutes. Overview of Example 3 before we build it. The situation: a five-bladed rotor, for example a turbine wheel, turns through a hot-gas jet. The jet is a heat source f fixed in space (the red dashed circle in the animation); the boundary of the rotor is kept at the coolant temperature, so u = 0 on the boundary, and u is the temperature rise. At every angle theta we solve a steady Poisson problem, minus Laplacian of u equals f in the rotor, a quasi-static picture (a real turbine would need the time-dependent heat equation). Left of the animation: the grey background mesh never changes and the orange cut cells follow the boundary; right: the temperature, high only in the blade that is inside the jet. Three steps. 1 Build: the rotor is a hub and five turned copies of one blade, combined with min (union) and max (difference, intersection): the next two slides. 2 Turn: changing the angle changes only the level set; the mesh stays and we cut, assemble and solve again, 24 angles per period. We watch the peak temperature and the condition number. 3 Tune: the widest, hence strongest, blade whose peak temperature stays below the limit T* = 150 at every angle: a first shape optimisation with one parameter, the blade half-width. No mesh is generated anywhere in this example.</aside>
+</section>

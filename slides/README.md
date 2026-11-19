@@ -4,8 +4,7 @@
 `assets/` holds the images used by the slides (the slides refer to them as `/_blob/<id>`; the file
 `assets/<id>.png|svg|jpg` is the same image).
 
-This folder is a **snapshot of the published deck** (a Claude Slides artifact, version 1794907683-2502,
-2026-11-17, 53 slides). The published deck is the source of truth.
+This folder is a **snapshot of the published deck** (a Claude Slides artifact, 64 slides, 2026-11-19). The published deck is the source of truth.
 
 ## Look at it locally
 

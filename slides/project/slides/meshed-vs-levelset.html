@@ -1,18 +1,18 @@
 <section id="meshed-vs-levelset" data-transition="fade" style="display:flex; flex-direction:column; gap:40px; padding:96px 128px 160px; background:#ffffff">
-  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Two ways to describe a geometry</h2>
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Different ways to describe a geometry</h2>
   <div style="display:flex; flex-direction:row; gap:52px; align-items:start">
     <div style="width:520px; display:flex; flex-direction:column; gap:14px; flex:0 0 auto">
-      <img src="/_blob/aa346aeaee83a52b5d4f523bedd9c367" alt="Triangular mesh fitted to a flower-shaped domain: the mesh edges follow the boundary" style="width:520px; height:417px; object-fit:contain; background:#ffffff; border:3px solid #eaf1f8; border-radius:12px">
+      <img src="/_blob/aa346aeaee83a52b5d4f523bedd9c367" alt="Triangular mesh fitted to a flower-shaped domain: the mesh edges follow the boundary" style="width:520px; height:417px; background:#ffffff; border:3px solid #eaf1f8; border-radius:12px; object-fit:contain">
       <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#b34f00">Meshed geometry</h3>
       <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b">The boundary is made of mesh edges: the mesh follows the shape. A new shape means a new mesh.</p>
     </div>
     <div style="width:520px; display:flex; flex-direction:column; gap:14px; flex:0 0 auto">
-      <img src="/_blob/1b168c1ca7567c6003fdaa9ac1bad6a1" alt="Colour map of a level set function: negative inside the flower, positive outside, zero on its boundary" style="width:520px; height:417px; object-fit:contain; background:#ffffff; border:3px solid #eaf1f8; border-radius:12px">
+      <img src="/_blob/1b168c1ca7567c6003fdaa9ac1bad6a1" alt="Colour map of a level set function: negative inside the flower, positive outside, zero on its boundary" style="width:520px; height:417px; background:#ffffff; border:3px solid #eaf1f8; border-radius:12px; object-fit:contain">
       <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">Level set function φ</h3>
-      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b">A function φ(x) with a sign: φ &lt; 0 inside Ω, φ &gt; 0 outside, φ = 0 on the boundary Γ. A disc of radius R: φ(x) = |x − c| − R.</p>
+      <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b">A function φ(x) with a sign: φ &lt; 0 inside Ω, φ &gt; 0 outside, φ = 0 on the boundary Γ. A disc of radius R:</p><img src="/_blob/7c64709ae81b0f46346b2f798696db08" alt="phi of x equals the norm of x minus c, minus R" style="width:260.0px;height:37.9px;object-fit:contain;">
     </div>
     <div style="width:520px; display:flex; flex-direction:column; gap:14px; flex:0 0 auto">
-      <img src="/_blob/b37042f3e0dea8cb6d469c6e8acce536" alt="Plain triangular background mesh with the flower-shaped boundary drawn across it" style="width:520px; height:417px; object-fit:contain; background:#ffffff; border:3px solid #eaf1f8; border-radius:12px">
+      <img src="/_blob/b37042f3e0dea8cb6d469c6e8acce536" alt="Plain triangular background mesh with the flower-shaped boundary drawn across it" style="width:520px; height:417px; background:#ffffff; border:3px solid #eaf1f8; border-radius:12px; object-fit:contain">
       <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">Level set on a simple mesh</h3>
       <p style="font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b">The mesh is a plain grid that ignores Ω. The boundary cuts through cells, and φ tells us where.</p>
     </div>

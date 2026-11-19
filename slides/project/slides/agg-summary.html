@@ -1,0 +1,34 @@
+<section id="agg-summary" data-transition="fade" style="display:flex; flex-direction:column; gap:24px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Ghost penalty and aggregation: summary</h2>
+  <div style="display:flex; flex-direction:row; gap:40px; align-items:start">
+    <div style="width:820px; display:flex; flex-direction:column; gap:18px; flex:0 0 auto">
+      <div style="display:flex; flex-direction:column; gap:6px; padding:18px 26px; background:#eaf1f8; border-radius:16px">
+        <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">Ghost penalty</h3>
+        <ul style="padding:0 0 0 30px; font-family:Arial, sans-serif; font-size:25px; line-height:1.3; color:#3b3b3b">
+          <li><span style="color:#2e8b57"><b>+</b></span> Keeps all DOFs and the space</li>
+          <li><span style="color:#2e8b57"><b>+</b></span> Consistent: accuracy is kept</li>
+          <li><span style="color:#2e8b57"><b>+</b></span> Same recipe for higher degree (more derivative jumps)</li>
+          <li><div style="display:flex;flex-direction:row;align-items:center;gap:8px"><p><span style="color:#b34f00"><b>−</b></span> Adds a term and a parameter</p><p style="font-family:Arial, sans-serif; font-size:25px; line-height:1.3; color:#3b3b3b">γ</p></div></li>
+          <li><span style="color:#b34f00"><b>−</b></span> Wider stencil: extra non-zeros</li>
+        </ul>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px; padding:18px 26px; background:#fdebd8; border-radius:16px">
+        <h3 style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#b34f00">Aggregation</h3>
+        <ul style="padding:0 0 0 30px; font-family:Arial, sans-serif; font-size:25px; line-height:1.3; color:#3b3b3b">
+          <li><span style="color:#2e8b57"><b>+</b></span> Nothing added to the form, no extra parameter but the threshold</li>
+          <li><span style="color:#2e8b57"><b>+</b></span> Fewer unknowns: the sliver DOFs disappear</li>
+          <li><span style="color:#b34f00"><b>−</b></span> Changes the space: E and EᵀAE</li>
+          <li><span style="color:#b34f00"><b>−</b></span> Needs a graph search over the active cells</li>
+        </ul>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px; align-items:center; flex:1">
+      <img src="/_blob/ed55958e79ab38b62690620da3e4267a" alt="Log-log plot of time against the number of active DOFs for five stages. Assembly with ghost penalty, assembly for aggregation and building the aggregates scale like N to the power 1.0. The direct solve scales like N to the power 1.2 with ghost penalty and 1.4 with aggregation. A line of slope one is shown for reference." style="width:760px; height:496px; object-fit:contain">
+      <p style="width:760px; font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">Time against N on meshes from 20² to 320² (best of 3, minicut, one laptop).</p><div style="width:760px; display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; gap:8px"><p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">Assembly and building the aggregates:</p><p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">N^1.0</p><p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">Direct solve:</p><p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">N^1.2</p><p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">(ghost penalty),</p><p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">N^1.4</p><p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">(aggregation, with EᵀAE).</p></div>
+    </div>
+  </div>
+  <p style="padding:16px 28px; font-family:Arial, sans-serif; font-size:28px; line-height:1.35; color:#3b3b3b; background:#eaf1f8; border-radius:16px">Overhead of the repairs: ghost penalty adds 3% non-zeros at N = 3·10⁴; aggregation removes 174 of 29 619 DOFs (0.6%). Both grow like √N, the length of the boundary.</p>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">39</p>
+  <aside>Three minutes. Summary of the two repairs of the small-cut problem. Ghost penalty: add a term to the form that penalises the jump of the normal derivative across the facets of the cut cells. Advantages: keeps all DOFs and the finite element space, it is consistent so accuracy is kept, and for higher degree it is the same idea with more derivative jumps. Disadvantages: an extra term and a parameter gamma_g (0.1 here), and the stencil is wider, so more non-zeros per row in the band around the boundary. Aggregation: restrict the space instead. Advantages: nothing is added to the form, the only parameter is the threshold (0.25), and the sliver DOFs disappear, so the system is smaller. Disadvantages: the space changes, which means an extension matrix E and the product E transpose A E; a graph search over the active cells is needed to build the aggregates, and the extrapolated weights can be negative. Scaling: measured on the disc of the previous experiments, meshes 20 by 20 to 320 by 320, best of three timings, minicut (Python and scipy), one laptop; N is the number of active DOFs. Assembly with or without the ghost term, and building the aggregates, scale like N to the power 1.0 to 1.04. The direct sparse solve scales like N to the 1.2 for the ghost penalty and like N to the 1.4 for aggregation, where the timing includes forming E transpose A E on the full-size matrix; with only five sizes and Python overheads the difference between 1.2 and 1.4 should not be over-interpreted, and a direct solver in 2D is expected to be above linear anyway. The overhead of the repairs scales with the boundary, like the square root of N: the ghost penalty adds 4788 non-zeros out of 148855 at N = 29619 (3%), aggregation removes 174 DOFs (0.6%). Data: tools/agg_scaling.py.</aside>
+</section>
