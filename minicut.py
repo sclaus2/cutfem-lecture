@@ -682,6 +682,35 @@ def plot_cells(geom, ax=None, subtriangulation=False, interface=True, quadrature
     return ax
 
 
+def plot_aggregation(geom, agg, ax=None, zoom=None):
+    """Aggregates of a cell aggregation: well-posed cells blue, ill-posed cut cells red,
+    an arrow from every ill-posed cell to its root cell, removed dofs as black crosses."""
+    from matplotlib.collections import LineCollection, PolyCollection
+
+    ax = _axes(ax)
+    m = geom.mesh
+    act = geom.cell_type != OUTSIDE
+    ill = np.zeros(m.n_cells, bool)
+    ill[agg.ill_cells] = True
+    colours = [("#E8795C" if ill[c] else "#CFE2F5") if act[c] else "#FFFFFF" for c in range(m.n_cells)]
+    ax.add_collection(PolyCollection(m.nodes[m.cells], facecolors=colours, edgecolors="k",
+                                     linewidths=0.4 if m.n_cells < 3000 else 0.05))
+    ax.add_collection(LineCollection(geom.segments, colors="k", linewidths=2))
+    cen = m.nodes[m.cells].mean(1)
+    for c in agg.ill_cells:
+        r = agg.root[c]
+        if r >= 0:
+            ax.annotate("", xy=cen[r], xytext=cen[c], arrowprops=dict(arrowstyle="->", color="#7a1f0c", lw=1.4))
+    if len(agg.removed_dofs):
+        p = m.nodes[agg.removed_dofs]
+        ax.plot(p[:, 0], p[:, 1], "kx", ms=7, mew=1.6)
+    x0, y0 = m.nodes.min(0)
+    x1, y1 = m.nodes.max(0)
+    ax.set_xlim(*(zoom[:2] if zoom else (x0, x1)))
+    ax.set_ylim(*(zoom[2:] if zoom else (y0, y1)))
+    return ax
+
+
 def plot_solution(geom, u, ax=None, levels=20, mesh_lines=False):
     """Solution on Omega_h only (the sub-triangulation of the active cells)."""
     import matplotlib.tri as mtri

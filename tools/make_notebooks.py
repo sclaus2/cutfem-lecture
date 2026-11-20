@@ -877,6 +877,168 @@ The terms you wrote are *exactly* the terms in the CutFEMx demo: on the same mes
 a P2 level set or on a 3D geometry (see the last slides of the lecture for the installation steps).
 """))
 
+    # ------------------------------------------------------------------ extra figures (one per topic)
+    def after(anchor, *cells):
+        for i, cell in enumerate(c):
+            if anchor in cell.source:
+                c[i + 1:i + 1] = list(cells)
+                return
+        raise KeyError(anchor)
+
+    after('# Try it: a disk with a smaller disk removed',
+          md(r"""
+**Combining shapes (CSG).** With the sign convention (negative inside) the Boolean operations are pointwise
+`min` and `max`: union $=\min(\phi_A,\phi_B)$, intersection $=\max(\phi_A,\phi_B)$, difference $=\max(\phi_A,-\phi_B)$.
+The result is again a function $\phi(x,y)$, so it cuts the mesh like any other shape:
+"""),
+          code(r"""
+A = mc.circle((0.40, 0.5), 0.25)
+B = mc.ellipse((0.64, 0.5), 0.28, 0.14, 0.6)
+shapes = [("A: disc", A), ("B: ellipse", B), ("union: min(A, B)", mc.union(A, B)),
+          ("intersection: max(A, B)", mc.intersection(A, B)), ("difference: max(A, -B)", mc.difference(A, B))]
+fig, ax = plt.subplots(1, 5, figsize=(19, 4))
+for a, (name, ph) in zip(ax, shapes):
+    mc.plot_cells(mc.CutGeometry(mc.Mesh(40), ph), a); a.set_title(name); a.axis("off")
+plt.tight_layout(); plt.show()
+"""))
+
+    after('mc.plot_cells(geom, ax[1], zoom=(0.45, 0.85, 0.35, 0.75), subtriangulation=True)',
+          md(r"""
+**The active mesh and its degrees of freedom.** Only the vertices of inside and cut cells carry unknowns (blue). The
+other vertices of the box (grey) are never created: the system has as many unknowns as the active mesh has vertices.
+"""),
+          code(r"""
+act = geom.active_dofs
+others = np.setdiff1d(np.arange(geom.mesh.n_nodes), act)
+X = geom.mesh.nodes
+plt.figure(figsize=(5.5, 5.5))
+mc.plot_cells(geom, plt.gca())
+plt.plot(X[others, 0], X[others, 1], ".", color="0.6", ms=4, label=f"not used: {len(others)}")
+plt.plot(X[act, 0], X[act, 1], "o", color="C0", ms=4, label=f"degrees of freedom: {len(act)}")
+plt.legend(loc="upper right"); plt.title("active mesh: unknowns only where they are needed"); plt.show()
+"""))
+
+    after('mc.plot_cells(geom_img, ax[2]); ax[2].set_title("cut on a 64 x 64 background mesh")',
+          md(r"""
+**The steps of the recipe, in a zoom.** Left: the binary image, its boundary lies on the pixel edges (a staircase). Middle: the
+signed distance (colour) with its zero set before (red) and after (blue) the Gaussian smoothing. Right: the background
+mesh only sees $\phi$ at its vertices (blue: $\phi<0$, orange: $\phi>0$); the geometry that is computed with is the zero
+set of the P1 interpolant (black), close to the smooth blue line but not equal to it.
+"""),
+          code(r"""
+from scipy import ndimage as ndi
+d0 = ndi.distance_transform_edt(~img) - ndi.distance_transform_edt(img)     # signed distance in pixels
+d1 = ndi.gaussian_filter(d0, 1.5)                                           # smoothed
+win = (slice(110, 190), slice(110, 190))                                    # a 80 x 80 pixel window
+fig, ax = plt.subplots(1, 3, figsize=(16, 5.3))
+ax[0].imshow(img[win], cmap="gray"); ax[0].set_title("1. binary image (white: material)"); ax[0].axis("off")
+im = ax[1].imshow(d0[win], cmap="RdBu_r", vmin=-8, vmax=8)
+ax[1].contour(d0[win], [0], colors="r", linewidths=1.5); ax[1].contour(d1[win], [0], colors="b", linewidths=1.5)
+ax[1].set_title("2-3. signed distance, zero set before / after smoothing"); ax[1].axis("off")
+msh = mc.Mesh(45); gi = mc.CutGeometry(msh, phi_img)
+box = (0.37, 0.63, 0.37, 0.63)
+mc.plot_cells(gi, ax[2], zoom=box)
+nodes = msh.nodes; ph = phi_img(nodes[:, 0], nodes[:, 1]); inb = (abs(nodes[:, 0] - 0.5) < 0.14) & (abs(nodes[:, 1] - 0.5) < 0.14)
+ax[2].scatter(nodes[inb, 0], nodes[inb, 1], c=np.where(ph[inb] < 0, "C0", "C1"), s=22, zorder=3)
+xx, yy = np.meshgrid(np.linspace(box[0], box[1], 200), np.linspace(box[2], box[3], 200))
+ax[2].contour(xx, yy, phi_img(xx, yy), [0], colors="b", linewidths=1.2)
+ax[2].set_title("4. values at the mesh vertices; black: P1 zero set"); plt.tight_layout(); plt.show()
+"""))
+
+    after('print("L2 error:", mc.l2_error(geom, u, u_exact))',
+          md(r"""
+**How large must the penalty be?** The Nitsche parameter $\gamma$ trades consistency against stability: for small $\gamma$ the
+method is unstable (and the matrix is not positive definite), for large $\gamma$ the boundary condition is enforced
+almost strongly, as with a penalty or Lagrange multiplier approach, and the matrix gets ill-conditioned. The error and the
+error on $\Gamma$ itself (ghost penalty on):
+"""),
+          code(r"""
+gammas = [0.5, 1, 3, 10, 40, 100, 1e3, 1e4, 1e5]
+g_ = mc.CutGeometry(mc.Mesh(20), mc.circle((0.5, 0.5), 0.33))
+err, errG, kap = [], [], []
+for gm in gammas:
+    A_, b_ = mc.poisson_system(g_, f, u_exact, gamma=gm, ghost=True)
+    u_ = mc.solve(g_, A_, b_)
+    q_ = g_.interface
+    err.append(mc.l2_error(g_, u_, u_exact))
+    errG.append(np.abs(mc.evaluate(g_, u_, q_.cells, q_.points) - u_exact(q_.points[:, 0], q_.points[:, 1])).max())
+    kap.append(mc.condition_number(g_, A_)[0])
+fig, ax = plt.subplots(1, 2, figsize=(11, 4))
+ax[0].loglog(gammas, err, "o-", label="L2 error on Omega"); ax[0].loglog(gammas, errG, "s-", label="max |u_h - g| on Gamma")
+ax[0].set_xlabel("Nitsche parameter γ"); ax[0].legend(); ax[0].grid(True, which="both", alpha=0.3)
+ax[1].loglog(gammas, kap, "C3o-"); ax[1].set_xlabel("Nitsche parameter γ"); ax[1].set_ylabel("condition number κ"); ax[1].grid(True, which="both", alpha=0.3)
+plt.tight_layout(); plt.show()
+"""))
+
+    after('**Question.** The $L^2$ error on $\\Omega$ is almost unchanged',
+          md(r"""
+**Why it is the small cuts.** Plot $\kappa$ against the smallest volume fraction $\eta$ of the sweep: the points follow a line of
+slope $-1$, $\kappa\sim 1/\eta$ ("The condition number grows like $1/\eta$"). Below, the eigenvector that belongs to the smallest
+eigenvalue of the unstabilised matrix: it sits on the one degree of freedom of the tiny cut cell (colour: value at the vertices) and costs almost no energy, which is why the matrix is nearly singular.
+"""),
+          code(r"""
+from matplotlib.collections import LineCollection
+plt.figure(figsize=(5.5, 4.5))
+plt.loglog(small, k_naive, "C3.", label="no stabilisation")
+eta = np.array([small.min(), small.max()])
+plt.loglog(eta, k_naive[np.argmax(k_naive)] * small[np.argmax(k_naive)] / eta, "k--", lw=1, label="1/η (upper bound)")
+plt.xlabel("smallest volume fraction η"); plt.ylabel("condition number κ"); plt.legend(); plt.grid(True, which="both", alpha=0.3); plt.show()
+
+g = mc.CutGeometry(mesh, mc.circle((0.5, 0.5), r_worst))
+cut = np.where(g.cell_type == mc.CUT)[0]
+ct = cut[np.argmin(g.volume_fraction[cut])]
+cx, cy = g.mesh.nodes[g.mesh.cells[ct]].mean(0)
+fig, ax = plt.subplots(1, 2, figsize=(11, 5.3))
+for a, ghost, name in zip(ax, (False, True), ("no stabilisation", "ghost penalty")):
+    A_, _ = mc.poisson_system(g, f, u_exact, ghost=ghost)
+    ev, mode = mc.smallest_mode(g, A_)
+    mode = mode / np.nanmax(np.abs(mode))
+    if not ghost: cx, cy = g.mesh.nodes[np.nanargmax(np.abs(mode))]     # where the unstabilised mode lives
+    a.triplot(g.mesh.nodes[:, 0], g.mesh.nodes[:, 1], g.mesh.cells, color="0.75", lw=0.5)
+    a.add_collection(LineCollection(g.segments, colors="k", linewidths=2))
+    d_ = g.active_dofs; X_ = g.mesh.nodes
+    a.scatter(X_[d_, 0], X_[d_, 1], c=mode[d_], cmap="RdBu_r", vmin=-1, vmax=1, s=150, edgecolors="k", zorder=3)
+    a.set_aspect("equal")
+    a.set_xlim(cx - 0.15, cx + 0.15); a.set_ylim(cy - 0.15, cy + 0.15)
+    a.set_title(f"{name}: smallest eigenvalue {ev:.1e}")
+plt.tight_layout(); plt.show()
+"""))
+
+    after('**Aggregation** (the second remedy of the lecture)',
+          code(r"""
+g = mc.CutGeometry(mc.Mesh(20), mc.circle((0.5, 0.5), r_worst))
+agg = mc.aggregate(g, 0.25)
+print(agg.summary())
+fig, ax = plt.subplots(1, 2, figsize=(11, 5.5))
+mc.plot_aggregation(g, agg, ax[0]); ax[0].set_title("ill-posed cut cells (red) and removed dofs (x)")
+mc.plot_aggregation(g, agg, ax[1], zoom=(0.45, 0.85, 0.45, 0.85)); ax[1].set_title("zoom: every ill cell points to its root cell")
+plt.tight_layout(); plt.show()
+"""))
+
+    after('agg = mc.aggregate(g, 0.25)\nprint(agg.summary())\nA0, b0',
+          md(r"""
+**All three at a glance.** Condition number and GMRES iterations (no preconditioner) at the worst radius, and the condition number over the whole radius sweep
+of section 7: aggregation, like the ghost penalty, removes the dependence on how the domain cuts the mesh.
+"""),
+          code(r"""
+names = ["none", "ghost penalty", "aggregation"]
+kk = [mc.condition_number(g, A_, a_)[0] for A_, a_ in ((A0, None), (A1, None), (A0, agg))]
+its = [mc.gmres_iterations(g, A_, b_, agg=a_) for A_, b_, a_ in ((A0, b0, None), (A1, b1, None), (A0, b0, agg))]
+sub = radii[::4]
+k_agg = []
+for r in sub:
+    gr = mc.CutGeometry(mc.Mesh(20), mc.circle((0.5, 0.5), r))
+    Ar, _ = mc.poisson_system(gr, f, u_exact, ghost=False)
+    k_agg.append(mc.condition_number(gr, Ar, mc.aggregate(gr, 0.25))[0])
+fig, ax = plt.subplots(1, 3, figsize=(15, 4))
+ax[0].bar(names, kk, color=["C3", "C2", "C0"]); ax[0].set_yscale("log"); ax[0].set_title("condition number at the worst radius")
+ax[1].bar(names, its, color=["C3", "C2", "C0"]); ax[1].set_title("GMRES iterations")
+ax[2].semilogy(radii, k_naive, "C3.-", label="none"); ax[2].semilogy(radii, k_ghost, "C2.-", label="ghost penalty")
+ax[2].semilogy(sub, k_agg, "C0o-", ms=4, label="aggregation"); ax[2].set_xlabel("radius r"); ax[2].set_ylabel("κ"); ax[2].legend()
+ax[2].grid(True, which="both", alpha=0.3); ax[2].set_title("over the radius sweep")
+plt.tight_layout(); plt.show()
+"""))
+
     nb = nbf.v4.new_notebook()
     nb["cells"] = c
     nb["metadata"] = {
