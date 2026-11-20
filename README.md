@@ -1,8 +1,8 @@
 # cutfem-lecture
 
 Hands-on material for a lecture on **cut finite element methods** (MINES Paris – PSL, second-year engineers).
-A cut FEM in pure Python, a notebook with exercises that follows the lecture, and the solutions.
-It needs only numpy, scipy and matplotlib: no FEniCSx installation, works on Windows, macOS and Linux.
+CutFEM in pure Python, 2D for Poisson, a notebook with exercises that follows the lecture, and the solutions.
+It needs only numpy, scipy and matplotlib. For 3D applications and other equations use CutFEMx.
 
 | Path | Content |
 |---|---|
