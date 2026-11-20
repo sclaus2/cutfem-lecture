@@ -1039,6 +1039,72 @@ ax[2].grid(True, which="both", alpha=0.3); ax[2].set_title("over the radius swee
 plt.tight_layout(); plt.show()
 """))
 
+    after('kap.append(mc.condition_number(g_, A_)[0])',
+          md(r"""
+### 5b. The alternative: a Lagrange multiplier
+
+Instead of Nitsche's terms one can add an **unknown on the boundary**: a multiplier $\lambda_h$ that lives on $\Gamma$ only,
+
+$$
+\begin{pmatrix} A & B\\ B^T & 0\end{pmatrix}\begin{pmatrix}U\\ \Lambda\end{pmatrix}=\begin{pmatrix}F\\ G\end{pmatrix},\qquad
+B_{ij}=\int_\Gamma \mu_j v_i\,ds,\quad G_j=\int_\Gamma g\,\mu_j\,ds .
+$$
+
+The multiplier is the **flux** $\lambda=-\partial_n u$. The matrix is symmetric but indefinite. `mc.lagrange_system` builds it
+(multiplier space: hat functions on $\Gamma_h$, `space="P1"`, or one constant per cut cell, `space="P0"`) and
+`mc.solve_lagrange` solves it. The two spaces $V_h$ and $\Lambda_h$ must be compatible (inf-sup condition); on a cut mesh
+nothing guarantees it. The **Barbosa–Hughes** stabilisation `stab` adds $-\varepsilon h\int_\Gamma(\lambda+\partial_n u)(\mu+\partial_n v)\,ds$,
+which vanishes for the exact solution. Without it, look at the multiplier:
+"""),
+          code(r"""
+r_, n_ = 0.33, 20
+g_ = mc.CutGeometry(mc.Mesh(n_), mc.circle((0.5, 0.5), r_))
+q_ = g_.interface
+gx, gy = grad_exact(q_.points[:, 0], q_.points[:, 1])
+flux = -(gx * q_.normals[:, 0] + gy * q_.normals[:, 1])               # exact lambda = -du/dn on Gamma
+angle = np.degrees(np.arctan2(q_.points[:, 1] - 0.5, q_.points[:, 0] - 0.5))
+order = np.argsort(angle)
+
+fig, ax = plt.subplots(1, 2, figsize=(12, 4))
+for a, stab, name in zip(ax, (0.0, 0.1), ("no stabilisation", "Barbosa-Hughes, 0.1")):
+    K, rhs, info = mc.lagrange_system(g_, f, u_exact, space="P1", stab=stab)
+    u_l, lam = mc.solve_lagrange(g_, K, rhs, info)
+    lq = mc.multiplier_at_interface(info, lam)
+    a.plot(angle[order], flux[order], "k-", lw=2, label="exact flux")
+    a.plot(angle[order], lq[order], "C3.", ms=4, label="multiplier λ_h")
+    a.set_ylim(flux.min() - 2, flux.max() + 2)
+    a.set_title(f"{name}:  max |λ_h| = {np.abs(lq).max():.1e}"); a.set_xlabel("angle along Γ [deg]"); a.legend(); a.grid(alpha=0.3)
+plt.tight_layout(); plt.show()
+print("L2 error of u with the stabilised multiplier:", mc.l2_error(g_, u_l, u_exact),
+      "  with Nitsche:", mc.l2_error(g_, mc.solve(g_, *mc.poisson_system(g_, f, u_exact, ghost=True)), u_exact))
+"""),
+          md(r"""
+Without stabilisation the saddle-point matrix is (almost) singular here: the multiplier space is too rich for the cut mesh and the
+multiplier is garbage (note the scale in the title). With the stabilisation it is accurate, and it is the **flux through the boundary**, which Nitsche's method
+only gives indirectly. The price: extra unknowns, an indefinite system, and a parameter. This is why Nitsche's method is the default in cut methods.
+Convergence of the stabilised multiplier method:
+"""),
+          code(r"""
+ns = [10, 20, 40, 80]
+eu, ef, en = [], [], []
+for n in ns:
+    g = mc.CutGeometry(mc.Mesh(n), mc.circle((0.5, 0.5), 0.33))
+    K, rhs, info = mc.lagrange_system(g, f, u_exact, space="P1", stab=0.1)
+    ul, lam = mc.solve_lagrange(g, K, rhs, info)
+    q = g.interface
+    gx, gy = grad_exact(q.points[:, 0], q.points[:, 1])
+    ex = -(gx * q.normals[:, 0] + gy * q.normals[:, 1])
+    eu.append(mc.l2_error(g, ul, u_exact))
+    ef.append(np.sqrt(np.sum(q.weights * (mc.multiplier_at_interface(info, lam) - ex) ** 2)))
+    A_, b_ = mc.poisson_system(g, f, u_exact, ghost=True)
+    en.append(mc.l2_error(g, mc.solve(g, A_, b_), u_exact))
+h = 1.0 / np.array(ns)
+plt.loglog(h, eu, "o-", label="u, Lagrange multiplier"); plt.loglog(h, en, "s--", label="u, Nitsche")
+plt.loglog(h, ef, "^-", label="flux λ_h, Lagrange multiplier")
+plt.loglog(h, eu[0] * (h / h[0]) ** 2, "k--", lw=0.8, label="h²"); plt.loglog(h, ef[0] * (h / h[0]), "k:", lw=0.8, label="h")
+plt.xlabel("h"); plt.ylabel("error"); plt.legend(); plt.grid(True, which="both", alpha=0.3); plt.show()
+"""))
+
     nb = nbf.v4.new_notebook()
     nb["cells"] = c
     nb["metadata"] = {

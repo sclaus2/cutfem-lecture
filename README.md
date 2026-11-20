@@ -8,7 +8,7 @@ It needs only numpy, scipy and matplotlib: no FEniCSx installation, works on Win
 |---|---|
 | `notebooks/cutfem_lecture.ipynb` | the notebook: start here |
 | `pyproject.toml` | makes `pip install <repository zip>` install minicut |
-| `minicut.py` | the cut FEM module (2D, P1, Nitsche, ghost penalty, cell aggregation), commented |
+| `minicut.py` | the cut FEM module (2D, P1, Nitsche, Lagrange multiplier, ghost penalty, cell aggregation), commented |
 | `tools/make_notebooks.py` | rebuilds the notebook (the notebook text lives there) |
 | `slides/` | the lecture deck (HTML slides, images), see `slides/README.md` |
 | `notes/speaker-notes.md` | speaker notes of all slides, in order (generated from the deck) |

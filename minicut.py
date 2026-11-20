@@ -443,6 +443,87 @@ def solve(geom, A, b):
     return u
 
 
+def _multiplier_space(geom, space):
+    """Multiplier basis on Gamma: sparse matrix M (n_q, n_mult) of the basis values at the interface points.
+
+    "P0": one constant per cut cell (the segment of Gamma in it).
+    "P1": hat functions on the polygon Gamma_h; the nodes are the points where Gamma crosses a mesh edge.
+    """
+    q = geom.interface
+    nseg = len(geom.segments)
+    nq = len(q.weights)
+    k = nq // nseg  # interface points per segment
+    seg = np.repeat(np.arange(nseg), k)
+    if space == "P0":
+        return sp.coo_matrix((np.ones(nq), (np.arange(nq), seg)), shape=(nq, nseg)).tocsr()
+    if space != "P1":
+        raise ValueError("space must be 'P0' or 'P1'")
+    xg = 0.5 * (np.polynomial.legendre.leggauss(k)[0] + 1.0)
+    keys = np.round(geom.segments.reshape(-1, 2), 10)  # a crossing is shared by two segments
+    _, ids = np.unique(keys, axis=0, return_inverse=True)
+    ids = ids.ravel().reshape(nseg, 2)
+    t = np.tile(xg, nseg)
+    rows = np.concatenate([np.arange(nq), np.arange(nq)])
+    cols = np.concatenate([ids[seg, 0], ids[seg, 1]])
+    vals = np.concatenate([1.0 - t, t])
+    return sp.coo_matrix((vals, (rows, cols)), shape=(nq, ids.max() + 1)).tocsr()
+
+
+def lagrange_system(geom, f, g, space="P1", stab=0.0):
+    """Saddle-point system for -Δu = f, u = g on Gamma with a Lagrange multiplier on Gamma.
+
+        [ A    B ] [U]   [F]        a(u, v) = ∫_Ω ∇u·∇v,    B_ij = ∫_Γ μ_j v_i ds
+        [ B^T  0 ] [Λ] = [G]        F_i = ∫_Ω f v_i,         G_j = ∫_Γ g μ_j ds
+
+    The multiplier is λ = -∂n u, the flux through the boundary.
+    stab > 0 adds the Barbosa-Hughes terms  - stab * h ∫_Γ (λ + ∂n u)(μ + ∂n v) ds.
+    Returns (K, rhs, info); solve with solve_lagrange.
+    """
+    q, m = geom.interface, geom.mesh
+    M = _multiplier_space(geom, space)
+    P = sp.coo_matrix(
+        (m.bary(q.cells, q.points).ravel(), (np.repeat(np.arange(len(q.weights)), 3), m.cells[q.cells].ravel())),
+        shape=(len(q.weights), m.n_nodes),
+    ).tocsr()  # P1 basis values at the interface points
+    W = sp.diags(q.weights)
+    B = (P.T @ W @ M).tocsr()
+    A = stiffness(geom)
+    rhs_u = load(geom, f)
+    rhs_l = M.T @ (q.weights * g(q.points[:, 0], q.points[:, 1]))
+    nm = M.shape[1]
+    if stab > 0:
+        dn = np.einsum("qkd,qd->qk", m.grads[q.cells], q.normals)
+        N = sp.coo_matrix((dn.ravel(), (np.repeat(np.arange(len(q.weights)), 3), m.cells[q.cells].ravel())),
+                          shape=(len(q.weights), m.n_nodes)).tocsr()  # ∂n of the basis functions
+        Wh = sp.diags(q.weights * stab * m.h[q.cells])
+        A = A - N.T @ Wh @ N
+        B = B - N.T @ Wh @ M
+        C = -(M.T @ Wh @ M)
+    else:
+        C = sp.csr_matrix((nm, nm))
+    K = sp.bmat([[A, B], [B.T, C]]).tocsr()
+    rhs = np.concatenate([rhs_u, rhs_l])
+    return K, rhs, {"n_mult": nm, "M": M, "space": space}
+
+
+def solve_lagrange(geom, K, rhs, info):
+    """Solve the saddle-point system on the active dofs and all multipliers.
+
+    Returns (u, lam): u on the nodes (NaN outside the active mesh) and the multiplier coefficients.
+    """
+    n = geom.mesh.n_nodes
+    idx = np.concatenate([geom.active_dofs, n + np.arange(info["n_mult"])])
+    sol = spla.spsolve(K[idx][:, idx].tocsc(), rhs[idx])
+    u = np.full(n, np.nan)
+    u[geom.active_dofs] = sol[: len(geom.active_dofs)]
+    return u, sol[len(geom.active_dofs):]
+
+
+def multiplier_at_interface(info, lam):
+    """Values of the multiplier lambda_h at the interface quadrature points."""
+    return info["M"] @ lam
+
+
 def condition_number(geom, A, agg=None):
     """2-norm condition number |λ|max / |λ|min of the (symmetric) active matrix.
 
