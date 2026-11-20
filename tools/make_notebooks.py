@@ -812,9 +812,10 @@ print(f"condition number: {k_on.min():.0f} to {k_on.max():.0f} with the ghost pe
 from matplotlib.animation import FuncAnimation
 from IPython.display import HTML
 
-fig, ax = plt.subplots(1, 2, figsize=(10, 5))
+fig = plt.figure(figsize=(10, 5))
 def frame(k):
-    for a in ax: a.clear()
+    fig.clf()                                   # also removes the colour bar of the previous frame
+    ax = fig.subplots(1, 2)
     th = 2 * pi / 5 * k / 24
     g, u, _ = temperature(0.055, th)
     mc.plot_cells(g, ax[0]); mc.plot_solution(g, u, ax[1])
