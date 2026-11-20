@@ -1,43 +1,97 @@
 <section id="csg" data-transition="fade" style="background:#ffffff">
-  <div id="e0-20p88s" style="position:absolute; top:0; right:0; bottom:0; left:0; display:flex; flex-direction:column; gap:40px; padding:96px 128px 160px">
-    <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Example 3 · Combining shapes with min and max</h2>
-    <div style="display:flex; flex-direction:row; gap:56px; align-items:start">
-      <div style="display:flex; flex-direction:column; gap:36px; flex:1">
-        <div style="width:820px; display:flex; flex-direction:column; flex:0 0 auto; border:2px solid #b9c7d8; border-radius:16px; overflow:hidden"><div style="display:flex; flex-direction:row; align-items:center; min-height:76px; background:#00509a"><div style="width:250px; flex:0 0 auto; display:flex; align-items:center; padding:0 0 0 28px; box-sizing:border-box"><p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#ffffff">Operation</p></div><div style="width:240px; flex:0 0 auto; display:flex; align-items:center; padding:0 0 0 28px; box-sizing:border-box"><p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#ffffff">Shape</p></div><div style="width:330px; flex:0 0 auto; display:flex; align-items:center; padding:0 0 0 28px; box-sizing:border-box"><p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#ffffff">Level set</p></div></div><div style="display:flex; flex-direction:row; align-items:center; min-height:88px; background:#ffffff"><div style="width:250px; flex:0 0 auto; display:flex; align-items:center; padding:0 0 0 28px; box-sizing:border-box"><p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#3b3b3b">Union</p></div><div style="width:240px; flex:0 0 auto; display:flex; align-items:center; padding:0 0 0 28px; box-sizing:border-box"><p style="font-family:Arial, sans-serif; font-size:32px; color:#3b3b3b">A ∪ B</p></div><div style="width:330px; flex:0 0 auto; display:flex; align-items:center; padding:0 0 0 28px; box-sizing:border-box"><p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">min(φ₁, φ₂)</p></div></div><div style="display:flex; flex-direction:row; align-items:center; min-height:88px; background:#eaf1f8"><div style="width:250px; flex:0 0 auto; display:flex; align-items:center; padding:0 0 0 28px; box-sizing:border-box"><p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#3b3b3b">Intersection</p></div><div style="width:240px; flex:0 0 auto; display:flex; align-items:center; padding:0 0 0 28px; box-sizing:border-box"><p style="font-family:Arial, sans-serif; font-size:32px; color:#3b3b3b">A ∩ B</p></div><div style="width:330px; flex:0 0 auto; display:flex; align-items:center; padding:0 0 0 28px; box-sizing:border-box"><p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">max(φ₁, φ₂)</p></div></div><div style="display:flex; flex-direction:row; align-items:center; min-height:88px; background:#ffffff"><div style="width:250px; flex:0 0 auto; display:flex; align-items:center; padding:0 0 0 28px; box-sizing:border-box"><p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#3b3b3b">Complement</p></div><div style="width:240px; flex:0 0 auto; display:flex; align-items:center; padding:0 0 0 28px; box-sizing:border-box"><p style="font-family:Arial, sans-serif; font-size:32px; color:#3b3b3b">outside A</p></div><div style="width:330px; flex:0 0 auto; display:flex; align-items:center; padding:0 0 0 28px; box-sizing:border-box"><p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">−φ₁</p></div></div><div style="display:flex; flex-direction:row; align-items:center; min-height:88px; background:#eaf1f8"><div style="width:250px; flex:0 0 auto; display:flex; align-items:center; padding:0 0 0 28px; box-sizing:border-box"><p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#3b3b3b">Difference</p></div><div style="width:240px; flex:0 0 auto; display:flex; align-items:center; padding:0 0 0 28px; box-sizing:border-box"><p style="font-family:Arial, sans-serif; font-size:32px; color:#3b3b3b">A without B</p></div><div style="width:330px; flex:0 0 auto; display:flex; align-items:center; padding:0 0 0 28px; box-sizing:border-box"><p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">max(φ₁, −φ₂)</p></div></div></div>
-      </div>
-      <div style="width:780px; display:flex; flex-direction:column; gap:10px; align-items:center">
-        <div style="display:grid; gap:20px; row-gap:16px; grid-template-columns:380px 380px">
-          <div style="width:380px; display:flex; flex-direction:column; gap:6px; align-items:center">
-            <img src="/_blob/1f40c9e221b16b9499dd568bb970bbbd" alt="A box A (blue) and a ball B (orange) side by side" style="width:380px; height:285px; object-fit:contain">
-            <p style="font-family:Arial, sans-serif; font-size:26px; font-weight:700; color:#00509a">A: box, B: ball</p>
+  <p id="e3-20p88s" style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p id="e4-20p88s" style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">42</p>
+  <h2 id="p2db92b017965r0-20489517" style="position:absolute; top:96px; left:128px; width:1664px; font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Example 3 · Combining level sets with min and max to create complex shapes</h2>
+  <div id="p2db92b017965r1-20489517" style="position:absolute; top:254px; left:128px; width:1664px; height:667px; display:flex; flex-direction:row; gap:56px; align-items:start">
+    <div style="display:flex; flex-direction:column; gap:36px; flex:1">
+      <div style="width:820px; display:flex; flex-direction:column; flex:0 0 auto; border:2px solid #b9c7d8; border-radius:16px; overflow:hidden">
+        <div style="display:flex; flex-direction:row; align-items:center; min-height:76px; background:#00509a">
+          <div style="width:250px; display:flex; flex-direction:row; align-items:center; flex:0 0 auto; padding:0 0 0 28px">
+            <p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#ffffff">Operation</p>
           </div>
-          <div style="width:380px; display:flex; flex-direction:column; gap:6px; align-items:center">
-            <img src="/_blob/697364e051018ec447d4a0cf8fcb6a87" alt="Union of box and ball: the box with the ball merged on one corner" style="width:380px; height:285px; object-fit:contain">
-            <div style="display:flex; flex-direction:row; gap:10px; align-items:center">
-              <p style="font-family:Arial, sans-serif; font-size:26px; font-weight:700; color:#00509a">Union:</p>
-              <p style="font-family:Arial, sans-serif; font-size:26px; font-weight:700; color:#00509a">min(φ₁, φ₂)</p>
-            </div>
+          <div style="width:240px; display:flex; flex-direction:row; align-items:center; flex:0 0 auto; padding:0 0 0 28px">
+            <p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#ffffff">Shape</p>
           </div>
-          <div style="width:380px; display:flex; flex-direction:column; gap:6px; align-items:center">
-            <img src="/_blob/0c18296b37f2f27520fa5abf7c7a95d7" alt="Intersection of box and ball: only the corner of the box that lies inside the ball" style="width:380px; height:285px; object-fit:contain">
-            <div style="display:flex; flex-direction:row; gap:10px; align-items:center">
-              <p style="font-family:Arial, sans-serif; font-size:26px; font-weight:700; color:#00509a">Intersection:</p>
-              <p style="font-family:Arial, sans-serif; font-size:26px; font-weight:700; color:#00509a">max(φ₁, φ₂)</p>
-            </div>
-          </div>
-          <div style="width:380px; display:flex; flex-direction:column; gap:6px; align-items:center">
-            <img src="/_blob/3f18cf17137ad8ce7a72b8c798f8ea21" alt="Difference of box and ball: the box with a spherical bite taken out of one corner" style="width:380px; height:285px; object-fit:contain">
-            <div style="display:flex; flex-direction:row; gap:10px; align-items:center">
-              <p style="font-family:Arial, sans-serif; font-size:26px; font-weight:700; color:#00509a">Difference:</p>
-              <p style="font-family:Arial, sans-serif; font-size:26px; font-weight:700; color:#00509a">max(φ₁, −φ₂)</p>
-            </div>
+          <div style="width:330px; display:flex; flex-direction:row; align-items:center; flex:0 0 auto; padding:0 0 0 28px">
+            <p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#ffffff">Level set</p>
           </div>
         </div>
-        <p style="font-family:Arial, sans-serif; font-size:24px; color:#6e6e6e">φ₁ is the level set of A, φ₂ that of B. Blue surface: where φ₁ decides. Orange surface: where φ₂ decides.</p>
+        <div style="display:flex; flex-direction:row; align-items:center; min-height:88px; background:#ffffff">
+          <div style="width:250px; display:flex; flex-direction:row; align-items:center; flex:0 0 auto; padding:0 0 0 28px">
+            <p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#3b3b3b">Union</p>
+          </div>
+          <div style="width:240px; display:flex; flex-direction:row; align-items:center; flex:0 0 auto; padding:0 0 0 28px">
+            <p style="font-family:Arial, sans-serif; font-size:32px; color:#3b3b3b">A ∪ B</p>
+          </div>
+          <div style="width:330px; display:flex; flex-direction:row; align-items:center; flex:0 0 auto; padding:0 0 0 28px">
+            <p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">min(φ₁, φ₂)</p>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:row; align-items:center; min-height:88px; background:#eaf1f8">
+          <div style="width:250px; display:flex; flex-direction:row; align-items:center; flex:0 0 auto; padding:0 0 0 28px">
+            <p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#3b3b3b">Intersection</p>
+          </div>
+          <div style="width:240px; display:flex; flex-direction:row; align-items:center; flex:0 0 auto; padding:0 0 0 28px">
+            <p style="font-family:Arial, sans-serif; font-size:32px; color:#3b3b3b">A ∩ B</p>
+          </div>
+          <div style="width:330px; display:flex; flex-direction:row; align-items:center; flex:0 0 auto; padding:0 0 0 28px">
+            <p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">max(φ₁, φ₂)</p>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:row; align-items:center; min-height:88px; background:#ffffff">
+          <div style="width:250px; display:flex; flex-direction:row; align-items:center; flex:0 0 auto; padding:0 0 0 28px">
+            <p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#3b3b3b">Complement</p>
+          </div>
+          <div style="width:240px; display:flex; flex-direction:row; align-items:center; flex:0 0 auto; padding:0 0 0 28px">
+            <p style="font-family:Arial, sans-serif; font-size:32px; color:#3b3b3b">outside A</p>
+          </div>
+          <div style="width:330px; display:flex; flex-direction:row; align-items:center; flex:0 0 auto; padding:0 0 0 28px">
+            <p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">−φ₁</p>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:row; align-items:center; min-height:88px; background:#eaf1f8">
+          <div style="width:250px; display:flex; flex-direction:row; align-items:center; flex:0 0 auto; padding:0 0 0 28px">
+            <p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#3b3b3b">Difference</p>
+          </div>
+          <div style="width:240px; display:flex; flex-direction:row; align-items:center; flex:0 0 auto; padding:0 0 0 28px">
+            <p style="font-family:Arial, sans-serif; font-size:32px; color:#3b3b3b">A without B</p>
+          </div>
+          <div style="width:330px; display:flex; flex-direction:row; align-items:center; flex:0 0 auto; padding:0 0 0 28px">
+            <p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; color:#00509a">max(φ₁, −φ₂)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="width:780px; display:flex; flex-direction:column; gap:10px; align-items:center">
+      <div style="display:grid; gap:20px; row-gap:16px; grid-template-columns:380px 380px">
+        <div style="width:380px; display:flex; flex-direction:column; gap:6px; align-items:center">
+          <img src="/_blob/1f40c9e221b16b9499dd568bb970bbbd" alt="A box A (blue) and a ball B (orange) side by side" style="width:380px; height:285px; object-fit:contain">
+          <p style="font-family:Arial, sans-serif; font-size:26px; font-weight:700; color:#00509a">A: box, B: ball</p>
+        </div>
+        <div style="width:380px; display:flex; flex-direction:column; gap:6px; align-items:center">
+          <img src="/_blob/697364e051018ec447d4a0cf8fcb6a87" alt="Union of box and ball: the box with the ball merged on one corner" style="width:380px; height:285px; object-fit:contain">
+          <div style="display:flex; flex-direction:row; gap:10px; align-items:center">
+            <p style="font-family:Arial, sans-serif; font-size:26px; font-weight:700; color:#00509a">Union:</p>
+            <p style="font-family:Arial, sans-serif; font-size:26px; font-weight:700; color:#00509a">min(φ₁, φ₂)</p>
+          </div>
+        </div>
+        <div style="width:380px; display:flex; flex-direction:column; gap:6px; align-items:center">
+          <img src="/_blob/0c18296b37f2f27520fa5abf7c7a95d7" alt="Intersection of box and ball: only the corner of the box that lies inside the ball" style="width:380px; height:285px; object-fit:contain">
+          <div style="display:flex; flex-direction:row; gap:10px; align-items:center">
+            <p style="font-family:Arial, sans-serif; font-size:26px; font-weight:700; color:#00509a">Intersection:</p>
+            <p style="font-family:Arial, sans-serif; font-size:26px; font-weight:700; color:#00509a">max(φ₁, φ₂)</p>
+          </div>
+        </div>
+        <div style="width:380px; display:flex; flex-direction:column; gap:6px; align-items:center">
+          <img src="/_blob/3f18cf17137ad8ce7a72b8c798f8ea21" alt="Difference of box and ball: the box with a spherical bite taken out of one corner" style="width:380px; height:285px; object-fit:contain">
+          <div style="display:flex; flex-direction:row; gap:10px; align-items:center">
+            <p style="font-family:Arial, sans-serif; font-size:26px; font-weight:700; color:#00509a">Difference:</p>
+            <p style="font-family:Arial, sans-serif; font-size:26px; font-weight:700; color:#00509a">max(φ₁, −φ₂)</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-  <p id="e3-20p88s" style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
-  <p id="e4-20p88s" style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">42</p>
+  <p id="p2db92b017965r1_1_1-20489517" style="position:absolute; top:852.41px; left:128px; width:780px; font-family:Arial, sans-serif; font-size:24px; color:#6e6e6e">φ₁ is the level set of A, φ₂ that of B. Blue surface: where φ₁ decides. Orange surface: where φ₂ decides.</p>
   <aside>Two minutes. The four pictures were rendered directly from the level set formulas of the table, for a box A and a ball B (blue surface: φ₁ decides, orange: φ₂ decides). Look at the difference: the orange surface is the ball seen from inside the bite. Engineers know CSG from CAD: here union is min and intersection is max, because inside means negative. Quick check with the room: a point inside A but outside B has φ₁ &lt; 0 and φ₂ &gt; 0, so it lies in the union (min is negative) but not in the intersection (max is positive). Closing the loop with the plate with a hole from lectures 1 and 2. Next: we use union and difference to build a rotor. Multiple level sets (several materials, several phases) are possible; mention only in passing.</aside>
 </section>

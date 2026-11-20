@@ -1,25 +1,27 @@
 <section id="ex1-solve" data-transition="fade" style="display:flex; flex-direction:column; gap:36px; padding:96px 128px 160px; background:#ffffff">
   <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Example 2 · Solve in the matrix, check</h2>
-  <div style="display:flex; flex-direction:row; gap:36px; align-items:flex-start">
+  <div style="display:flex; flex-direction:row; gap:36px; align-items:start">
     <div style="width:500px; display:flex; flex-direction:column; gap:10px; flex:0 0 auto">
-      <img src="/_blob/41fcdee78e103ba13c077860925600bb" alt="Background triangle mesh with the solid matrix of the porous specimen: cells inside in blue, cut cells in orange, inactive cells in white, the boundary of the matrix, pores and outer edge, in dark orange" style="width:500px; height:500px; object-fit:contain; flex:0 0 auto">
+      <img src="/_blob/41fcdee78e103ba13c077860925600bb" alt="Background triangle mesh with the solid matrix of the porous specimen: cells inside in blue, cut cells in orange, inactive cells in white, the boundary of the matrix, pores and outer edge, in dark orange" style="width:500px; height:500px; flex:0 0 auto; object-fit:contain">
       <p style="width:500px; font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">Cells of the 40 × 40 background mesh: blue inside the matrix, orange cut, white inactive; the pores are empty</p>
     </div>
     <div style="width:500px; display:flex; flex-direction:column; gap:10px; flex:0 0 auto">
-      <img src="/_blob/9d7ef1b2520322753500a641abb20ffd" alt="Computed solution in the solid matrix of the porous specimen; the pores are holes" style="width:500px; height:500px; object-fit:contain; flex:0 0 auto">
+      <img src="/_blob/9d7ef1b2520322753500a641abb20ffd" alt="Computed solution in the solid matrix of the porous specimen; the pores are holes" style="width:500px; height:500px; flex:0 0 auto; object-fit:contain">
       <p style="width:500px; font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">uₕ in the matrix; the black line is Γ, around every pore and along the specimen edge</p>
     </div>
     <div style="width:592px; display:flex; flex-direction:column; gap:22px; flex:0 0 auto">
-      <div style="background:#eaf1f8; border-radius:16px; padding:22px 28px; display:flex; flex-direction:column; gap:10px">
+      <div style="width:626px; display:flex; flex-direction:column; gap:10px; padding:22px 28px; background:#eaf1f8; border-radius:16px">
         <p style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#00509a">Check against a known solution</p>
         <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">u = sin 2πx · sin 2πy, f = −Δu, u = g on Γ</p>
-        <table style="font-family:Arial, sans-serif; font-size:26px; color:#3b3b3b; width:100%">
+        <table style="font-family:Arial, sans-serif; font-size:26px; color:#3b3b3b">
           <tr><th style="color:#00509a">n</th><th style="color:#00509a">cut cells</th><th style="color:#00509a">‖u − uₕ‖ in L²</th><th style="color:#00509a">rate</th></tr>
-          <tr><td>20</td><td>358</td><td>4.54·10⁻³</td><td>–</td></tr><tr><td>40</td><td>768</td><td>1.27·10⁻³</td><td>1.84</td></tr><tr><td>80</td><td>1556</td><td>3.41·10⁻⁴</td><td>1.90</td></tr>
+          <tr><td>20</td><td>358</td><td>4.54·10⁻³</td><td>–</td></tr>
+          <tr><td>40</td><td>768</td><td>1.27·10⁻³</td><td>1.84</td></tr>
+          <tr><td>80</td><td>1556</td><td>3.41·10⁻⁴</td><td>1.90</td></tr>
         </table>
         <p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">Rate approaching two as the mesh resolves the pores</p>
       </div>
-      <div style="background:#fdebd8; border-radius:16px; padding:22px 28px; display:flex; flex-direction:column; gap:8px">
+      <div style="width:619px; display:flex; flex-direction:column; gap:8px; padding:22px 28px; background:#fdebd8; border-radius:16px">
         <p style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#b34f00">Why the ghost penalty</p>
         <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">Condition number at n = 40: 5.6·10⁷ without it, with 16 negative eigenvalues; 331 with it.</p>
       </div>

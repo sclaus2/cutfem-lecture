@@ -1,7 +1,18 @@
-<section id="mot-designs" data-transition="fade" style="background:#FFFFFF;color:#3B3B3B;font-family:Arial, Helvetica, sans-serif;padding:96px 128px 160px;display:flex;flex-direction:column;gap:40px">
-<h2 style="font-size:60px;font-weight:700;line-height:1.1;color:#00509A">Example 3 · The same loop for a wing</h2>
-<div style="display:flex;flex-direction:row;gap:48px;align-items:center;"><img src="/_blob/0e10ec020400ab0c1f8097e8bcdbd2c2" data-video="/_blob/5f83aacc05748402d3b1ba30f374a9e8" alt="Video: an aircraft whose wingspan and sweep are changed with sliders; each new shape is cut from the same background grid and solved, ending with six designs deformed under 100 kilonewtons of lift" style="width:1040px;height:585px;object-fit:contain"><div style="display:flex;flex-direction:column;gap:24px;flex:1"><h3 style="font-size:36px;font-weight:700;color:#00509A">6 designs, one grid</h3><ul style="font-size:28px;line-height:1.4"><li>Span and sweep change from design to design</li><li>Same background mesh, h = 0.15 m, for all of them</li><li>Only the level set φ(θ) depends on the design parameters θ</li><li>The optimiser can change the shape thousands of times</li></ul></div></div>
-<p style="position:absolute;left:480px;top:992px;width:960px;text-align:center;font-size:24px;color:#6E6E6E">Cut finite element methods · MINES Paris – PSL</p>
-<p style="position:absolute;right:128px;top:992px;width:120px;text-align:right;font-size:24px;color:#6E6E6E">46</p>
-<aside>Two minutes. The picture is a video (it plays in presentation mode and loops; click to pause). It shows a 3D aircraft skin where the wingspan and the sweep are changed with sliders: for each new shape only the level set changes, the shape is cut from the same background grid and solved again, and the clip ends on the six-design overview. Say what to look at: the grid never changes. Figure and video from the JSO 2026 talk: six wing designs, 100 kN of lift on each, one background grid with h = 0.15 m. The geometry of each design is a level set depending on parameters. This is what makes shape optimisation affordable: no meshing in the loop. The rotor of the previous slide is the same loop with one parameter; here there are several (span, sweep) and a gradient drives the optimiser. We will not go into the optimisation; the point is the workflow.</aside>
+<section id="mot-designs" data-transition="fade" hidden style="display:flex; flex-direction:column; gap:40px; padding:96px 128px 160px; background:#ffffff">
+  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Example 3 · The same loop for a wing</h2>
+  <div style="display:flex; flex-direction:row; gap:48px; align-items:center">
+    <img src="/_blob/0e10ec020400ab0c1f8097e8bcdbd2c2" alt="Video: an aircraft whose wingspan and sweep are changed with sliders; each new shape is cut from the same background grid and solved, ending with six designs deformed under 100 kilonewtons of lift" data-video="/_blob/5f83aacc05748402d3b1ba30f374a9e8" style="width:1040px; height:585px; object-fit:contain">
+    <div style="display:flex; flex-direction:column; gap:24px; flex:1">
+      <h3 style="font-family:Arial, sans-serif; font-size:36px; font-weight:700; color:#00509a">6 designs, one grid</h3>
+      <ul style="font-family:Arial, sans-serif; font-size:28px; line-height:1.4; color:#3b3b3b">
+        <li>Span and sweep change from design to design</li>
+        <li>Same background mesh, h = 0.15 m, for all of them</li>
+        <li>Only the level set φ(θ) depends on the design parameters θ</li>
+        <li>The optimiser can change the shape thousands of times</li>
+      </ul>
+    </div>
+  </div>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">46</p>
+  <aside>Two minutes. The picture is a video (it plays in presentation mode and loops; click to pause). It shows a 3D aircraft skin where the wingspan and the sweep are changed with sliders: for each new shape only the level set changes, the shape is cut from the same background grid and solved again, and the clip ends on the six-design overview. Say what to look at: the grid never changes. Figure and video from the JSO 2026 talk: six wing designs, 100 kN of lift on each, one background grid with h = 0.15 m. The geometry of each design is a level set depending on parameters. This is what makes shape optimisation affordable: no meshing in the loop. The rotor of the previous slide is the same loop with one parameter; here there are several (span, sweep) and a gradient drives the optimiser. We will not go into the optimisation; the point is the workflow.</aside>
 </section>

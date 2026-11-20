@@ -1,18 +1,18 @@
-<section id="bc-options" data-transition="fade" style="display:flex; flex-direction:column; gap:40px; padding:96px 128px 160px; background:#ffffff">
-  <h2 style="font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Dirichlet conditions on a cut boundary</h2>
-  <div style="display:flex; flex-direction:column; gap:0px">
-    <div style="display:flex; flex-direction:row; align-items:center; gap:0px">
-      <p style="font-family:Arial, sans-serif; font-size:41px; line-height:1.35; color:#3b3b3b">Lecture 2 fixed the nodal values on&nbsp;</p>
+<section id="bc-options" data-transition="fade" style="background:#ffffff">
+  <p id="e3-zdr6l9" style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p id="e4-zdr6l9" style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">20</p>
+  <h2 id="p88b806ac4b5fr0-270acadb" style="position:absolute; top:96px; left:128px; width:1664px; font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Dirichlet conditions on a cut boundary</h2>
+  <div id="p88b806ac4b5fr1-270acadb" style="position:absolute; top:201.99px; left:50%; width:1664px; display:flex; flex-direction:column; transform:translateX(-50%)">
+    <div style="display:flex; flex-direction:row; align-items:center">
+      <p style="font-family:Arial, sans-serif; font-size:41px; line-height:1.35; color:#3b3b3b">In FE the nodal values on&nbsp;</p>
       <img src="/_blob/a7fd448cdcacb609a092ae96341abc8d" alt="Gamma subscript D" style="width:48px; height:55px; object-fit:contain">
-      <p style="font-family:Arial, sans-serif; font-size:41px; line-height:1.35; color:#3b3b3b">&nbsp;and solved for the rest.</p>
+      <p style="width:822px; font-family:Arial, sans-serif; font-size:41px; line-height:1.35; color:#3b3b3b">are fixed. Now no node lies on&nbsp;</p>
     </div>
-    <div style="display:flex; flex-direction:row; align-items:center; gap:0px">
-      <p style="font-family:Arial, sans-serif; font-size:41px; line-height:1.35; color:#3b3b3b">Now no node lies on&nbsp;</p>
-      <img src="/_blob/a7fd448cdcacb609a092ae96341abc8d" alt="Gamma subscript D" style="width:48px; height:55px; object-fit:contain">
-      <p style="font-family:Arial, sans-serif; font-size:41px; line-height:1.35; color:#3b3b3b">: the boundary runs through the cells.</p>
+    <div style="display:flex; flex-direction:row; align-items:center">
+      <p style="font-family:Arial, sans-serif; font-size:41px; line-height:1.35; color:#3b3b3b">The boundary runs through the cells and boundary conditions have to be enforced using integrals.&nbsp;</p>
     </div>
   </div>
-  <div style="display:flex; flex-direction:row; gap:24px">
+  <div id="p88b806ac4b5fr2-270acadb" style="position:absolute; top:408px; left:128px; width:1664px; height:488px; display:flex; flex-direction:row; gap:24px">
     <div style="display:flex; flex-direction:column; gap:14px; align-items:center; flex:1; padding:32px; background:#ffffff; border:2px solid #d5d9de; border-radius:16px">
       <img src="/_blob/161ebed76fdc493f30af23e7e1a35b6f" alt="A square triangle mesh with the six-petal flower boundary running through the cells; no mesh node lies on the boundary" style="width:360px; height:360px; object-fit:contain">
       <p style="font-family:Arial, sans-serif; font-size:34px; line-height:1.35; color:#6e6e6e">Γ runs through the cells</p>
@@ -28,7 +28,6 @@
       <p style="font-family:Arial, sans-serif; font-size:34px; font-weight:700; line-height:1.35; color:#00509a">No extra unknowns, symmetric, consistent</p>
     </div>
   </div>
-  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
-  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">20</p>
+  <img src="/_blob/a7fd448cdcacb609a092ae96341abc8d" alt="Gamma subscript D" id="b3f4701f" style="position:absolute; top:194.56px; left:1225.95px; width:48px; height:55px; object-fit:contain">
   <aside>Three minutes. Link to lecture 2 (Dirichlet conditions: assemble all nodes, fix UD, solve for Uf, a discrete lifting). With a cut boundary there is nothing to fix. The picture shows the unfitted boundary: the flower runs through the cells of a background mesh and no node lies on it. (The classical workaround, snapping the boundary to the nearest nodes, moves it by up to h and gives a first-order geometry error.) Two options remain. Lagrange multipliers work but add unknowns and a compatibility condition. Nitsche keeps the system symmetric positive definite with the same unknowns, which is why it is the standard choice in cut methods. Neumann conditions are unchanged: they are natural in the weak form and only need the interface quadrature.</aside>
 </section>
