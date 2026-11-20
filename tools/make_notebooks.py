@@ -1,9 +1,9 @@
-"""Build the lecture notebooks (student version and solutions) with nbformat.
+"""Build the lecture notebook with nbformat.
 
     python make_notebooks.py
 
-writes notebooks/cutfem_lecture.ipynb and solutions/cutfem_lecture_solutions.ipynb.
-The two differ only in the exercise cells marked SOLUTION below.
+writes notebooks/cutfem_lecture.ipynb. Every cell runs as it is (the exercise cells
+hold their complete code).
 """
 
 from pathlib import Path
@@ -23,7 +23,7 @@ def code(text):
 
 def build(solutions):
     def ex(student, solution):
-        return code(solution if solutions else student)
+        return code(solution)
 
     c = []
 
@@ -44,7 +44,7 @@ new work. In this notebook you build every step yourself:
 | 2 | classify cells, active mesh | count inside / cut / outside |
 | 3 | from an image to a level set (Example 2) | cut a (synthetic) scan, solve in the solid matrix |
 | 4 | sub-triangulation and quadrature | check that area and perimeter converge |
-| 5 | Dirichlet condition with Nitsche | **write the Nitsche terms** |
+| 5 | Dirichlet condition with Nitsche | the Nitsche terms, checked against `mc.nitsche` |
 | 6 | convergence | measure the rates |
 | 7 | what goes wrong: small cuts | sweep a circle, watch $\kappa$ explode |
 | 8 | the remedy: ghost penalty | switch it on, see $\kappa$ stay flat |
@@ -313,7 +313,7 @@ print("number of interface points:", len(geom.interface))
 """))
     c.append(md(r"""
 **Check the quadrature.** The exact values are $|\Omega|=\pi r^2$ and $|\Gamma|=2\pi r$. The error should drop by a
-factor 4 when $h$ is halved (second order, the price of replacing the circle by a polygon). Fill in the rate column.
+factor 4 when $h$ is halved (second order, the price of replacing the circle by a polygon). The rate column is $\log_2$ of the ratio of successive errors.
 """))
     c.append(ex(r"""
 r = 0.3
@@ -367,7 +367,7 @@ $$
 =\int_\Omega f v_h\,dx\;\underbrace{-\int_\Gamma g\,\partial_n v_h\,ds+\frac{\gamma}{h}\int_\Gamma g\,v_h\,ds}_{\text{boundary data}}
 $$
 
-with $\gamma=40$ and $h$ the cell size. The three boundary terms of the left-hand side are what you implement.
+with $\gamma=40$ and $h$ the cell size. The three boundary terms of the left-hand side are what `my_nitsche` implements.
 
 On every interface quadrature point $x_q$ with weight $w_q$ the local matrix is indexed `[q, i, j]`, with
 $i$ the test function $v$ and $j$ the trial function $u$, where the P1 basis functions of the cell are
@@ -376,7 +376,7 @@ $\lambda_0,\lambda_1,\lambda_2$:
 * `lam[q, k]` $=\lambda_k(x_q)$ and `dn[q, k]` $=\partial_n\lambda_k(x_q)=\nabla\lambda_k\cdot n$,
 * the consistency term is $-\sum_q w_q\,\lambda_i\,\partial_n\lambda_j$ : `-np.einsum("q,qi,qj->qij", w, lam, dn)`.
 
-Implement the other two terms and the two right-hand side terms, then compare with `mc.nitsche`.
+The cell below implements all of them and compares with `mc.nitsche`.
 """))
     c.append(ex(r"""
 def my_nitsche(geom, g, gamma=40.0):
@@ -427,7 +427,7 @@ try:
     A_ref, b_ref = mc.nitsche(geom, u_exact)
     dA, db = abs(A_mine - A_ref).max(), np.abs(b_mine - b_ref).max()
     print("max difference matrix:", dA, "  vector:", db)
-    print("OK, your Nitsche terms are correct" if max(dA, db) < 1e-12 else "Not yet: check the signs and the factors")
+    print("OK, the Nitsche terms agree with mc.nitsche" if max(dA, db) < 1e-12 else "Not yet: check the signs and the factors")
 except Exception as e:
     print("Not finished yet:", type(e).__name__, e)
 """))
@@ -829,7 +829,8 @@ HTML(anim.to_jshtml())      # use anim.save("rotor.gif") to keep it
 stronger but get hotter in the jet. We want the *widest* blade whose peak temperature stays below $T^* = 150$ at every
 angle of the turn. $T_\text{worst}(b)$ is the maximum over the 24 angles; it grows with $b$, so the optimum is where
 $T_\text{worst}(b) = T^*$: a root-finding problem. Every evaluation is 24 new level sets, cuts of the same mesh and
-solves; nothing is meshed in the loop (n = 80 takes about 20 s).
+solves; nothing is meshed in the loop (about 6 evaluations, 4 s at n = 40). We search only up to $b = 0.09$: from about
+$b = 0.1$ the neighbouring blades touch and merge, and the design is no longer five blades.
 """))
     c.append(code(r"""
 T_star = 150.0
@@ -837,13 +838,13 @@ def T_worst(b, n=40):
     return max(peak(b, t, n) for t in angles)
 
 for n in (40, 80):
-    b_star = brentq(lambda b: T_worst(b, n) - T_star, 0.03, 0.12, xtol=1e-5)
+    b_star = brentq(lambda b: T_worst(b, n) - T_star, 0.03, 0.09, xtol=1e-5)
     area = mc.area(mc.CutGeometry(mc.Mesh(n), rotor(b_star)))
     print(f"n = {n}:  b* = {b_star:.4f}   area = {area:.3f}")
 print(f"starting design b = 0.055:  T_worst = {T_worst(0.055):.0f},  "
       f"area = {mc.area(mc.CutGeometry(mc.Mesh(40), rotor(0.055))):.3f}")
 
-bs = np.linspace(0.03, 0.12, 19)
+bs = np.linspace(0.03, 0.09, 13)
 plt.figure(figsize=(7, 4.5))
 for n in (40, 80):
     plt.plot(bs, [T_worst(b, n) for b in bs], "o-", ms=3, label=f"n = {n}")
@@ -885,6 +886,6 @@ a P2 level set or on a 3D geometry (see the last slides of the lecture for the i
 
 
 if __name__ == "__main__":
-    for sol, name in ((False, "notebooks/cutfem_lecture.ipynb"), (True, "solutions/cutfem_lecture_solutions.ipynb")):
+    for sol, name in ((True, "notebooks/cutfem_lecture.ipynb"),):
         nbf.write(build(sol), ROOT / name)
         print("wrote", ROOT / name)
