@@ -2,8 +2,8 @@
 
     python make_notebooks.py
 
-writes notebooks/cutfem_lecture.ipynb. Every cell runs as it is (the exercise cells
-hold their complete code).
+writes notebooks/cutfem_lecture.ipynb. Every cell runs as it is: there are no exercises
+to fill in, only cells to run, read and change.
 """
 
 from pathlib import Path
@@ -22,9 +22,6 @@ def code(text):
 
 
 def build(solutions):
-    def ex(student, solution):
-        return code(solution)
-
     c = []
 
     # ------------------------------------------------------------------ intro
@@ -35,19 +32,19 @@ def build(solutions):
 
 In the lecture we meshed a **simple box** instead of a complicated geometry, described the
 domain $\Omega$ by a **level set function** $\phi$, and found that only the **cut cells** need
-new work. In this notebook you build every step yourself:
+new work. In this notebook you run every step, look at the pictures and change the parameters:
 
-| Section | Lecture idea | You do |
+| Section | Lecture idea | What it shows |
 |---|---|---|
-| 0 | **Example 1: Poisson on a flower in six steps** | run the lecture code on the flower |
-| 1 | background mesh, level set | look at $\phi$ |
-| 2 | classify cells, active mesh | count inside / cut / outside |
-| 3 | from an image to a level set (Example 2) | cut a (synthetic) scan, solve in the solid matrix |
-| 4 | sub-triangulation and quadrature | check that area and perimeter converge |
-| 5 | Dirichlet condition with Nitsche | the Nitsche terms, checked against `mc.nitsche` |
-| 6 | convergence | measure the rates |
-| 7 | what goes wrong: small cuts | sweep a circle, watch $\kappa$ explode |
-| 8 | the remedy: ghost penalty | switch it on, see $\kappa$ stay flat |
+| 0 | **Example 1: Poisson on a flower in six steps** | the lecture code on the flower |
+| 1 | background mesh, level set | the level set $\phi$ |
+| 2 | classify cells, active mesh | inside / cut / outside cells |
+| 3 | from an image to a level set (Example 2) | a (synthetic) scan cut and solved in the solid matrix |
+| 4 | sub-triangulation and quadrature | area and perimeter converge |
+| 5 | Dirichlet condition with Nitsche | the Nitsche terms, written out and checked against `mc.nitsche` |
+| 6 | convergence | the measured rates |
+| 7 | what goes wrong: small cuts | a circle swept across the mesh, $\kappa$ explodes |
+| 8 | the remedy: ghost penalty | switched on, $\kappa$ stays flat |
 | 9 | play | star, image, moving domain |
 | 10 | Examples 2 and 3 of the lecture | image data; a rotor built, turned through a hot jet and tuned |
 
@@ -315,19 +312,7 @@ print("number of interface points:", len(geom.interface))
 **Check the quadrature.** The exact values are $|\Omega|=\pi r^2$ and $|\Gamma|=2\pi r$. The error should drop by a
 factor 4 when $h$ is halved (second order, the price of replacing the circle by a polygon). The rate column is $\log_2$ of the ratio of successive errors.
 """))
-    c.append(ex(r"""
-r = 0.3
-print("   n   |area err|  rate   |perimeter err|  rate")
-prev = None
-for n in (10, 20, 40, 80, 160):
-    g = mc.CutGeometry(mc.Mesh(n), mc.circle((0.5, 0.5), r))
-    ea = abs(mc.area(g) - np.pi * r**2)
-    ep = abs(mc.perimeter(g) - 2 * np.pi * r)
-    # TODO: the rate is log2(previous error / error): compute it for area and perimeter
-    ra = rp = float("nan")
-    print(f"{n:4d}  {ea:10.3e} {ra:6.2f}  {ep:10.3e} {rp:6.2f}")
-    prev = (ea, ep)
-""", r"""
+    c.append(code(r"""
 r = 0.3
 print("   n   |area err|  rate   |perimeter err|  rate")
 prev = None
@@ -367,7 +352,7 @@ $$
 =\int_\Omega f v_h\,dx\;\underbrace{-\int_\Gamma g\,\partial_n v_h\,ds+\frac{\gamma}{h}\int_\Gamma g\,v_h\,ds}_{\text{boundary data}}
 $$
 
-with $\gamma=40$ and $h$ the cell size. The three boundary terms of the left-hand side are what `my_nitsche` implements.
+with $\gamma=40$ and $h$ the cell size. The three boundary terms of the left-hand side are what `my_nitsche` below writes out term by term.
 
 On every interface quadrature point $x_q$ with weight $w_q$ the local matrix is indexed `[q, i, j]`, with
 $i$ the test function $v$ and $j$ the trial function $u$, where the P1 basis functions of the cell are
@@ -376,27 +361,9 @@ $\lambda_0,\lambda_1,\lambda_2$:
 * `lam[q, k]` $=\lambda_k(x_q)$ and `dn[q, k]` $=\partial_n\lambda_k(x_q)=\nabla\lambda_k\cdot n$,
 * the consistency term is $-\sum_q w_q\,\lambda_i\,\partial_n\lambda_j$ : `-np.einsum("q,qi,qj->qij", w, lam, dn)`.
 
-The cell below implements all of them and compares with `mc.nitsche`.
+The cell below implements all of them and compares with `mc.nitsche`, the version minicut uses.
 """))
-    c.append(ex(r"""
-def my_nitsche(geom, g, gamma=40.0):
-    q, m = geom.interface, geom.mesh
-    lam = m.bary(q.cells, q.points)                                # (nq, 3)  basis functions at the points
-    dn = np.einsum("qkd,qd->qk", m.grads[q.cells], q.normals)      # (nq, 3)  normal derivatives of the basis functions
-    w = q.weights                                                  # weights (contain the segment length)
-    pen = gamma / m.h[q.cells]                                     # gamma / h of the cell of every point
-    gx = g(q.points[:, 0], q.points[:, 1])                         # boundary data at the points
-
-    local = np.zeros((len(w), 3, 3))
-    local += -np.einsum("q,qi,qj->qij", w, lam, dn)                # consistency   - ∫ (∂n u) v
-    # TODO: symmetry   - ∫ u (∂n v)
-    # TODO: penalty    + gamma/h ∫ u v
-
-    local_b = np.zeros((len(w), 3))
-    # TODO: boundary data   - ∫ g ∂n v
-    # TODO: boundary data   + gamma/h ∫ g v
-    return mc.assemble_matrix(m, q.cells, local), mc.assemble_vector(m, q.cells, local_b)
-""", r"""
+    c.append(code(r"""
 def my_nitsche(geom, g, gamma=40.0):
     q, m = geom.interface, geom.mesh
     lam = m.bary(q.cells, q.points)                                # (nq, 3)  basis functions at the points
@@ -416,7 +383,7 @@ def my_nitsche(geom, g, gamma=40.0):
     return mc.assemble_matrix(m, q.cells, local), mc.assemble_vector(m, q.cells, local_b)
 """))
     c.append(code(r"""
-# Check your implementation against the reference (the test problem below has u = sin(pi x) sinh(y))
+# Check the explicit version against the one in minicut (the test problem below has u = sin(pi x) sinh(y))
 u_exact = lambda x, y: np.sin(np.pi * x) * np.sinh(y)
 f = lambda x, y: (np.pi**2 - 1) * np.sin(np.pi * x) * np.sinh(y)           # f = -Δ u_exact
 grad_exact = lambda x, y: (np.pi * np.cos(np.pi * x) * np.sinh(y), np.sin(np.pi * x) * np.cosh(y))
@@ -427,12 +394,12 @@ try:
     A_ref, b_ref = mc.nitsche(geom, u_exact)
     dA, db = abs(A_mine - A_ref).max(), np.abs(b_mine - b_ref).max()
     print("max difference matrix:", dA, "  vector:", db)
-    print("OK, the Nitsche terms agree with mc.nitsche" if max(dA, db) < 1e-12 else "Not yet: check the signs and the factors")
+    print("OK, the Nitsche terms agree with mc.nitsche" if max(dA, db) < 1e-12 else "Mismatch: check the signs and the factors")
 except Exception as e:
-    print("Not finished yet:", type(e).__name__, e)
+    print("Failed:", type(e).__name__, e)
 """))
     c.append(md(r"""
-**Solve.** Now assemble stiffness + Nitsche (use `mc.nitsche` if you did not finish yours), the load vector, and solve on the active dofs.
+**Solve.** Now assemble stiffness + Nitsche (`mc.nitsche`, which agrees with `my_nitsche`), the load vector, and solve on the active dofs.
 For the moment we **do not** use the ghost penalty (`ghost=False`).
 """))
     c.append(code(r"""
