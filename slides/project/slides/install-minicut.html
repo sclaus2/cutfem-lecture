@@ -1,72 +1,31 @@
 <section id="install-minicut" data-transition="fade" style="background:#ffffff">
-  <p id="e3-1bx9yp4" style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
-  <p id="e4-1bx9yp4" style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">9</p>
-  <h2 id="p53ec4d937ac3r0-a3a3c93d" style="position:absolute; top:96px; left:128px; width:1664px; font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Get minicut: install it on Windows</h2>
-  <div id="p53ec4d937ac3r1-a3a3c93d" style="position:absolute; top:180px; left:128px; width:1344px; height:187px; display:flex; flex-direction:column; gap:10px; padding:18px 28px; background:#eaf1f8; border:3px solid #00509a; border-radius:16px">
-    <p style="font-family:Arial, sans-serif; font-size:28px; font-weight:700; color:#00509a">In one line: just minicut, nothing else to download</p>
-    <div style="display:flex; flex-direction:column; padding:12px 24px; background:#f4f7fb; border:2px solid #b9c7d8; border-radius:12px">
-      <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:28px; font-weight:700; line-height:1.4; color:#1f2937">pip install https://github.com/sclaus2/cutfem-lecture/archive/main.zip</p>
-    </div>
-    <p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.35; color:#3b3b3b">After step 1, run it in PowerShell inside a venv (first two lines on the right). The notebook: steps 2 to 4.</p>
+  <p style="position:absolute; top:992px; left:480px; width:960px; font-family:Arial, sans-serif; font-size:24px; text-align:center; color:#6e6e6e">Cut finite element methods · MINES Paris – PSL</p>
+  <p style="position:absolute; top:992px; right:128px; width:120px; font-family:Arial, sans-serif; font-size:24px; text-align:right; color:#6e6e6e">9</p>
+  <h2 style="position:absolute; top:96px; left:128px; width:1664px; font-family:Arial, sans-serif; font-size:60px; font-weight:700; line-height:1.1; color:#00509a">Install minicut and run the notebook</h2>
+  <div style="position:absolute; top:180px; left:128px; width:1664px; display:flex; flex-direction:column; gap:6px; padding:16px 28px; background:#eaf1f8; border:3px solid #00509a; border-radius:16px">
+    <p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.35; color:#3b3b3b"><b>Python 3.9 or newer</b> from python.org (Windows: tick <b>Add python.exe to PATH</b>; Linux: python3-venv).</p>
+    <p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.35; color:#3b3b3b"><b>No git?</b> github.com/sclaus2/cutfem-lecture → <b>Code → Download ZIP</b>, extract, open the terminal there, skip lines 1 and 2.</p>
+    <p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.35; color:#3b3b3b"><b>requirements.txt</b> is in the repository folder: it lists numpy, scipy, matplotlib and jupyterlab.</p>
+    <p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.35; color:#3b3b3b"><b>Next time:</b> activate the environment again (line 4), then run the last line.</p>
   </div>
-  <div id="qr-repo-a3a3c93d" style="position:absolute; top:180px; left:1560px; width:232px; display:flex; flex-direction:column; gap:6px; align-items:center">
+  <div style="position:absolute; top:388px; left:128px; width:816px; height:296px; display:flex; flex-direction:column; gap:0px; padding:12px 24px; background:#f4f7fb; border:2px solid #b9c7d8; border-radius:16px">
+    <p style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#00509a">Windows (PowerShell)</p>
+    <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.4; color:#1f2937">git clone https://github.com/sclaus2/cutfem-lecture</p><p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.4; color:#1f2937">cd cutfem-lecture</p><p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.4; color:#1f2937">python -m venv .venv</p><p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.4; color:#1f2937">.venv\Scripts\Activate.ps1</p><p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.4; color:#1f2937">pip install -r requirements.txt</p><p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.4; color:#1f2937">jupyter lab notebooks\cutfem_lecture.ipynb</p>
+  </div>
+  <div style="position:absolute; top:388px; left:976px; width:816px; height:296px; display:flex; flex-direction:column; gap:0px; padding:12px 24px; background:#f4f7fb; border:2px solid #b9c7d8; border-radius:16px">
+    <p style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#00509a">Linux and macOS (terminal)</p>
+    <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.4; color:#1f2937">git clone https://github.com/sclaus2/cutfem-lecture</p><p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.4; color:#1f2937">cd cutfem-lecture</p><p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.4; color:#1f2937">python3 -m venv .venv</p><p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.4; color:#1f2937">source .venv/bin/activate</p><p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.4; color:#1f2937">pip install -r requirements.txt</p><p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.4; color:#1f2937">jupyter lab notebooks/cutfem_lecture.ipynb</p>
+  </div>
+  <div style="position:absolute; top:700px; left:128px; width:1400px; display:flex; flex-direction:column; gap:8px; padding:14px 28px; background:#f4f7fb; border:2px solid #b9c7d8; border-radius:16px">
+    <p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.35; color:#3b3b3b"><b>Only minicut, without the notebook:</b> create and activate the environment (lines 3 and 4), then</p>
+    <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:24px; font-weight:700; line-height:1.4; color:#1f2937">pip install https://github.com/sclaus2/cutfem-lecture/archive/main.zip</p>
+  </div>
+  <div style="position:absolute; top:828px; left:128px; width:1400px; display:flex; flex-direction:column; padding:14px 28px; background:#fdebd8; border-radius:16px">
+    <p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.35; color:#3b3b3b"><b style="color:#b34f00">If something fails:</b> PowerShell refuses Activate.ps1? Run <b>Set-ExecutionPolicy -Scope Process Bypass</b> first.</p>
+  </div>
+  <div style="position:absolute; top:700px; left:1560px; width:232px; display:flex; flex-direction:column; gap:6px; align-items:center">
     <img src="/_blob/c8e971d299a1b44513795b70bc576478" alt="QR code linking to the code repository github.com/sclaus2/cutfem-lecture" style="width:200px; height:200px; object-fit:contain">
     <p style="font-family:Arial, sans-serif; font-size:22px; font-weight:700; line-height:1.2; text-align:center; color:#00509a">Scan: repository</p>
   </div>
-  <div id="p53ec4d937ac3r2-a3a3c93d" style="position:absolute; top:420px; left:128px; width:1664px; height:452px; display:flex; flex-direction:row; gap:56px; align-items:start">
-    <div style="display:flex; flex-direction:column; gap:20px; flex:1">
-      <div style="display:flex; flex-direction:row; gap:24px; align-items:start">
-        <div style="width:48px; height:48px; display:flex; flex-direction:row; align-items:center; justify-content:center; flex:0 0 auto; background:#00509a; border-radius:24px">
-          <p style="font-family:Arial, sans-serif; font-size:28px; font-weight:700; color:#ffffff">1</p>
-        </div>
-        <div style="display:flex; flex-direction:column; gap:4px; flex:1">
-          <p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; line-height:1.2; color:#00509a">Install Python 3.9 or newer</p>
-          <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">From python.org. In the installer tick <b>Add python.exe to PATH</b>.</p>
-        </div>
-      </div>
-      <div style="display:flex; flex-direction:row; gap:24px; align-items:start">
-        <div style="width:48px; height:48px; display:flex; flex-direction:row; align-items:center; justify-content:center; flex:0 0 auto; background:#00509a; border-radius:24px">
-          <p style="font-family:Arial, sans-serif; font-size:28px; font-weight:700; color:#ffffff">2</p>
-        </div>
-        <div style="display:flex; flex-direction:column; gap:4px; flex:1">
-          <p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; line-height:1.2; color:#00509a">Download the repository</p>
-          <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">Open <b>github.com/sclaus2/cutfem-lecture</b>, click <b>Code → Download ZIP</b>, then right-click the file and choose <b>Extract All</b>.</p>
-        </div>
-      </div>
-      <div style="display:flex; flex-direction:row; gap:24px; align-items:start">
-        <div style="width:48px; height:48px; display:flex; flex-direction:row; align-items:center; justify-content:center; flex:0 0 auto; background:#00509a; border-radius:24px">
-          <p style="font-family:Arial, sans-serif; font-size:28px; font-weight:700; color:#ffffff">3</p>
-        </div>
-        <div style="display:flex; flex-direction:column; gap:4px; flex:1">
-          <p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; line-height:1.2; color:#00509a">Open PowerShell in that folder</p>
-          <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">In File Explorer click the address bar of the extracted folder, type <b>powershell</b>, press Enter.</p>
-        </div>
-      </div>
-      <div style="display:flex; flex-direction:row; gap:24px; align-items:start">
-        <div style="width:48px; height:48px; display:flex; flex-direction:row; align-items:center; justify-content:center; flex:0 0 auto; background:#00509a; border-radius:24px">
-          <p style="font-family:Arial, sans-serif; font-size:28px; font-weight:700; color:#ffffff">4</p>
-        </div>
-        <div style="display:flex; flex-direction:column; gap:4px; flex:1">
-          <p style="font-family:Arial, sans-serif; font-size:32px; font-weight:700; line-height:1.2; color:#00509a">Install and start</p>
-          <p style="font-family:Arial, sans-serif; font-size:26px; line-height:1.35; color:#3b3b3b">Paste the commands on the right. JupyterLab opens in your browser. Next time, activate .venv again first.</p>
-        </div>
-      </div>
-    </div>
-    <div style="width:760px; display:flex; flex-direction:column; gap:18px; flex:0 0 auto">
-      <div style="display:flex; flex-direction:column; gap:2px; padding:24px 32px; background:#f4f7fb; border:2px solid #b9c7d8; border-radius:16px">
-        <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:26px; font-weight:700; line-height:1.45; color:#1f2937">python -m venv .venv</p>
-        <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:26px; font-weight:700; line-height:1.45; color:#1f2937">.venv\Scripts\Activate.ps1</p>
-        <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:26px; font-weight:700; line-height:1.45; color:#1f2937">pip install -r requirements.txt</p>
-        <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:26px; font-weight:700; line-height:1.45; color:#1f2937">&nbsp;</p>
-        <p style="padding:0; font-family:Consolas, 'Courier New', monospace; font-size:26px; font-weight:700; line-height:1.45; color:#1f2937">jupyter lab notebooks\cutfem_lecture.ipynb</p>
-      </div>
-      <div style="display:flex; flex-direction:column; gap:8px; padding:16px 28px; background:#fdebd8; border-radius:16px">
-        <p style="font-family:Arial, sans-serif; font-size:30px; font-weight:700; color:#b34f00">If something fails</p>
-        <p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.35; color:#3b3b3b">PowerShell refuses to run <b>Activate.ps1</b>: first run Set-ExecutionPolicy -Scope Process Bypass</p>
-        <p style="font-family:Arial, sans-serif; font-size:24px; line-height:1.35; color:#3b3b3b">Keep the folder as it is: the notebook imports <b>minicut.py</b> from the folder above it.</p>
-      </div>
-    </div>
-  </div>
-  <p id="p53ec4d937ac3r3-a3a3c93d" style="position:absolute; top:906px; left:128px; width:1664px; height:62px; font-family:Arial, sans-serif; font-size:24px; line-height:1.3; color:#6e6e6e">minicut is one file, minicut.py, and needs only numpy, scipy and matplotlib. On macOS or Linux: python3 -m venv .venv, source .venv/bin/activate, then the same pip and jupyter lines.</p>
-  <aside>Two minutes, or skip it in the lecture and point to it. Everything we run in the lecture is minicut: one Python file with numpy, scipy and matplotlib, so it installs on a Windows laptop without a compiler. Steps: install Python from python.org and tick "Add python.exe to PATH"; download the repository as a ZIP from GitHub (Code, Download ZIP) and extract it; open PowerShell in the extracted folder (type powershell in the address bar of File Explorer); create a virtual environment with py -m venv .venv, activate it with .venv\Scripts\Activate.ps1, install numpy, scipy, matplotlib and jupyterlab with pip install -r requirements.txt, and start the notebook with jupyter lab notebooks\cutfem_lecture.ipynb. To only get minicut, one line after installing Python is enough, run inside a virtual environment (python -m venv .venv, then .venv\Scripts\Activate.ps1, so that it does not touch the system Python): pip install https://github.com/sclaus2/cutfem-lecture/archive/main.zip (the repository has a pyproject.toml; this installs minicut and its three dependencies, import minicut then works in any folder, and no git is needed). The notebook is not part of that package: either use the ZIP steps, or in the same environment run pip install jupyterlab, download the notebook from the repository (the README has a one-line command) and start it with jupyter lab cutfem_lecture.ipynb. In later sessions activate the environment again before jupyter lab. If PowerShell blocks the activation script, Set-ExecutionPolicy -Scope Process Bypass allows it for this window only. The notebook finds minicut.py in the folder above it, so keep the folder structure. On macOS or Linux use python3 -m venv .venv and source .venv/bin/activate. Not tested here: Google Colab or other online notebooks.</aside>
+  <aside>Two minutes, or skip it in the lecture and point to it. Everything we run in the lecture is minicut: one Python file with numpy, scipy and matplotlib, so it installs on Windows, Linux and macOS without a compiler. Before you start: Python 3.9 or newer from python.org (on Windows tick Add python.exe to PATH; on Linux install python3 and python3-venv, for example sudo apt install python3 python3-venv). Then the six lines, the same on every system except lines 3 and 4. Line 1 downloads the repository with git; without git open github.com/sclaus2/cutfem-lecture, click Code, Download ZIP, extract it, open the terminal in the extracted folder and skip lines 1 and 2. Line 3 creates a virtual environment named .venv, so that nothing is installed into the system Python, and line 4 activates it (Windows PowerShell: .venv\Scripts\Activate.ps1; Linux and macOS: source .venv/bin/activate). Line 5 installs what the file requirements.txt in the repository folder lists: numpy, scipy, matplotlib and jupyterlab. Line 6 starts JupyterLab with the notebook, and it opens in the browser. Next time only line 4 and line 6 are needed. To get only minicut without the notebook, create and activate the environment (lines 3 and 4) and run pip install https://github.com/sclaus2/cutfem-lecture/archive/main.zip; import minicut then works in any folder. If PowerShell blocks the activation script, Set-ExecutionPolicy -Scope Process Bypass allows it for this window only. The notebook finds minicut.py in the folder above it, so keep the folder structure. Not tested here: Google Colab or other online notebooks.</aside>
 </section>
