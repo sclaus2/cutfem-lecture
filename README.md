@@ -37,14 +37,29 @@ Figures from the lecture, all produced with `minicut`.
 <tr><td align="center" valign="top"><img src="slides/assets/31c4842236d730fcb612dfdf68ac8374.gif" width="500"><br><sub>The optimisation loop: widest blade within the temperature limit</sub></td><td align="center" valign="top"><img src="slides/assets/74482f4d619bad76b76b6924b99fff22.gif" width="500"><br><sub>The two-parameter loop (derivative-free)</sub></td></tr>
 </table>
 
-## Install only minicut (one line)
+## Install only minicut (without cloning)
+
+Install it into a virtual environment, not into your system Python. Then start JupyterLab from the same environment.
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate          # Windows (PowerShell): .venv\Scripts\Activate.ps1
 pip install https://github.com/sclaus2/cutfem-lecture/archive/main.zip
+pip install jupyterlab
 ```
 
 This installs `minicut` and numpy, scipy and matplotlib, so `import minicut` works in any folder (no git needed).
-The notebooks are not part of the package: use the steps below.
+To check: `python -c "import minicut; print(minicut.__file__)"`.
+
+The package does not contain the notebook. Download it into the current folder and open it:
+
+```bash
+python -c "import urllib.request as u; u.urlretrieve('https://raw.githubusercontent.com/sclaus2/cutfem-lecture/main/notebooks/cutfem_lecture.ipynb', 'cutfem_lecture.ipynb')"
+jupyter lab cutfem_lecture.ipynb
+```
+
+Run the cells from top to bottom with Shift+Enter. The notebook imports the installed `minicut`.
+Every later session: activate the environment again (`source .venv/bin/activate`) before `jupyter lab`.
 
 ## Run the notebook locally
 
@@ -59,7 +74,9 @@ pip install -r requirements.txt
 jupyter lab notebooks/cutfem_lecture.ipynb
 ```
 
-(On Windows `python` replaces `python3`.) Jupyter opens in your browser. Run the cells from top to bottom with
+Every later session: activate the environment again (`source .venv/bin/activate`), then run the last line.
+
+(On Windows `python` replaces `python3`.) JupyterLab opens in your browser. Run the cells from top to bottom with
 Shift+Enter. The whole notebook takes about a minute. VS Code with the Python and Jupyter extensions also works:
 open the notebook and select the `.venv` interpreter.
 
